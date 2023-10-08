@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:queue/data/lesson_database.dart';
+
 import 'package:queue/data/user_database.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
@@ -6,7 +8,8 @@ import 'package:queue/models/lesson.dart';
 
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase? _userDataBase;
-  List<Lesson>? _todayLessons;
+  List<Lesson>? get _todayLessons => _lessonDatabase.todayLessons;
+  final LessonDatabase _lessonDatabase = LessonDatabase();
   QueueBloc(super.initialState) {
     // --- loading
 
@@ -17,9 +20,11 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
         (event, emit) => emit(UserUnAuthenticatedState(event.errorMessage)));
     on<UserAuthenticateEvent>(
         (event, emit) async => await _authenticateUser(event.userID));
-    on<UserAuthenticatedEvent>(
-        (event, emit) => emit(MainState(_todayLessons ?? [])));
+    on<UserAuthenticatedEvent>((event, emit) {
+      emit(MainState(_todayLessons ?? []));
+    });
     on<UserLogOutEvent>((event, emit) async => await userLogOut());
+
     add(FindUserEvent());
   }
 

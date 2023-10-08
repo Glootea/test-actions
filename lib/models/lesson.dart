@@ -9,6 +9,8 @@ class Lesson {
   final List<bool> weeks;
   final LessonPair pair;
   List<Rec> recs = [];
+  UserRec? userRec;
 
-  Lesson(this.displayName, this.tableName, this.weekDay, this.weeks, this.pair);
+  Lesson(this.displayName, this.tableName, this.weekDay, this.weeks, this.pair,
+      [this.userRec]);
 }

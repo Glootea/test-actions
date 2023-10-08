@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/login_screen.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +35,10 @@ class MyApp extends StatelessWidget {
           //
           // This works for code too, not just values: Most code changes can be
           // tested with just a hot reload.
-          colorScheme: const ColorScheme.dark(),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+                  .withOpacity(1.0),
+              brightness: Brightness.dark),
           useMaterial3: true,
         ),
         home: const LoginScreen(),

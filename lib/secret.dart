@@ -1,7 +1,11 @@
 // ignore_for_file: non_constant_identifier_names, constant_identifier_names
 
 final Map<String, String> STUDENTS = Map.fromEntries(
-    const String.fromEnvironment("students").split(',').map((e) {
+    const String.fromEnvironment("students")
+        .replaceAll("{", "")
+        .replaceAll("}", "")
+        .split(',')
+        .map((e) {
   List<String> params = e.split(':');
   return MapEntry(params[0].trim(), params[1].trim());
 }));

@@ -11,27 +11,30 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<QueueBloc, QueueState>(buildWhen: (previous, current) {
-      if (previous.runtimeType != current.runtimeType) return true;
-      if (previous is UserUnAuthenticatedState &&
-          current is UserUnAuthenticatedState) {
-        return previous.hashCode != current.hashCode;
-      }
-      return false;
-    }, builder: (context, state) {
-      if (state is MainState) {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const MainScreen()));
-        });
-      } else {
-        if (state is UserUnAuthenticatedState) {
-          return LoginView(
-              errorMessage: state.errorMessage, key: ValueKey(state.hashCode));
+    return SafeArea(
+      child: BlocBuilder<QueueBloc, QueueState>(buildWhen: (previous, current) {
+        if (previous.runtimeType != current.runtimeType) return true;
+        if (previous is UserUnAuthenticatedState &&
+            current is UserUnAuthenticatedState) {
+          return previous.hashCode != current.hashCode;
         }
-      }
-      return const LoadingView();
-    });
+        return false;
+      }, builder: (context, state) {
+        if (state is MainState) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const MainScreen()));
+          });
+        } else {
+          if (state is UserUnAuthenticatedState) {
+            return LoginView(
+                errorMessage: state.errorMessage,
+                key: ValueKey(state.hashCode));
+          }
+        }
+        return const LoadingView();
+      }),
+    );
   }
 }
 

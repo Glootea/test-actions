@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:queue/models/lesson.dart';
+import 'package:queue/models/rec.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
 
 class LessonDatabase {
@@ -19,7 +20,7 @@ class LessonDatabase {
       TimeOfDay(hour: 18, minute: 0), TimeOfDay(hour: 19, minute: 30));
   @Deprecated("For test")
   final LessonPair _testPair = const LessonPair(
-      TimeOfDay(hour: 23, minute: 49), TimeOfDay(hour: 23, minute: 58));
+      TimeOfDay(hour: 13, minute: 15), TimeOfDay(hour: 19, minute: 0));
 
   List<Lesson> get todayLessons => lessons
       .where((element) => element.weekDay == DateTime.now().weekday)
@@ -36,7 +37,8 @@ class LessonDatabase {
             "Поис", 5, [true, true], _sixthPair),
         Lesson("Ити (Информационно-технологическая инфраструктура)", "Ити", 6,
             [true, true], _thirdPair),
-        Lesson("Test", "test", 6, [true, true], _testPair)
+        Lesson("Ити (Информационно-технологическая инфраструктура)", "test", 7,
+            [true, true], _testPair, UserRec("me", DateTime.now()))
       ];
 }
 

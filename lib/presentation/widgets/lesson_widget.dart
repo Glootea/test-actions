@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:queue/models/lesson.dart';
+import 'package:queue/presentation/widgets/padding.dart';
+import 'package:queue/presentation/widgets/qr_button.dart';
+import 'package:queue/presentation/widgets/rec_button.dart';
 import 'package:queue/presentation/widgets/timer_start_reg.dart';
 
 class LessonWidget extends StatefulWidget {
@@ -12,49 +16,172 @@ class LessonWidget extends StatefulWidget {
 
 class _LessonWidgetState extends State<LessonWidget> {
   DateTime get now => DateTime.now();
-  bool get regIsActive => (timeToStart < const TimeOfDay(minute: 10, hour: 0) &&
-      const TimeOfDay(hour: 0, minute: 0) < timetillEnd);
+  TimeOfDay timerStartDelay = const TimeOfDay(minute: 11, hour: 0);
+
+  late bool displayedRegState;
+
+  bool get regIsActive => (timeToStart < timerStartDelay &&
+      const TimeOfDay(hour: 0, minute: 0) <= timetillEnd);
+  bool get showTimer =>
+      timeToStart < const TimeOfDay(hour: 0, minute: 30) &&
+      timerStartDelay < timeToStart;
   TimeOfDay get timeToStart =>
       widget.lesson.pair.startTime - TimeOfDay.fromDateTime(now);
   TimeOfDay get timetillEnd =>
       widget.lesson.pair.endTime - TimeOfDay.fromDateTime(now);
 
+  late Timer timer;
+
+  bool expanded = false;
+
+  @override
+  void initState() {
+    displayedRegState = regIsActive;
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (displayedRegState == false && regIsActive) {
+        setState(() {
+          displayedRegState = true;
+        });
+      } else if (displayedRegState == true && !regIsActive) {
+        setState(() {
+          displayedRegState = false;
+        });
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: Theme.of(context).colorScheme.primaryContainer),
-      child: Column(
-        children: [
-          Text(
-            widget.lesson.displayName,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          Text(regIsActive ? "Запись открыта" : "Запись закрыта"),
-          if (regIsActive) TimerStartReg(widget.lesson.pair.startTime)
-        ],
-      ),
-    );
+    return GestureDetector(
+        onTap: () => setState(() {
+              expanded = !expanded;
+            }),
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                color: Theme.of(context).colorScheme.primaryContainer),
+            child: Column(
+              children: [
+                const MySmallPadding(),
+                Row(
+                  children: [
+                    const MySmallPadding(),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text(
+                          widget.lesson.displayName,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                    ),
+                    const MySmallPadding(),
+                    AnimatedRotation(
+                      turns: expanded ? 0.5 : 0,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut,
+                      child: const Icon(Icons.expand_more_outlined),
+                    ),
+                    const MySmallPadding(),
+                  ],
+                ),
+                const MySmallPadding(),
+                SizedBox(
+                  height: 56,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      const MySmallPadding(),
+                      SizedBox(
+                        height: 56,
+                        child: Center(
+                          child: (!showTimer)
+                              ? Text(
+                                  displayedRegState
+                                      ? "Запись открыта"
+                                      : "Запись закрыта",
+                                  textAlign: TextAlign.left,
+                                )
+                              : TimerStartReg(widget.lesson.pair.startTime),
+                        ),
+                      ),
+                      const MySmallPadding(),
+                      if (displayedRegState) RecButton(widget.lesson),
+                      const MySmallPadding(),
+                      if ((widget.lesson.userRec != null)) const QrButton(),
+                    ],
+                  ),
+                ),
+                const MySmallPadding(),
+              ],
+            )
+            //   child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            //     const MySmallPadding(),
+            //     Flexible(
+            //       child: Column(
+            //         children: [
+            //           const MySmallPadding(),
+            //           SingleChildScrollView(
+            //             scrollDirection: Axis.horizontal,
+            //             child: Text(
+            //               widget.lesson.displayName,
+            //               style: Theme.of(context).textTheme.headlineSmall,
+            //             ),
+            //           ),
+            //           const MySmallPadding(),
+            //           Text(
+            //             displayedRegState ? "Запись открыта" : "Запись закрыта",
+            //             textAlign: TextAlign.center,
+            //           ),
+            //           if (!displayedRegState)
+            //             TimerStartReg(widget.lesson.pair.startTime),
+            //           const MySmallPadding(),
+            //         ],
+            //       ),
+            //     ),
+            //     const MySmallPadding(),
+            //     if (displayedRegState)
+            //       SizedBox(
+            //         width: 148,
+            //         child: Column(
+            //             children: <Widget>[RecButton(widget.lesson)] +
+            //                 ((widget.lesson.userRec != null)
+            //                     ? <Widget>[const QrButton()]
+            //                     : [])),
+            //       ),
+            //     const MySmallPadding(),
+            //     AnimatedRotation(
+            //       turns: expanded ? 0.5 : 0,
+            //       duration: const Duration(milliseconds: 400),
+            //       curve: Curves.easeInOut,
+            //       child: const Icon(Icons.expand_more_outlined),
+            //     ),
+            //     const MySmallPadding(),
+            //   ]),
+            // ),
+            ));
   }
 }
 
 extension TimeArithmetic on TimeOfDay {
   TimeOfDay operator -(TimeOfDay other) {
-    if ((minute - other.minute < 0) || (hour - other.hour < 0)) {
-      return const TimeOfDay(hour: 0, minute: 0);
-    }
-    if (minute - other.minute < 0) {
-      return TimeOfDay(
-          hour: hour - other.hour - 1, minute: 60 + minute - other.minute);
-    }
-    return TimeOfDay(hour: hour - other.hour, minute: minute - other.minute);
+    int totalMinutes = (hour - other.hour) * 60 + (minute - other.minute);
+    if (totalMinutes <= 0) return const TimeOfDay(hour: 0, minute: 0);
+    return TimeOfDay(hour: totalMinutes ~/ 60, minute: totalMinutes % 60);
   }
 
   bool operator <(TimeOfDay other) {
     if (hour < other.hour) return true;
     if (hour > other.hour) return false;
     if (minute < other.minute) return true;
+    return false;
+  }
+
+  bool operator <=(TimeOfDay other) {
+    if (hour <= other.hour) return true;
+    if (hour > other.hour) return false;
+    if (minute <= other.minute) return true;
     return false;
   }
 }

@@ -18,6 +18,6 @@ class NoUserEvent extends QueueEvent {
   NoUserEvent([this.errorMessage]);
 }
 
-// --- loading
+// --- main screen
 
 

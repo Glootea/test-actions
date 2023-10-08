@@ -10,15 +10,16 @@ class TimerStartReg extends StatefulWidget {
   State<TimerStartReg> createState() => _TimerStartRegState();
 }
 
-class _TimerStartRegState extends State<TimerStartReg>
-    with SingleTickerProviderStateMixin {
+class _TimerStartRegState extends State<TimerStartReg> {
   late Timer timer;
   DateTime get now => DateTime.now();
-  Duration get diff => now
-      .copyWith(
-          hour: widget.target.hour, minute: widget.target.minute, second: 0)
-      .difference(now);
-  String time = '';
+  Duration get diff =>
+      now
+          .copyWith(
+              hour: widget.target.hour, minute: widget.target.minute, second: 0)
+          .difference(now) -
+      const Duration(minutes: 10);
+  String time = '     ';
   @override
   void initState() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {

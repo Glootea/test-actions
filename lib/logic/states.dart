@@ -10,7 +10,7 @@ class UserUnAuthenticatedState extends QueueState {
 class LoadingState extends QueueState {}
 
 class MainState extends QueueState {
-  final List<Lesson> todaysLessons;
+  final List<Lesson> todayLessons;
 
-  MainState(this.todaysLessons);
+  MainState(this.todayLessons);
 }
