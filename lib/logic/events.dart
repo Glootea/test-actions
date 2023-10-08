@@ -18,6 +18,16 @@ class NoUserEvent extends QueueEvent {
   NoUserEvent([this.errorMessage]);
 }
 
-// --- main screen
+// --- main screen ---
 
+class CreateRegEvent extends QueueEvent {
+  final String lessonName;
 
+  CreateRegEvent(this.lessonName);
+}
+
+class DeleteRegEvent extends QueueEvent {
+  final String lessonName;
+
+  DeleteRegEvent(this.lessonName);
+}

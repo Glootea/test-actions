@@ -11,7 +11,7 @@
             "flutterMode": "debug",
             "args": [
                 "--dart-define-from-file",
-                "secret//api-keys.json",
+                "lib/secret/api-keys.json",
                 "-d", "chrome","--web-port", "8000"
               ]
         },
@@ -22,7 +22,7 @@
             "flutterMode": "debug",
             "args": [
                 "--dart-define-from-file",
-                "secret//api-keys.json",
+                "lib/secret/api-keys.json",
               ]
         },
         {
@@ -32,7 +32,7 @@
             "flutterMode": "profile",
             "args": [
                 "--dart-define-from-file",
-                "secret//api-keys.json",
+                "lib/secret/api-keys.json",
                 // "-d", "chrome","--web-port", "8000"
               ]
         },
@@ -43,7 +43,7 @@
             "flutterMode": "release",
             "args": [
                 "--dart-define-from-file",
-                "secret//api-keys.json",
+                "lib/secret/api-keys.json",
                 "-d", "chrome","--web-port", "8000"
               ]
         }

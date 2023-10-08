@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:queue/models/lesson.dart';
+import 'package:queue/models/rec.dart';
 import 'package:queue/presentation/widgets/padding.dart';
 import 'package:queue/presentation/widgets/qr_button.dart';
 import 'package:queue/presentation/widgets/rec_button.dart';
 import 'package:queue/presentation/widgets/timer_start_reg.dart';
+import 'package:intl/intl.dart';
 
 class LessonWidget extends StatefulWidget {
   final Lesson lesson;
@@ -21,7 +23,7 @@ class _LessonWidgetState extends State<LessonWidget> {
   late bool displayedRegState;
 
   bool get regIsActive => (timeToStart < timerStartDelay &&
-      const TimeOfDay(hour: 0, minute: 0) <= timetillEnd);
+      const TimeOfDay(hour: 0, minute: 0) < timetillEnd);
   bool get showTimer =>
       timeToStart < const TimeOfDay(hour: 0, minute: 30) &&
       timerStartDelay < timeToStart;
@@ -53,69 +55,163 @@ class _LessonWidgetState extends State<LessonWidget> {
 
   @override
   Widget build(BuildContext context) {
+    List<Rec> sortedList = widget.lesson.recs
+      ..sort((a, b) => a.time.isBefore(b.time) ? -1 : 1);
+    int queueN = sortedList
+            .indexOf(widget.lesson.userRec ?? Rec('none', DateTime.now())) +
+        1;
     return GestureDetector(
         onTap: () => setState(() {
               expanded = !expanded;
             }),
-        child: Container(
+        child: AnimatedContainer(
+            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 1200),
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
                 color: Theme.of(context).colorScheme.primaryContainer),
-            child: Column(
-              children: [
-                const MySmallPadding(),
-                Row(
-                  children: [
-                    const MySmallPadding(),
-                    Flexible(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Text(
-                          widget.lesson.displayName,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                      ),
-                    ),
-                    const MySmallPadding(),
-                    AnimatedRotation(
-                      turns: expanded ? 0.5 : 0,
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.easeInOut,
-                      child: const Icon(Icons.expand_more_outlined),
-                    ),
-                    const MySmallPadding(),
-                  ],
-                ),
-                const MySmallPadding(),
-                SizedBox(
-                  height: 56,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
+            child: Stack(children: [
+              Column(
+                children: [
+                  const MySmallPadding(),
+                  Row(
                     children: [
                       const MySmallPadding(),
-                      SizedBox(
-                        height: 56,
-                        child: Center(
-                          child: (!showTimer)
-                              ? Text(
-                                  displayedRegState
-                                      ? "Запись открыта"
-                                      : "Запись закрыта",
-                                  textAlign: TextAlign.left,
-                                )
-                              : TimerStartReg(widget.lesson.pair.startTime),
+                      Flexible(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Text(
+                            widget.lesson.displayName,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
                         ),
                       ),
+                      const MyPadding(),
+                      AnimatedRotation(
+                        turns: expanded ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                        child: const Icon(Icons.expand_more_outlined),
+                      ),
                       const MySmallPadding(),
-                      if (displayedRegState) RecButton(widget.lesson),
-                      const MySmallPadding(),
-                      if ((widget.lesson.userRec != null)) const QrButton(),
                     ],
                   ),
+                  const MySmallPadding(),
+                  SizedBox(
+                    height: 56,
+                    child: Row(
+                      children: [
+                        const MySmallPadding(),
+                        SizedBox(
+                          height: 56,
+                          child: Center(
+                              child: (widget.lesson.userRec == null)
+                                  ? (!showTimer)
+                                      ? Text(
+                                          displayedRegState
+                                              ? "Запись открыта"
+                                              : "Запись закрыта",
+                                          textAlign: TextAlign.left,
+                                        )
+                                      : TimerStartReg(
+                                          widget.lesson.pair.startTime)
+                                  : Text(
+                                      "Запись от\n${DateFormat('yyyy-MM-dd в kk:mm:ss').format(widget.lesson.userRec!.time)}")),
+                        ),
+                        const Spacer(),
+                        if (displayedRegState || widget.lesson.userRec != null)
+                          SizedBox(height: 40, child: RecButton(widget.lesson)),
+                        const MySmallPadding(),
+                        if ((widget.lesson.userRec != null))
+                          const SizedBox(height: 40, child: QrButton()),
+                        const MySmallPadding(),
+                      ],
+                    ),
+                  ),
+                  const MySmallPadding(),
+                  if (widget.lesson.userRec != null)
+                    Row(
+                      children: [
+                        const MySmallPadding(),
+                        Text(
+                          queueN == 0
+                              ? "Очередь не синхронизирована"
+                              : "Вы $queueN в очереди",
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ],
+                    ),
+                  const MySmallPadding(),
+                  AnimatedCrossFade(
+                      firstChild: const SizedBox(width: double.infinity),
+                      secondChild: SizedBox(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Очередь: ",
+                              textAlign: TextAlign.left,
+                            ),
+                            const MySmallPadding(),
+                            ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: sortedList.length,
+                                itemBuilder: (context, index) => Row(
+                                      children: [
+                                        const MySmallPadding(),
+                                        Text("${index + 1}"),
+                                        const Spacer(),
+                                        Text(sortedList[index].userName),
+                                        const MySmallPadding(),
+                                      ],
+                                    ))
+                          ],
+                        ),
+                      )),
+                      sizeCurve: Curves.easeInOut,
+                      crossFadeState: expanded
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      duration: const Duration(milliseconds: 1200)),
+                  const MySmallPadding(),
+                ],
+              ),
+              if (widget.lesson.userRec != null)
+                Positioned(
+                  left: 112,
+                  top: 72,
+                  child: Icon(
+                    Icons.save_outlined,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
                 ),
-                const MySmallPadding(),
-              ],
-            )
+              if (widget.lesson.userRec != null &&
+                  widget.lesson.userRec!.isOnline)
+                Positioned(
+                  left: 140,
+                  top: 72,
+                  child: Icon(
+                    Icons.wifi_outlined,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              if (widget.lesson.userRec != null &&
+                  !widget.lesson.userRec!.isOnline)
+                Positioned(
+                  left: 140,
+                  top: 72,
+                  child: Icon(
+                    Icons.wifi_off_outlined,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+            ])
             //   child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
             //     const MySmallPadding(),
             //     Flexible(

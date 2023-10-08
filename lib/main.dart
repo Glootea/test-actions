@@ -1,22 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:queue/data/lesson_database.dart';
+import 'package:queue/data/user_database.dart';
+
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/login_screen.dart';
 import 'dart:math' as math;
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  final userDataBase = await UserDataBase.configuredUserDataBase();
+  LessonDatabase lessonDatabase;
+  if (userDataBase != null) {
+    lessonDatabase =
+        await LessonDatabase.fillFromLocal(userDataBase.getUserName);
+  } else {
+    lessonDatabase = await LessonDatabase.fillFromLocal("noName");
+  }
+
+  runApp(MyApp(
+    userDataBase,
+    lessonDatabase,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final LessonDatabase _lessonDatabase;
+  final UserDataBase? _userDataBase;
+  const MyApp(this._userDataBase, this._lessonDatabase, {super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => QueueBloc(LoadingState()),
+      create: (context) =>
+          QueueBloc(_userDataBase, _lessonDatabase, LoadingState()),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(

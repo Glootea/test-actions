@@ -1,11 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:queue/secret.dart';
 
-import '../models/rec.dart';
-
 class UserDataBase {
   final String _userName;
-  List<UserRec>? _recs;
   String get getUserName => _userName;
   static const _userKey = "userID";
   static const _storage = FlutterSecureStorage();

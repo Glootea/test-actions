@@ -6,6 +6,8 @@ class QrButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-        onPressed: () {}, child: const Icon(Icons.qr_code_rounded));
+        style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
+        onPressed: () {},
+        child: const Icon(Icons.qr_code_rounded, color: Colors.black));
   }
 }

@@ -18,3 +18,5 @@ final List<String> ADMINS = (const String.fromEnvironment("admins"))
     .split(",")
     .map((e) => e.trim())
     .toList();
+
+String SHEETID = const String.fromEnvironment("tableUrl");

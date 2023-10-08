@@ -6,6 +6,7 @@ import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/login_screen.dart';
+import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
 import 'package:queue/presentation/widgets/padding.dart';
 
@@ -41,12 +42,29 @@ class _MainScreenState extends State<MainScreen> {
               }
               try {
                 MainState mainState = state as MainState;
-                return PageView(
-                  controller: pageController,
-                  physics: const NeverScrollableScrollPhysics(),
+                return Stack(
                   children: [
-                    TodayView(mainState: mainState),
-                    const QRScannerView()
+                    MediaQuery.of(context).size.width < 600
+                        ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ConnectionStatusWidget(),
+                            ],
+                          )
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              ConnectionStatusWidget(),
+                            ],
+                          ),
+                    PageView(
+                      controller: pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        TodayView(mainState: mainState),
+                        const QRScannerView()
+                      ],
+                    ),
                   ],
                 );
               } catch (e) {
@@ -95,6 +113,7 @@ class TodayView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const MyPadding(),
           const MyPadding(),
           Text(
             "Пары с очередью сегодня: ",
