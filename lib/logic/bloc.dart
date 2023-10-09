@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:queue/data/lesson_database.dart';
@@ -13,6 +15,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase? _userDataBase;
   final LessonDatabase _lessonDatabase;
   final OnlineDataBase _onlineDB = OnlineDataBase();
+
+  String get userName => _userDataBase!.getUserName;
 
   List<Lesson>? get _todayLessons => _lessonDatabase.todayLessons;
   QueueBloc(this._userDataBase, this._lessonDatabase, super.initialState) {
@@ -34,12 +38,16 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     );
     on<UserAuthenticatedEvent>(
       (event, emit) async {
-        Map<String, List<Rec>> map =
-            await _onlineDB.getData(_userDataBase?.getUserName ?? 'none');
+        try {
+          Map<String, List<Rec>> map =
+              await _onlineDB.getData(_userDataBase?.getUserName ?? 'none');
 
-        for (final entry in map.entries) {
-          _lessonDatabase.import(
-              entry.key, entry.value, _userDataBase?.getUserName ?? 'none');
+          for (final entry in map.entries) {
+            _lessonDatabase.import(
+                entry.key, entry.value, _userDataBase?.getUserName ?? 'none');
+          }
+        } catch (e) {
+          log("Failed to import db due to load failure");
         }
         emit(
           MainState(_todayLessons ?? []),
@@ -120,5 +128,5 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     // }
   }
 
-  Future<void> getData() async {}
+  // Future<void> getData() async {}
 }

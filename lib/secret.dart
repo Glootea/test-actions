@@ -20,3 +20,5 @@ final List<String> ADMINS = (const String.fromEnvironment("admins"))
     .toList();
 
 String SHEETID = const String.fromEnvironment("tableUrl");
+
+String ENCRIPTION_KEY = const String.fromEnvironment("encryptKey");

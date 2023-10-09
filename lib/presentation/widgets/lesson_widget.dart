@@ -122,9 +122,6 @@ class _LessonWidgetState extends State<LessonWidget> {
                         if (displayedRegState || widget.lesson.userRec != null)
                           SizedBox(height: 40, child: RecButton(widget.lesson)),
                         const MySmallPadding(),
-                        if ((widget.lesson.userRec != null))
-                          const SizedBox(height: 40, child: QrButton()),
-                        const MySmallPadding(),
                       ],
                     ),
                   ),
@@ -179,10 +176,19 @@ class _LessonWidgetState extends State<LessonWidget> {
                   const MySmallPadding(),
                 ],
               ),
+              // if ((widget.lesson.userRec != null && TODO: activate on release
+              //     widget.lesson.userRec!.isOnline == false))
               if (widget.lesson.userRec != null)
                 Positioned(
-                  left: 112,
-                  top: 72,
+                  right: 16,
+                  top: 128,
+                  child: SizedBox(
+                      height: 40, child: QrButton(widget.lesson.tableName)),
+                ),
+              if (widget.lesson.userRec != null)
+                Positioned(
+                  right: 128,
+                  top: 140,
                   child: Icon(
                     Icons.save_outlined,
                     size: 20,
@@ -192,8 +198,8 @@ class _LessonWidgetState extends State<LessonWidget> {
               if (widget.lesson.userRec != null &&
                   widget.lesson.userRec!.isOnline)
                 Positioned(
-                  left: 140,
-                  top: 72,
+                  right: 96,
+                  top: 140,
                   child: Icon(
                     Icons.wifi_outlined,
                     size: 20,
@@ -203,8 +209,8 @@ class _LessonWidgetState extends State<LessonWidget> {
               if (widget.lesson.userRec != null &&
                   !widget.lesson.userRec!.isOnline)
                 Positioned(
-                  left: 140,
-                  top: 72,
+                  right: 96,
+                  top: 140,
                   child: Icon(
                     Icons.wifi_off_outlined,
                     size: 20,

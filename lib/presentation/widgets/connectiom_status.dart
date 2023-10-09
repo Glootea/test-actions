@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:queue/logic/bloc.dart';
+import 'package:queue/logic/events.dart';
 
 class ConnectionStatusWidget extends StatefulWidget {
   const ConnectionStatusWidget({super.key});
@@ -19,6 +22,9 @@ class _ConnectionStatusWidgetState extends State<ConnectionStatusWidget> {
   @override
   void initState() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (timer.tick % 60 == 0) {
+        context.read<QueueBloc>().add(UserAuthenticatedEvent());
+      }
       if (timer.tick % 60 == 2 || timer.tick % 60 == 50) {
         connectivityResult = await (Connectivity().checkConnectivity());
       }

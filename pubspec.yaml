@@ -45,6 +45,7 @@ dependencies:
   intl: ^0.18.1
   connectivity_plus: ^4.0.2
   bloc_concurrency: ^0.2.2
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:

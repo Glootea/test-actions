@@ -9,6 +9,7 @@ import 'package:queue/presentation/login_screen.dart';
 import 'dart:math' as math;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final userDataBase = await UserDataBase.configuredUserDataBase();
   LessonDatabase lessonDatabase;
   if (userDataBase != null) {

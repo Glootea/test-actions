@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'dart:developer';
-
+import 'dart:typed_data';
+import 'package:encrypt/encrypt.dart' as enc;
+import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/bloc.dart';
@@ -9,6 +13,7 @@ import 'package:queue/presentation/login_screen.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
 import 'package:queue/presentation/widgets/padding.dart';
+import 'package:queue/secret.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -147,6 +152,21 @@ class QRScannerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("QR scanner view"));
+    return Center(
+      child: AiBarcodeScanner(
+        // onScan: (String value) {
+        //   debugPrint(value);
+        // },
+        onScan: (String value) {
+          final encrypter =
+              enc.Encrypter(Salsa20(enc.Key.fromBase64(ENCRIPTION_KEY)));
+          final decrypted = encrypter.decrypt(
+              Encrypted(Uint8List.fromList(
+                  base64.encode(utf8.encode(value)).codeUnits)),
+              iv: enc.IV.fromLength(8));
+          log(decrypted);
+        },
+      ),
+    );
   }
 }

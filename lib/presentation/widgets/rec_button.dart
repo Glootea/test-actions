@@ -31,6 +31,7 @@ class RecButton extends StatelessWidget {
           },
           child: Text(
             "Запись\nиспользована",
+            textAlign: TextAlign.center,
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium

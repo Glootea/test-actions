@@ -43,7 +43,7 @@ class LessonDatabase {
       Lesson(
         "Test (long test name to test how it fits)",
         "test",
-        7,
+        1,
         [true, true],
         _testPair,
       )
