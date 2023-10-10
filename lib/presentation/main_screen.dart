@@ -1,19 +1,17 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
-import 'package:encrypt/encrypt.dart' as enc;
-import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
-import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:queue/data/online_database.dart';
 import 'package:queue/logic/bloc.dart';
+import 'package:queue/logic/encryprion.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/login_screen.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
 import 'package:queue/presentation/widgets/padding.dart';
-import 'package:queue/secret.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -67,7 +65,7 @@ class _MainScreenState extends State<MainScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         TodayView(mainState: mainState),
-                        const QRScannerView()
+                        QRScannerView()
                       ],
                     ),
                   ],
@@ -147,24 +145,53 @@ class TodayView extends StatelessWidget {
   }
 }
 
-class QRScannerView extends StatelessWidget {
-  const QRScannerView({super.key});
+class SnackBarState {
+  bool _snackbarShown = false;
+}
 
+class QRScannerView extends StatelessWidget {
+  QRScannerView({super.key});
+  final _snackBarState = SnackBarState();
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: AiBarcodeScanner(
+      child: MobileScanner(
+        controller: MobileScannerController(
+          detectionSpeed: DetectionSpeed.noDuplicates,
+        ),
+
         // onScan: (String value) {
         //   debugPrint(value);
         // },
-        onScan: (String value) {
-          final encrypter =
-              enc.Encrypter(Salsa20(enc.Key.fromBase64(ENCRIPTION_KEY)));
-          final decrypted = encrypter.decrypt(
-              Encrypted(Uint8List.fromList(
-                  base64.encode(utf8.encode(value)).codeUnits)),
-              iv: enc.IV.fromLength(8));
-          log(decrypted);
+        onDetect: (BarcodeCapture capture) async {
+          final messenger = ScaffoldMessenger.of(context);
+          try {
+            final data = capture.barcodes.last.rawBytes;
+            if (data == null) return;
+            final decrypted = Encryption.decrypt(data);
+            final result = await OnlineDataBase.uploadFromQuery(decrypted);
+            if (!_snackBarState._snackbarShown) {
+              if (result) {
+                messenger
+                    .showSnackBar(const SnackBar(
+                        content: Text("Спасибо за помощь!"),
+                        showCloseIcon: true))
+                    .closed
+                    .then((value) => _snackBarState._snackbarShown = false);
+              } else {
+                messenger
+                    .showSnackBar(const SnackBar(
+                        content: Text("Ошибка при отправке запроса"),
+                        showCloseIcon: true))
+                    .closed
+                    .then((value) => _snackBarState._snackbarShown = false);
+              }
+              _snackBarState._snackbarShown = true;
+            }
+            return;
+          } catch (e) {
+            log(e.toString());
+          }
         },
       ),
     );

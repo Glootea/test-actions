@@ -1,16 +1,18 @@
 import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:gsheets/gsheets.dart';
+import 'package:queue/logic/encryprion.dart';
 import 'package:queue/models/rec.dart';
 import 'package:queue/secret.dart';
 import 'package:queue/secret/table_credentials.dart';
 
 class OnlineDataBase {
-  final _gsheets = GSheets(CREDENTIALS);
-  Spreadsheet? _spreadsheet;
-  Worksheet? _sheet;
-  List<String>? _nameColumn;
-  List<String>? _subjectRow;
+  static final _gsheets = GSheets(CREDENTIALS);
+  static Spreadsheet? _spreadsheet;
+  static Worksheet? _sheet;
+  static List<String>? _nameColumn;
+  static List<String>? _subjectRow;
 
   Future<Map<String, List<Rec>>> getData(String userName) async {
     final result = <String, List<Rec>>{};
@@ -75,6 +77,29 @@ class OnlineDataBase {
       int column = _subjectRow!.indexOf(lessonName) + 2;
       return await (await _sheet!.cells.cell(row: row, column: column))
           .post(null);
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
+  }
+
+  static Future<bool> uploadFromQuery(String query) async {
+    try {
+      List<String> params = query.split("|||").map((e) => e.trim()).toList();
+      String lessonName = params[1];
+      String userName = params[2];
+      DateTime time = DateTime.parse(params[3]);
+      _spreadsheet ??= await _gsheets.spreadsheet(TABLEURL);
+      _sheet ??= _spreadsheet!.worksheetByTitle('queue');
+      _sheet ??= await _spreadsheet!.addWorksheet('example');
+      _nameColumn ??=
+          (await _sheet!.cells.column(1)).map((e) => e.value).toList();
+      _subjectRow ??= (await _sheet!.cells.row(1)).map((e) => e.value).toList();
+      int row = _nameColumn!.indexOf(userName) + 2;
+      int column = _subjectRow!.indexOf(lessonName) + 2;
+      final result =
+          await (await _sheet!.cells.cell(row: row, column: column)).post(time);
+      return result;
     } catch (e) {
       log(e.toString());
       return false;

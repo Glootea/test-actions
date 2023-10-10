@@ -1,11 +1,11 @@
-import 'package:encrypt/encrypt.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:queue/logic/bloc.dart';
+import 'package:queue/logic/encryprion.dart';
 import 'package:queue/logic/states.dart';
-import 'package:encrypt/encrypt.dart' as enc;
-import 'package:queue/secret.dart';
 
 class QrButton extends StatelessWidget {
   final String lessonName;
@@ -16,8 +16,6 @@ class QrButton extends StatelessWidget {
     return OutlinedButton(
         style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
         onPressed: () async {
-          final encrypter =
-              enc.Encrypter(Salsa20(enc.Key.fromBase64(ENCRIPTION_KEY)));
           final bloc = context.read<QueueBloc>();
           final state = bloc.state as MainState;
           final rec = state.todayLessons
@@ -25,19 +23,22 @@ class QrButton extends StatelessWidget {
               .userRec!;
           final dateTime = rec.time;
           String userName = rec.userName;
-          String string = "&&&$lessonName&&&$userName&&&$dateTime";
-          String output =
-              encrypter.encrypt(string, iv: enc.IV.fromLength(8)).base64;
+          String data = "&&&$lessonName&&&$userName&&&$dateTime";
+
+          ByteData output = ByteData.sublistView(Uint8List.fromList(
+              "https://queue-01-22.web.app/#upload/info=".codeUnits +
+                  Encryption.encryct(data)));
           await showDialog(
               context: context,
               builder: (context) => AlertDialog(
                     backgroundColor: Colors.white,
                     content: PrettyQrView(
                       qrImage: QrImage(QrCode(
-                        8,
-                        QrErrorCorrectLevel.L,
-                      )..addData(output)),
-                      decoration: const PrettyQrDecoration(),
+                        14,
+                        QrErrorCorrectLevel.H,
+                      )..addByteData(output)),
+                      decoration: const PrettyQrDecoration(
+                          shape: PrettyQrSmoothSymbol(roundFactor: 0)),
                     ),
                     actions: [
                       TextButton(
