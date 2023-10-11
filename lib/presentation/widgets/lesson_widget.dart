@@ -69,12 +69,16 @@ class _LessonWidgetState extends State<LessonWidget> {
             duration: const Duration(milliseconds: 1200),
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
-                color: Theme.of(context).colorScheme.primaryContainer),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.9)),
             child: Stack(children: [
               Column(
                 children: [
                   const MySmallPadding(),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const MySmallPadding(),
                       Flexible(
@@ -86,14 +90,18 @@ class _LessonWidgetState extends State<LessonWidget> {
                           ),
                         ),
                       ),
-                      const MyPadding(),
                       AnimatedRotation(
                         turns: expanded ? 0.5 : 0,
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.easeInOut,
-                        child: const Icon(Icons.expand_more_outlined),
+                        child: const Padding(
+                          padding: EdgeInsets.only(right: 16.0, left: 16.0),
+                          child: Icon(
+                            Icons.expand_more_outlined,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
-                      const MySmallPadding(),
                     ],
                   ),
                   const MySmallPadding(),
@@ -116,7 +124,8 @@ class _LessonWidgetState extends State<LessonWidget> {
                                       : TimerStartReg(
                                           widget.lesson.pair.startTime)
                                   : Text(
-                                      "Запись от\n${DateFormat('yyyy-MM-dd в kk:mm:ss').format(widget.lesson.userRec!.time)}")),
+                                      "Запись от\n${DateFormat('yyyy-MM-dd в kk:mm:ss').format(widget.lesson.userRec!.time)}",
+                                    )),
                         ),
                         const Spacer(),
                         if (displayedRegState || widget.lesson.userRec != null)
@@ -135,7 +144,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                               ? "Очередь не синхронизирована"
                               : "Вы $queueN в очереди",
                           textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ],
                     ),

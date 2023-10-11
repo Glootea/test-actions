@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
@@ -14,7 +12,7 @@ class QrButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-        style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
+        // style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
         onPressed: () async {
           final bloc = context.read<QueueBloc>();
           final state = bloc.state as MainState;
@@ -24,10 +22,13 @@ class QrButton extends StatelessWidget {
           final dateTime = rec.time;
           String userName = rec.userName;
           String data = "&&&$lessonName&&&$userName&&&$dateTime";
+          // print(
+          //   Uri.https("localhost:8000", "/#upload", {"info": data}),
+          // );
+          String output = "https://queue-01-22.web.app/#upload/info=" +
+              Encryption.encryct(data);
 
-          ByteData output = ByteData.sublistView(Uint8List.fromList(
-              "https://queue-01-22.web.app/#upload/info=".codeUnits +
-                  Encryption.encryct(data)));
+          print(output);
           await showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -36,7 +37,7 @@ class QrButton extends StatelessWidget {
                       qrImage: QrImage(QrCode(
                         14,
                         QrErrorCorrectLevel.H,
-                      )..addByteData(output)),
+                      )..addData(output)),
                       decoration: const PrettyQrDecoration(
                           shape: PrettyQrSmoothSymbol(roundFactor: 0)),
                     ),

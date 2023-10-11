@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,6 +46,13 @@ class _MainScreenState extends State<MainScreen> {
                 MainState mainState = state as MainState;
                 return Stack(
                   children: [
+                    Positioned.fill(
+                        child: Image.asset(
+                      'assets/panda.png',
+                      width: 50,
+                      height: 50,
+                      repeat: ImageRepeat.repeat,
+                    )),
                     MediaQuery.of(context).size.width < 600
                         ? const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -60,13 +66,17 @@ class _MainScreenState extends State<MainScreen> {
                               ConnectionStatusWidget(),
                             ],
                           ),
-                    PageView(
-                      controller: pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        TodayView(mainState: mainState),
-                        QRScannerView()
-                      ],
+                    Material(
+                      color: Colors.transparent,
+                      elevation: 20,
+                      child: PageView(
+                        controller: pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          TodayView(mainState: mainState),
+                          QRScannerView()
+                        ],
+                      ),
                     ),
                   ],
                 );
@@ -137,8 +147,13 @@ class TodayView extends StatelessWidget {
                 ),
           const MyPadding(),
           OutlinedButton(
-              onPressed: () => context.read<QueueBloc>().add(UserLogOutEvent()),
-              child: const Text("Выйти из аккаунта"))
+            style: Theme.of(context).outlinedButtonTheme.style,
+            onPressed: () => context.read<QueueBloc>().add(UserLogOutEvent()),
+            child: Text(
+              "Выйти из аккаунта",
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          )
         ],
       ),
     );
@@ -166,9 +181,10 @@ class QRScannerView extends StatelessWidget {
         onDetect: (BarcodeCapture capture) async {
           final messenger = ScaffoldMessenger.of(context);
           try {
-            final data = capture.barcodes.last.rawBytes;
+            final data = capture.barcodes.last.rawValue;
             if (data == null) return;
-            final decrypted = Encryption.decrypt(data);
+            final decrypted =
+                Encryption.decrypt(data.substring(data.indexOf('info=') + 5));
             final result = await OnlineDataBase.uploadFromQuery(decrypted);
             if (!_snackBarState._snackbarShown) {
               if (result) {

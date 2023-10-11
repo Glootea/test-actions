@@ -22,7 +22,7 @@ LessonPair _sixthPair = const LessonPair(
     TimeOfDay(hour: 18, minute: 0), TimeOfDay(hour: 19, minute: 30));
 @Deprecated("For test")
 LessonPair _testPair = const LessonPair(
-    TimeOfDay(hour: 21, minute: 00), TimeOfDay(hour: 23, minute: 0));
+    TimeOfDay(hour: 10, minute: 00), TimeOfDay(hour: 23, minute: 50));
 
 class LessonDatabase {
   final FlutterSecureStorage secureStorage;
@@ -43,7 +43,7 @@ class LessonDatabase {
       Lesson(
         "Test (long test name to test how it fits)",
         "test",
-        2,
+        3,
         [true, true],
         _testPair,
       )

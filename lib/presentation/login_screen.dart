@@ -102,6 +102,7 @@ class _LoginViewState extends State<LoginView> {
                   maxLength: 32,
                   maxLines: 1,
                   onChanged: (value) => setState(() {}),
+                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                       errorText: controller.text.length == 32
                           ? null
@@ -113,7 +114,8 @@ class _LoginViewState extends State<LoginView> {
                   onPressed: () => context
                       .read<QueueBloc>()
                       .add(UserAuthenticateEvent(controller.text)),
-                  child: const Text("Войти")),
+                  child: Text("Войти",
+                      style: Theme.of(context).textTheme.bodyMedium)),
               const MyPadding(),
               Text(
                 "Ключ отправлен в лс с #queue",
@@ -125,11 +127,17 @@ class _LoginViewState extends State<LoginView> {
               const MyPadding(),
               const MyPadding(),
               Text("Много буков: ",
-                  style: Theme.of(context).textTheme.headlineSmall),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(color: Colors.white)),
               const MyPadding(),
               Text(
                   """Приложение для ведения очереди сдачи работ для группы ИНБО-01-22 МИРЭА.\n\nПреимущества:\n- офлайн доступ\n- возможность продолжения очереди с прошлой пары\n- учитывается время записи, а не время отправки сообщения на сервер\n- возможность записать с помощью друга при отсутсвии интернета\n- организованность ведения очереди\n- независимость от наличия старост\n\nНаписано на Flutter за пару вечеров""",
-                  style: Theme.of(context).textTheme.bodySmall)
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.white))
             ]),
       ),
     ));

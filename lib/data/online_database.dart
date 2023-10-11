@@ -1,8 +1,5 @@
 import 'dart:developer';
-import 'dart:typed_data';
-
 import 'package:gsheets/gsheets.dart';
-import 'package:queue/logic/encryprion.dart';
 import 'package:queue/models/rec.dart';
 import 'package:queue/secret.dart';
 import 'package:queue/secret/table_credentials.dart';
@@ -52,9 +49,14 @@ class OnlineDataBase {
       _spreadsheet ??= await _gsheets.spreadsheet(TABLEURL);
       _sheet ??= _spreadsheet!.worksheetByTitle('queue');
       _sheet ??= await _spreadsheet!.addWorksheet('example');
-      _nameColumn ??=
-          (await _sheet!.cells.column(1)).map((e) => e.value).toList();
-      _subjectRow ??= (await _sheet!.cells.row(1)).map((e) => e.value).toList();
+      _nameColumn ??= (await _sheet!.cells.column(1))
+          .map((e) => e.value)
+          .where((element) => element.isNotEmpty)
+          .toList();
+      _subjectRow ??= (await _sheet!.cells.row(1))
+          .map((e) => e.value)
+          .where((element) => element.isNotEmpty)
+          .toList();
       int row = _nameColumn!.indexOf(userName) + 2;
       int column = _subjectRow!.indexOf(lessonName) + 2;
       return await (await _sheet!.cells.cell(row: row, column: column))
@@ -70,9 +72,14 @@ class OnlineDataBase {
       _spreadsheet ??= await _gsheets.spreadsheet(TABLEURL);
       _sheet ??= _spreadsheet!.worksheetByTitle('queue');
       _sheet ??= await _spreadsheet!.addWorksheet('example');
-      _nameColumn ??=
-          (await _sheet!.cells.column(1)).map((e) => e.value).toList();
-      _subjectRow ??= (await _sheet!.cells.row(1)).map((e) => e.value).toList();
+      _nameColumn ??= (await _sheet!.cells.column(1))
+          .map((e) => e.value)
+          .where((element) => element.isNotEmpty)
+          .toList();
+      _subjectRow ??= (await _sheet!.cells.row(1))
+          .map((e) => e.value)
+          .where((element) => element.isNotEmpty)
+          .toList();
       int row = _nameColumn!.indexOf(userName) + 2;
       int column = _subjectRow!.indexOf(lessonName) + 2;
       return await (await _sheet!.cells.cell(row: row, column: column))
@@ -85,16 +92,21 @@ class OnlineDataBase {
 
   static Future<bool> uploadFromQuery(String query) async {
     try {
-      List<String> params = query.split("|||").map((e) => e.trim()).toList();
+      List<String> params = query.split("&&&").map((e) => e.trim()).toList();
       String lessonName = params[1];
       String userName = params[2];
       DateTime time = DateTime.parse(params[3]);
       _spreadsheet ??= await _gsheets.spreadsheet(TABLEURL);
       _sheet ??= _spreadsheet!.worksheetByTitle('queue');
       _sheet ??= await _spreadsheet!.addWorksheet('example');
-      _nameColumn ??=
-          (await _sheet!.cells.column(1)).map((e) => e.value).toList();
-      _subjectRow ??= (await _sheet!.cells.row(1)).map((e) => e.value).toList();
+      _nameColumn ??= (await _sheet!.cells.column(1))
+          .map((e) => e.value)
+          .where((element) => element.isNotEmpty)
+          .toList();
+      _subjectRow ??= (await _sheet!.cells.row(1))
+          .map((e) => e.value)
+          .where((element) => element.isNotEmpty)
+          .toList();
       int row = _nameColumn!.indexOf(userName) + 2;
       int column = _subjectRow!.indexOf(lessonName) + 2;
       final result =

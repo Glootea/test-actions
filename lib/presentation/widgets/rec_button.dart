@@ -14,7 +14,7 @@ class RecButton extends StatelessWidget {
       return OutlinedButton(
           onPressed: () =>
               context.read<QueueBloc>().add(CreateRegEvent(lesson.tableName)),
-          style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
+          // style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
           child: Text('Записаться',
               style: Theme.of(context)
                   .textTheme
@@ -22,7 +22,7 @@ class RecButton extends StatelessWidget {
                   ?.copyWith(color: Colors.black)));
     } else {
       return OutlinedButton(
-          style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
+          // style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 showCloseIcon: true,
