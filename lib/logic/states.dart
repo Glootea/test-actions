@@ -1,6 +1,6 @@
 import 'package:queue/models/lesson.dart';
 
-abstract class QueueState {}
+sealed class QueueState {}
 
 class UserUnAuthenticatedState extends QueueState {
   String? errorMessage;
@@ -13,4 +13,10 @@ class MainState extends QueueState {
   final List<Lesson> todayLessons;
 
   MainState(this.todayLessons);
+}
+
+class UploadFromLinkState extends QueueState {
+  final String? message;
+  final bool isLoading;
+  UploadFromLinkState({required this.isLoading, this.message});
 }

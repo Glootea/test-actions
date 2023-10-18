@@ -9,8 +9,8 @@ class Lesson {
   final List<bool> weeks;
   final LessonPair pair;
   List<Rec> recs = [
-    Rec("name", DateTime.now()),
-    Rec("name", DateTime.now()),
+    // Rec("name", DateTime.now()),
+    // Rec("name", DateTime.now()),
   ];
   UserRec? userRec;
 

@@ -4,9 +4,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:queue/extension.dart';
 import 'package:queue/models/lesson.dart';
 import 'package:queue/models/rec.dart';
-import 'package:queue/presentation/widgets/lesson_widget.dart';
 
 LessonPair _firstPair = const LessonPair(
     TimeOfDay(hour: 9, minute: 0), TimeOfDay(hour: 10, minute: 30));
@@ -22,7 +22,7 @@ LessonPair _sixthPair = const LessonPair(
     TimeOfDay(hour: 18, minute: 0), TimeOfDay(hour: 19, minute: 30));
 @Deprecated("For test")
 LessonPair _testPair = const LessonPair(
-    TimeOfDay(hour: 10, minute: 00), TimeOfDay(hour: 23, minute: 50));
+    TimeOfDay(hour: 8, minute: 00), TimeOfDay(hour: 23, minute: 50));
 
 class LessonDatabase {
   final FlutterSecureStorage secureStorage;

@@ -24,9 +24,12 @@ class RecButton extends StatelessWidget {
       return OutlinedButton(
           // style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 showCloseIcon: true,
-                content: Text("Спасибо за поддержание порядка!")));
+                content: Text(
+                  "Спасибо за поддержание порядка!",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )));
             context.read<QueueBloc>().add(DeleteRegEvent(lesson.tableName));
           },
           child: Text(

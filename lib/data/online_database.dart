@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:math' as math;
 import 'package:gsheets/gsheets.dart';
+import 'package:queue/extension.dart';
 import 'package:queue/models/rec.dart';
 import 'package:queue/secret.dart';
 import 'package:queue/secret/table_credentials.dart';
@@ -90,7 +92,7 @@ class OnlineDataBase {
     }
   }
 
-  static Future<bool> uploadFromQuery(String query) async {
+  Future<bool> uploadFromQuery(String query) async {
     try {
       List<String> params = query.split("&&&").map((e) => e.trim()).toList();
       String lessonName = params[1];
@@ -115,6 +117,44 @@ class OnlineDataBase {
     } catch (e) {
       log(e.toString());
       return false;
+    }
+  }
+
+  Future<Map<String, String>?> recExist(String query) async {
+    List<String> params = query.split("&&&").map((e) => e.trim()).toList();
+    String lessonName = params[1];
+    String userName = params[2];
+    DateTime time = DateTime.parse(params[3]);
+    _spreadsheet ??= await _gsheets.spreadsheet(TABLEURL);
+    _sheet ??= _spreadsheet!.worksheetByTitle('queue');
+    _sheet ??= await _spreadsheet!.addWorksheet('example');
+    _nameColumn ??= (await _sheet!.cells.column(1))
+        .map((e) => e.value)
+        .where((element) => element.isNotEmpty)
+        .toList();
+    _subjectRow ??= (await _sheet!.cells.row(1))
+        .map((e) => e.value)
+        .where((element) => element.isNotEmpty)
+        .toList();
+    int row = _nameColumn!.indexOf(userName) + 2;
+    int column = _subjectRow!.indexOf(lessonName) + 2;
+    final r = (await _sheet!.cells.cell(row: row, column: column)).value;
+    final result = r == time.toString();
+    if (result) {
+      final queue = (([...(await _sheet!.cells.column(column, fromRow: 2))]
+          .where((element) => element.value.isNotEmpty)
+          .toList()
+        ..sort((a, b) =>
+            DateTime.parse(a.value).compareTo(DateTime.parse(b.value)))));
+      final position = queue.indexWhere((element) => element.value == r) + 1;
+      return {
+        'name': userName.nameSurname,
+        'position': position.toString(),
+        'last':
+            _nameColumn![queue[math.max(position - 2, 0)].row - 2].nameSurname
+      };
+    } else {
+      return null;
     }
   }
 }

@@ -33,7 +33,7 @@
             "args": [
                 "--dart-define-from-file",
                 "lib/secret/api-keys.json",
-                // "-d", "chrome","--web-port", "8000"
+                "-d", "chrome","--web-port", "8000"
               ]
         },
         {

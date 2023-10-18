@@ -1,17 +1,11 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:queue/data/lesson_database.dart';
-import 'package:queue/data/online_database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/logic/bloc.dart';
-import 'package:queue/logic/encryprion.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/login_screen.dart';
-import 'package:queue/presentation/main_screen.dart';
+import 'package:queue/presentation/navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,52 +18,81 @@ void main() async {
     lessonDatabase = await LessonDatabase.fillFromLocal("noName");
   }
 
-  runApp(MyApp(
-    userDataBase,
-    lessonDatabase,
-  ));
+  runApp(BlocProvider(
+      create: (context) =>
+          QueueBloc(userDataBase, lessonDatabase, LoadingState()),
+      child: Consumer<QueueBloc>(
+        builder: (context, value, child) {
+          // value.add(FindUserEvent());
+          return MyApp(value);
+        },
+      )));
 }
 
 class MyApp extends StatelessWidget {
-  final LessonDatabase _lessonDatabase;
-  final UserDataBase? _userDataBase;
-  const MyApp(this._userDataBase, this._lessonDatabase, {super.key});
+  const MyApp(this.bloc, {super.key});
+  final QueueBloc bloc;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          QueueBloc(_userDataBase, _lessonDatabase, LoadingState()),
-      child: MaterialApp(
-        title: 'Queue',
-        initialRoute: "/",
-        routes: {
-          "/": (context) => const LoginScreen(),
-          '/home': (context) => const MainScreen(),
-          '/upload': (context) => const LoginScreen()
-        },
+    final router = AppRouter(bloc);
+    return MaterialApp(
         onGenerateRoute: (settings) {
-          // log(Encryption.decrypt(latin1.encode(
-          //     'idfXiAn2tb3dIIb7rBdB9eLBRq+jP9U22CDd7GrYPZ+uvl1LU9v43z/wSEKSPFE9J/p1JbJ+EIKgeZBHRgWzekXEsOzN3ybGRNweiY5KEUPswN59kAQExlQSHhY=')));
-          if (settings.name?.contains("upload") ?? false) {
-            String query = settings.name ?? '';
-            if (query.isEmpty) return;
-            log(query.substring(query.indexOf('info=') + 5));
-            query =
-                Encryption.decrypt(query.substring(query.indexOf('info=') + 5));
-            log(query);
-            final result = OnlineDataBase.uploadFromQuery(query);
-            // result.then((value) => showDialog(context: context,
-            //   builder: (context) =>  Container(
-            //         showCloseIcon: true,
-            //         content: Text(value
-            //             ? "Спасибо за помощь!"
-            //             : "Не удалось загрузить данные"))));
-            result.then((value) => log("finished"));
+          if (settings.name?.isNotEmpty ?? false) {
+            List<String> params = settings.name!.split('/');
+            // if (params.length > 2) {
+            settings = RouteSettings(
+                name: params[0],
+                arguments: params.length > 1
+                    ? params
+                        .sublist(1)
+                        .reduce((value, element) => value + element)
+                    : null);
+            // } else if (params.length == 2) {
+            //   settings = RouteSettings(name: params[1]);
+            // }
           }
-          return null;
+          return router.onGenerateRoute(settings);
         },
+
+        // title: 'Queue',
+        // initialRoute: "/",
+        // routes: {
+        //   "/": (context) => const LoginScreen(),
+        //   '/home': (context) => const MainScreen(),
+        //   '/upload': (context) => const LoginScreen()
+        // },
+        // onGenerateRoute: (settings) {
+        //   if (settings.name?.contains("upload") ?? false) {
+        //     String query = settings.name ?? '';
+        //     if (query.isEmpty) return null;
+        //     log(query.substring(query.indexOf('info=') + 5));
+        //     query =
+        //         Encryption.decrypt(query.substring(query.indexOf('info=') + 5));
+        //     log(query);
+        //     final result = OnlineDataBase.uploadFromQuery(query);
+        //     // result.then((value) => showDialog(context: context,
+        //     //   builder: (context) =>  Container(
+        //     //         showCloseIcon: true,
+        //     //         content: Text(value
+        //     //             ? "Спасибо за помощь!"
+        //     //             : "Не удалось загрузить данные"))));
+        //     result.then((value) {
+        //       log("finished");
+        //       MaterialPageRoute(
+        //           builder: ((_) => BlocConsumer<QueueBloc, QueueState>(
+        //               listener: (context, state) => {},
+        //               builder: (localContext, _) {
+        //                 print("in consumer");
+        //                 bloc.add(FindUserEvent());
+        //                 print("in consumer");
+        //                 return child ?? const Placeholder();
+        //               })));
+        //     });
+        //   }
+        //   return null;
+        // },
         theme: ThemeData(
           colorScheme: const ColorScheme(
               brightness: Brightness.dark,
@@ -90,17 +113,20 @@ class MyApp extends StatelessWidget {
                   ?.copyWith(
                       color: Colors.white, backgroundColor: Colors.black87),
               bodyMedium: Theme.of(context).textTheme.bodyMedium,
+              bodyLarge: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: Colors.white),
               headlineSmall: Theme.of(context).textTheme.headlineSmall),
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
+              textStyle: const TextStyle(color: Colors.black),
               backgroundColor: Colors.white.withOpacity(0.8),
               side: const BorderSide(color: Colors.black, width: 1.5),
             ),
           ),
           useMaterial3: true,
-        ),
-        // home: const LoginScreen(),
-      ),
-    );
+        ));
+    // home: const LoginScreen(),
   }
 }

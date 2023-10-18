@@ -15,7 +15,6 @@ class Encryption {
           iv: _iv,
         )
         .base64;
-    print(decrypt(output));
     return output;
   }
 

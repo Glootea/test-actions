@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:queue/extension.dart';
 import 'package:queue/models/lesson.dart';
 import 'package:queue/models/rec.dart';
 import 'package:queue/presentation/widgets/padding.dart';
@@ -140,12 +141,39 @@ class _LessonWidgetState extends State<LessonWidget> {
                       children: [
                         const MySmallPadding(),
                         Text(
-                          queueN == 0
-                              ? "Очередь не синхронизирована"
-                              : "Вы $queueN в очереди",
-                          textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.headlineSmall,
+                            queueN == 0
+                                ? "Очередь\nнедоступна"
+                                : "Вы $queueN в очереди",
+                            textAlign: TextAlign.start,
+                            style: Theme.of(context).textTheme.headlineSmall),
+                        const Spacer(),
+                        Icon(
+                          Icons.save_outlined,
+                          size: 20,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
                         ),
+                        const MySmallPadding(),
+                        (widget.lesson.userRec != null &&
+                                widget.lesson.userRec!.isOnline)
+                            ? Icon(
+                                Icons.wifi_outlined,
+                                size: 20,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSecondaryContainer,
+                              )
+                            : Icon(
+                                Icons.wifi_off_outlined,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                        const MySmallPadding(),
+                        SizedBox(
+                            height: 40,
+                            child: QrButton(widget.lesson.tableName)),
+                        const MySmallPadding(),
                       ],
                     ),
                   const MySmallPadding(),
@@ -170,7 +198,9 @@ class _LessonWidgetState extends State<LessonWidget> {
                                         const MySmallPadding(),
                                         Text("${index + 1}"),
                                         const Spacer(),
-                                        Text(sortedList[index].userName),
+                                        Text(sortedList[index]
+                                            .userName
+                                            .nameSurname),
                                         const MySmallPadding(),
                                       ],
                                     ))
@@ -187,45 +217,32 @@ class _LessonWidgetState extends State<LessonWidget> {
               ),
               // if ((widget.lesson.userRec != null && TODO: activate on release
               //     widget.lesson.userRec!.isOnline == false))
-              if (widget.lesson.userRec != null)
-                Positioned(
-                  right: 16,
-                  top: 128,
-                  child: SizedBox(
-                      height: 40, child: QrButton(widget.lesson.tableName)),
-                ),
-              if (widget.lesson.userRec != null)
-                Positioned(
-                  right: 128,
-                  top: 140,
-                  child: Icon(
-                    Icons.save_outlined,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
-                ),
-              if (widget.lesson.userRec != null &&
-                  widget.lesson.userRec!.isOnline)
-                Positioned(
-                  right: 96,
-                  top: 140,
-                  child: Icon(
-                    Icons.wifi_outlined,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
-                ),
-              if (widget.lesson.userRec != null &&
-                  !widget.lesson.userRec!.isOnline)
-                Positioned(
-                  right: 96,
-                  top: 140,
-                  child: Icon(
-                    Icons.wifi_off_outlined,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
+              // if (widget.lesson.userRec != null)
+              //   Positioned(
+              //     right: 16,
+              //     top: 128,
+              //     child: ,
+              //   ),
+              // if (widget.lesson.userRec != null)
+              //   Positioned(
+              //     right: 128,
+              //     top: 140,
+              //     child:
+              //   ),
+              // if (widget.lesson.userRec != null &&
+              //     widget.lesson.userRec!.isOnline)
+              //   Positioned(
+              //     right: 96,
+              //     top: 140,
+              //     child:
+              //   ),
+              // if (widget.lesson.userRec != null &&
+              //     !widget.lesson.userRec!.isOnline)
+              //   Positioned(
+              //     right: 96,
+              //     top: 140,
+              //     child:
+              //   ),
             ])
             //   child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
             //     const MySmallPadding(),
@@ -272,27 +289,5 @@ class _LessonWidgetState extends State<LessonWidget> {
             //   ]),
             // ),
             ));
-  }
-}
-
-extension TimeArithmetic on TimeOfDay {
-  TimeOfDay operator -(TimeOfDay other) {
-    int totalMinutes = (hour - other.hour) * 60 + (minute - other.minute);
-    if (totalMinutes <= 0) return const TimeOfDay(hour: 0, minute: 0);
-    return TimeOfDay(hour: totalMinutes ~/ 60, minute: totalMinutes % 60);
-  }
-
-  bool operator <(TimeOfDay other) {
-    if (hour < other.hour) return true;
-    if (hour > other.hour) return false;
-    if (minute < other.minute) return true;
-    return false;
-  }
-
-  bool operator <=(TimeOfDay other) {
-    if (hour <= other.hour) return true;
-    if (hour > other.hour) return false;
-    if (minute <= other.minute) return true;
-    return false;
   }
 }

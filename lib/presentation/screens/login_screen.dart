@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/main_screen.dart';
+import 'package:queue/presentation/navigation.dart';
 import 'package:queue/presentation/widgets/padding.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -11,6 +11,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<QueueBloc>().add(FindUserEvent());
     return SafeArea(
       child: BlocBuilder<QueueBloc, QueueState>(buildWhen: (previous, current) {
         if (previous.runtimeType != current.runtimeType) return true;
@@ -21,9 +22,8 @@ class LoginScreen extends StatelessWidget {
         return false;
       }, builder: (context, state) {
         if (state is MainState) {
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const MainScreen()));
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+            await Navigator.of(context).pushReplacementNamed(Routes.mainScreen);
           });
         } else {
           if (state is UserUnAuthenticatedState) {
