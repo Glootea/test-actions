@@ -21,10 +21,11 @@ class OnlineDataBase {
       _sheet ??= await _spreadsheet!.addWorksheet('queue');
       final allColumns = await _sheet!.cells.allColumns();
       _nameColumn ??= (allColumns[0])
+          .sublist(1)
           .map((e) => e.value)
           .where((element) => element.isNotEmpty)
           .toList();
-      _subjectRow ??= (allColumns.map((e) => e.first))
+      _subjectRow ??= (allColumns.sublist(1).map((e) => e.first))
           .map((e) => e.value)
           .where((element) => element.isNotEmpty)
           .toList();
