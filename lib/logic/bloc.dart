@@ -74,6 +74,12 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     // --- uploadScreen
 
     on<UploadFromLinkEvent>((event, emit) => _onUploadEvent(event, emit));
+
+    // --- invite
+
+    on<InviteEvent>((event, emit) => _onInviteEvent(event, emit));
+    on<RegisterUserEvent>(
+        (event, emit) async => await _onRegisterUserEvent(event, emit));
   }
 
 // --- Functions
@@ -87,8 +93,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     }
   }
 
-  Future<void> _authenticateUser(String userID) async {
-    await UserDataBase.fillUser(userID);
+  Future<void> _authenticateUser(String userName) async {
+    await UserDataBase.fillUser(userName);
     _userDataBase = await UserDataBase.configuredUserDataBase();
     if (_userDataBase == null) {
       add(NoUserEvent("Пользователь c таким ключем не найден"));
@@ -161,6 +167,21 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       log(e.toString());
       emit(UploadFromLinkState(
           isLoading: false, message: "Ошибка при добавлении записи"));
+    }
+  }
+
+  void _onInviteEvent(InviteEvent event, Emitter<QueueState> emit) {
+    //TODO: implement
+  }
+
+  Future<void> _onRegisterUserEvent(
+      RegisterUserEvent event, Emitter<QueueState> emit) async {
+    await UserDataBase.fillUser(event.inviteState.userName);
+    _userDataBase = await UserDataBase.configuredUserDataBase();
+    if (_userDataBase == null) {
+      add(NoUserEvent("Пользователь c таким ключем не найден"));
+    } else {
+      add(UserAuthenticatedEvent());
     }
   }
 

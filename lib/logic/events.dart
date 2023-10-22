@@ -1,3 +1,5 @@
+import 'package:queue/logic/states.dart';
+
 sealed class QueueEvent {}
 
 // --- user authentication
@@ -38,4 +40,18 @@ class UploadFromLinkEvent extends QueueEvent {
   final String link;
 
   UploadFromLinkEvent(this.link);
+}
+
+// --- invite
+
+class InviteEvent extends QueueEvent {
+  final String link;
+
+  InviteEvent(this.link);
+}
+
+class RegisterUserEvent extends QueueEvent {
+  final InviteState inviteState;
+
+  RegisterUserEvent(this.inviteState);
 }
