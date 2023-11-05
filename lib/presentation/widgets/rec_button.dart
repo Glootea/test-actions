@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:queue/entities/lesson.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
-import 'package:queue/models/lesson.dart';
 
 class RecButton extends StatelessWidget {
-  final Lesson lesson;
+  final LessonEntity lesson;
   const RecButton(this.lesson, {super.key});
 
   @override
@@ -13,7 +13,7 @@ class RecButton extends StatelessWidget {
     if (lesson.userRec == null) {
       return OutlinedButton(
           onPressed: () =>
-              context.read<QueueBloc>().add(CreateRegEvent(lesson.tableName)),
+              context.read<QueueBloc>().add(CreateRegEvent(lesson.name)),
           // style: OutlinedButton.styleFrom(backgroundColor: Colors.white70),
           child: Text('Записаться',
               style: Theme.of(context)
@@ -30,7 +30,7 @@ class RecButton extends StatelessWidget {
                   "Спасибо за поддержание порядка!",
                   style: Theme.of(context).textTheme.bodyMedium,
                 )));
-            context.read<QueueBloc>().add(DeleteRegEvent(lesson.tableName));
+            context.read<QueueBloc>().add(DeleteRegEvent(lesson.name));
           },
           child: Text(
             "Запись\nиспользована",

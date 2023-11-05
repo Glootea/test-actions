@@ -1,26 +1,29 @@
 import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:queue/data/lesson_database.dart';
+import 'package:queue/data/database/database.dart';
 import 'package:queue/data/online_database.dart';
-
 import 'package:queue/data/user_database.dart';
+import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/rec.dart';
 import 'package:queue/logic/encryprion.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/models/lesson.dart';
-import 'package:queue/models/rec.dart';
 
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase? _userDataBase;
-  final LessonDatabase _lessonDatabase;
+  final LocalDatabase _localDataBase;
   final OnlineDataBase _onlineDB = OnlineDataBase();
 
   String get userName => _userDataBase!.getUserName;
 
-  List<Lesson>? get _todayLessons => _lessonDatabase.todayLessons;
-  QueueBloc(this._userDataBase, this._lessonDatabase, super.initialState) {
+  Future<List<LessonEntity>> _todayLessons(String studentName) async {
+    DateTime today = DateTime.now();
+    int weekDay = today.weekday;
+    return await _localDataBase.todayLessons(today, weekDay, studentName);
+  }
+
+  QueueBloc(this._userDataBase, this._localDataBase, super.initialState) {
     // --- loading
 
     // --- user Authentication ---
@@ -40,18 +43,13 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     on<UserAuthenticatedEvent>(
       (event, emit) async {
         try {
-          Map<String, List<Rec>> map =
-              await _onlineDB.getData(_userDataBase!.getUserName);
-
-          for (final entry in map.entries) {
-            _lessonDatabase.import(
-                entry.key, entry.value, _userDataBase!.getUserName);
-          }
+          List<RecEntity> list = await _onlineDB.getData();
+          _localDataBase.import(list);
         } catch (e) {
           log("Failed to import db due to load failure");
         }
         emit(
-          MainState(_todayLessons ?? []),
+          MainState(await _todayLessons(_userDataBase!.getUserName)),
         );
       },
       transformer: sequential(),
@@ -113,28 +111,29 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _createReg(String lessonName, Emitter emit) async {
     DateTime time = DateTime.now();
-    _lessonDatabase.createRec(
-        lessonName, _userDataBase!.getUserName, false, time);
-    emit(MainState(_todayLessons ?? []));
+    _localDataBase.createRec(lessonName, _userDataBase!.getUserName, time);
+    emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
     bool isOnline =
         await _onlineDB.createRec(lessonName, _userDataBase!.getUserName, time);
     if (isOnline == true) {
-      _lessonDatabase.updateRec(
-          lessonName, _userDataBase!.getUserName, true, time);
-      emit(MainState(_todayLessons ?? []));
+      _localDataBase.updateUploadStatus(
+          lessonName, _userDataBase!.getUserName, true);
+      emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
     } else {
+      _localDataBase.updateUploadStatus(
+          lessonName, _userDataBase!.getUserName, false);
       //TODO : cache for later upload
     }
   }
 
   Future<void> _deleteReg(String lessonName, Emitter emit) async {
-    _lessonDatabase.deleteReg(lessonName, _userDataBase!.getUserName);
-    emit(MainState(_todayLessons ?? []));
+    _localDataBase.deleteRec(lessonName, _userDataBase!.getUserName);
+    emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
     bool isOnline =
         await _onlineDB.deleteRec(lessonName, _userDataBase!.getUserName);
     if (isOnline == true) {
-      _lessonDatabase.deleteReg(lessonName, _userDataBase!.getUserName);
-      emit(MainState(_todayLessons ?? []));
+      _localDataBase.deleteRec(lessonName, _userDataBase!.getUserName);
+      emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
     }
     //else {
     //   //TODO : cache for later upload

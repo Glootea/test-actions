@@ -17,7 +17,7 @@ class QrButton extends StatelessWidget {
           final bloc = context.read<QueueBloc>();
           final state = bloc.state as MainState;
           final rec = state.todayLessons
-              .firstWhere((element) => element.tableName == lessonName)
+              .firstWhere((element) => element.name == lessonName)
               .userRec!;
           final dateTime = rec.time;
           String userName = rec.userName;
