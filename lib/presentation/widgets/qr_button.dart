@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/encryprion.dart';
@@ -25,10 +26,11 @@ class QrButton extends StatelessWidget {
           // print(
           //   Uri.https("localhost:8000", "/#upload", {"info": data}),
           // );
-          String output = "https://queue-01-22.web.app/#upload/info=" +
-              Encryption.encryct(data);
+          String output = "https://queue-01-22.web.app/upload/" +
+              Encryption.encryct(data).replaceAll('/', '%');
 
           print(output);
+
           await showDialog(
               context: context,
               builder: (context) => AlertDialog(

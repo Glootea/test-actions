@@ -5,7 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/navigation.dart';
+// import 'package:queue/navigation.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
 import 'package:queue/presentation/widgets/padding.dart';
@@ -47,10 +47,10 @@ class _MainScreenState extends State<MainScreen> {
           child: BlocBuilder<QueueBloc, QueueState>(
             builder: (context, state) {
               if (state is UserUnAuthenticatedState) {
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Navigator.of(context)
-                      .pushReplacementNamed(Routes.loginScreen);
-                });
+                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) { TODO: delete - navigation moved to seperate file
+                //   Navigator.of(context)
+                //       .pushReplacementNamed(Routes.loginScreen);
+                // });
               }
               try {
                 MainState mainState = state as MainState;
@@ -213,7 +213,7 @@ class _QRScannerViewState extends State<QRScannerView> {
 
               context.read<QueueBloc>().add(
                   UploadFromLinkEvent(barcodes.barcodes.first.rawValue ?? ''));
-              Navigator.of(context).pushReplacementNamed(Routes.uploadScreen);
+              // Navigator.of(context).pushReplacementNamed(Routes.uploadScreen); TODO: delete - navigation moved to seperate file
             }
             // onScan: (String value) { TODO: update to bloc
             //   debugPrint(value);

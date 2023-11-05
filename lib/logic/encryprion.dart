@@ -14,7 +14,8 @@ class Encryption {
           data,
           iv: _iv,
         )
-        .base64;
+        .base64
+        .replaceAll('/', '[]');
     return output;
   }
 
@@ -24,7 +25,9 @@ class Encryption {
   }
 
   static String decrypt(String data) {
-    return _encrypter
-        .decrypt(Encrypted(Uint8List.fromList(base64.decode(data))), iv: _iv);
+    return _encrypter.decrypt(
+        Encrypted(
+            Uint8List.fromList(base64.decode(data.replaceAll('[]', '/')))),
+        iv: _iv);
   }
 }

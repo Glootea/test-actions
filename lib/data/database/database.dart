@@ -23,7 +23,7 @@ class LocalDatabase extends _$LocalDatabase {
             id: 0,
             name: "Sunday pair",
             startTime: "17:30",
-            endTime: "17:50",
+            endTime: "22:50",
             weekDay: 7));
         into(students).insert(
             const Student(id: 0, name: "Рыбкин Александр Владимирович"));
@@ -32,13 +32,13 @@ class LocalDatabase extends _$LocalDatabase {
             id: 0,
             studentID: 0,
             lessonID: 0,
-            time: DateTime(2023, 11, 5, 17, 16, 43, 54)));
+            time: DateTime(2023, 11, 5, 17, 16, 43, 54),
+            uploaded: false));
         into(recs).insert(Rec(
             id: 1,
             studentID: 1,
             lessonID: 0,
             time: DateTime(2023, 11, 5, 17, 16)));
-        print(recs);
       });
   @override
   int get schemaVersion => 1;

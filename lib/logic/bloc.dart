@@ -144,8 +144,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _onUploadEvent(UploadFromLinkEvent event, Emitter emit) async {
     try {
-      String link = Encryption.decrypt(
-          event.link.substring(event.link.indexOf('info=') + 5));
+      String link = Encryption.decrypt(event.link);
       emit(UploadFromLinkState(isLoading: true));
       if (await _onlineDB.uploadFromQuery(link)) {
         emit(UploadFromLinkState(
