@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:queue/data/lesson_database.dart';
+import 'package:queue/data/database/database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/states.dart';
@@ -10,13 +10,7 @@ import 'package:queue/presentation/navigation.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final userDataBase = await UserDataBase.configuredUserDataBase();
-  LessonDatabase lessonDatabase;
-  if (userDataBase != null) {
-    lessonDatabase =
-        await LessonDatabase.fillFromLocal(userDataBase.getUserName);
-  } else {
-    lessonDatabase = await LessonDatabase.fillFromLocal("noName");
-  }
+  LocalDatabase lessonDatabase = LocalDatabase();
 
   runApp(BlocProvider(
       create: (context) =>

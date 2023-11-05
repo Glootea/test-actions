@@ -2,21 +2,27 @@ import 'package:drift/drift.dart';
 
 class Recs extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get userName => text()();
-  TextColumn get lessonName => text().references(Lessons, #id)();
-  TextColumn get time => text()();
+  IntColumn get studentID => integer().references(Students, #id)();
+  IntColumn get lessonID => integer().references(Lessons, #id)();
+  DateTimeColumn get time => dateTime()();
+  BoolColumn get uploaded => boolean().nullable()();
 }
 
 class Lessons extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get tablename => text()();
-  TextColumn get displayName => text()();
+  TextColumn get name => text()();
   TextColumn get startTime => text()();
   TextColumn get endTime => text()();
   IntColumn get weekDay => integer()();
 }
 
-class UserRecs extends Table {
+class Students extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get rec => integer().references(Recs, #id)();
+  TextColumn get name => text()();
+}
+
+class DatedLessons extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get lessonID => integer().references(Lessons, #id)();
+  DateTimeColumn get date => dateTime()();
 }

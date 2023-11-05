@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:queue/entities/lesson.dart';
 import 'package:queue/extension.dart';
-import 'package:queue/models/lesson.dart';
-import 'package:queue/models/rec.dart';
 import 'package:queue/presentation/widgets/padding.dart';
 import 'package:queue/presentation/widgets/qr_button.dart';
 import 'package:queue/presentation/widgets/rec_button.dart';
@@ -10,7 +9,7 @@ import 'package:queue/presentation/widgets/timer_start_reg.dart';
 import 'package:intl/intl.dart';
 
 class LessonWidget extends StatefulWidget {
-  final Lesson lesson;
+  final LessonEntity lesson;
   const LessonWidget(this.lesson, {super.key});
 
   @override
@@ -29,9 +28,9 @@ class _LessonWidgetState extends State<LessonWidget> {
       timeToStart < const TimeOfDay(hour: 0, minute: 30) &&
       timerStartDelay < timeToStart;
   TimeOfDay get timeToStart =>
-      widget.lesson.pair.startTime - TimeOfDay.fromDateTime(now);
+      widget.lesson.startTime - TimeOfDay.fromDateTime(now);
   TimeOfDay get timetillEnd =>
-      widget.lesson.pair.endTime - TimeOfDay.fromDateTime(now);
+      widget.lesson.endTime - TimeOfDay.fromDateTime(now);
 
   late Timer timer;
 
@@ -56,11 +55,6 @@ class _LessonWidgetState extends State<LessonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    List<Rec> sortedList = widget.lesson.recs
-      ..sort((a, b) => a.time.isBefore(b.time) ? -1 : 1);
-    int queueN = sortedList
-            .indexOf(widget.lesson.userRec ?? Rec('none', DateTime.now())) +
-        1;
     return GestureDetector(
         onTap: () => setState(() {
               expanded = !expanded;
@@ -86,7 +80,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Text(
-                            widget.lesson.displayName,
+                            widget.lesson.name,
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                         ),
@@ -122,8 +116,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                                               : "Запись закрыта",
                                           textAlign: TextAlign.left,
                                         )
-                                      : TimerStartReg(
-                                          widget.lesson.pair.startTime)
+                                      : TimerStartReg(widget.lesson.startTime)
                                   : Text(
                                       "Запись от\n${DateFormat('yyyy-MM-dd в kk:mm:ss').format(widget.lesson.userRec!.time)}",
                                     )),
@@ -141,9 +134,9 @@ class _LessonWidgetState extends State<LessonWidget> {
                       children: [
                         const MySmallPadding(),
                         Text(
-                            queueN == 0
+                            widget.lesson.userQueuePosition == 0
                                 ? "Очередь\nнедоступна"
-                                : "Вы $queueN в очереди",
+                                : "Вы ${widget.lesson.userQueuePosition} в очереди",
                             textAlign: TextAlign.start,
                             style: Theme.of(context).textTheme.headlineSmall),
                         const Spacer(),
@@ -156,7 +149,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                         ),
                         const MySmallPadding(),
                         (widget.lesson.userRec != null &&
-                                widget.lesson.userRec!.isOnline)
+                                (widget.lesson.userRec!.isUploaded ?? true))
                             ? Icon(
                                 Icons.wifi_outlined,
                                 size: 20,
@@ -171,8 +164,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                               ),
                         const MySmallPadding(),
                         SizedBox(
-                            height: 40,
-                            child: QrButton(widget.lesson.tableName)),
+                            height: 40, child: QrButton(widget.lesson.name)),
                         const MySmallPadding(),
                       ],
                     ),
@@ -192,15 +184,14 @@ class _LessonWidgetState extends State<LessonWidget> {
                             const MySmallPadding(),
                             ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: sortedList.length,
+                                itemCount: widget.lesson.recs.length,
                                 itemBuilder: (context, index) => Row(
                                       children: [
                                         const MySmallPadding(),
                                         Text("${index + 1}"),
                                         const Spacer(),
-                                        Text(sortedList[index]
-                                            .userName
-                                            .nameSurname),
+                                        Text(
+                                            widget.lesson.recs[index].userName),
                                         const MySmallPadding(),
                                       ],
                                     ))

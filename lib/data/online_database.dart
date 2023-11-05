@@ -1,8 +1,7 @@
 import 'dart:developer';
 import 'dart:math' as math;
 import 'package:gsheets/gsheets.dart';
-import 'package:queue/extension.dart';
-import 'package:queue/models/rec.dart';
+import 'package:queue/entities/rec.dart';
 import 'package:queue/secret.dart';
 import 'package:queue/secret/table_credentials.dart';
 
@@ -13,8 +12,8 @@ class OnlineDataBase {
   static List<String>? _nameColumn;
   static List<String>? _subjectRow;
 
-  Future<Map<String, List<Rec>>> getData(String userName) async {
-    final result = <String, List<Rec>>{};
+  Future<List<RecEntity>> getData() async {
+    final result = <RecEntity>[];
     try {
       _spreadsheet ??= await _gsheets.spreadsheet(TABLEURL);
       _sheet ??= _spreadsheet!.worksheetByTitle('queue');
@@ -31,12 +30,11 @@ class OnlineDataBase {
           .toList();
       // final columnCount = sheet.columnCount;
       for (int i = 0; i < _subjectRow!.length; i++) {
-        result.addAll({
-          (_subjectRow![i]): (allColumns[i + 1].sublist(1))
-              .where((element) => element.value.isNotEmpty)
-              .map((e) => Rec(_nameColumn![e.row - 2], DateTime.parse(e.value)))
-              .toList()
-        });
+        result.addAll((allColumns[i + 1].sublist(1))
+            .where((element) => element.value.isNotEmpty)
+            .map((e) => RecEntity(_nameColumn![e.row - 2],
+                DateTime.parse(e.value), _subjectRow![i]))
+            .toList());
       }
     } catch (e) {
       log("Failed to load database");
@@ -149,10 +147,9 @@ class OnlineDataBase {
             DateTime.parse(a.value).compareTo(DateTime.parse(b.value)))));
       final position = queue.indexWhere((element) => element.value == r) + 1;
       return {
-        'name': userName.nameSurname,
+        'name': userName,
         'position': position.toString(),
-        'last':
-            _nameColumn![queue[math.max(position - 2, 0)].row - 2].nameSurname
+        'last': _nameColumn![queue[math.max(position - 2, 0)].row - 2]
       };
     } else {
       return null;
