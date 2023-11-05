@@ -190,8 +190,8 @@ class _QRScannerViewState extends State<QRScannerView> {
     controller = MobileScannerController(
       detectionSpeed: DetectionSpeed.normal,
     );
-    controller.stop();
-    controller.start();
+    // controller.stop();
+    // controller.start();
     super.initState();
   }
 

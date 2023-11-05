@@ -1,4 +1,4 @@
-import 'package:queue/models/lesson.dart';
+import 'package:queue/entities/lesson.dart';
 
 sealed class QueueState {}
 
@@ -10,7 +10,7 @@ class UserUnAuthenticatedState extends QueueState {
 class LoadingState extends QueueState {}
 
 class MainState extends QueueState {
-  final List<Lesson> todayLessons;
+  final List<LessonEntity> todayLessons;
 
   MainState(this.todayLessons);
 }

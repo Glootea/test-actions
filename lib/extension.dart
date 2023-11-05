@@ -22,9 +22,9 @@ extension TimeArithmetic on TimeOfDay {
   }
 }
 
-extension NameSurname on String {
-  String get nameSurname {
-    final splitted = split(' ');
-    return '${splitted[0]} ${splitted[1]}';
+extension TimeFromString on String {
+  TimeOfDay get toTimeOfDay {
+    final List<int> a = split(':').map((e) => int.parse(e)).toList();
+    return TimeOfDay(hour: a[0], minute: a[1]);
   }
 }
