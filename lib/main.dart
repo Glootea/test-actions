@@ -9,33 +9,45 @@ import 'package:queue/logic/states.dart';
 import 'package:queue/navigation.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
+  try {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    print(e.toString());
+  }
   final userDataBase = await UserDataBase.configuredUserDataBase();
   LocalDatabase lessonDatabase = LocalDatabase();
 
   runApp(BlocProvider(
       create: (context) =>
           QueueBloc(userDataBase, lessonDatabase, LoadingState())
-            ..add(FindUserEvent()),
-      child: Consumer<QueueBloc>(
-        builder: (context, value, child) {
-          return MyApp(value);
-        },
-      )));
+            // ..add(FindUserEvent()),
+            ..add(UserAuthenticateEvent("Рыбкин Александр Владимирович")),
+      // child: Consumer<QueueBloc>(
+      //   child: MyApp(),
+      //   builder: (_, value, __) {
+      //     // return MyApp();
+      //   },
+      // )));
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp(this.bloc, {super.key});
-  final QueueBloc bloc;
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final QueueBloc bloc = context.read<QueueBloc>();
+    final router = getRouter(bloc);
     return MaterialApp.router(
-        routerConfig: router(bloc),
+        routerConfig: router,
         theme: ThemeData(
           colorScheme: const ColorScheme(
               brightness: Brightness.dark,

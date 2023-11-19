@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:queue/data/database/database.dart';
 import 'package:queue/data/online_database.dart';
 import 'package:queue/data/user_database.dart';
@@ -9,18 +10,30 @@ import 'package:queue/entities/rec.dart';
 import 'package:queue/logic/encryprion.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:googleapis/drive/v3.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase? _userDataBase;
   final LocalDatabase _localDataBase;
   final OnlineDataBase _onlineDB = OnlineDataBase();
-
+  String? backgroundImageEncoded;
   String get userName => _userDataBase!.getUserName;
+  bool? _isAdminBacked;
+  Future<bool> get _isAdmin async {
+    _isAdminBacked ??= await _localDataBase.isAdmin(userName);
+    return _isAdminBacked!;
+  }
 
   Future<List<LessonEntity>> _todayLessons(String studentName) async {
     DateTime today = DateTime.now();
     int weekDay = today.weekday;
     return await _localDataBase.todayLessons(today, weekDay, studentName);
+  }
+
+  Future<void> _getBackgroundImage() async {
+    backgroundImageEncoded ??= await _localDataBase.getBackgroundImage();
   }
 
   QueueBloc(this._userDataBase, this._localDataBase, super.initialState) {
@@ -49,7 +62,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
           log("Failed to import db due to load failure");
         }
         emit(
-          MainState(await _todayLessons(_userDataBase!.getUserName)),
+          MainState(
+              await _todayLessons(_userDataBase!.getUserName), await _isAdmin),
         );
       },
       transformer: sequential(),
@@ -58,6 +72,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       (event, emit) async => await userLogOut(),
       transformer: sequential(),
     );
+
+    on<CreateGroupEvent>((event, emit) async => await _createGroup());
 //---mainScreen ---
 
     on<CreateRegEvent>(
@@ -97,6 +113,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     if (_userDataBase == null) {
       add(NoUserEvent("Пользователь c таким ключем не найден"));
     } else {
+      await _getBackgroundImage();
       add(UserAuthenticatedEvent());
     }
   }
@@ -111,14 +128,17 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _createReg(String lessonName, Emitter emit) async {
     DateTime time = DateTime.now();
-    _localDataBase.createRec(lessonName, _userDataBase!.getUserName, time);
-    emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
+    await _localDataBase.createRec(
+        lessonName, _userDataBase!.getUserName, time);
+    emit(MainState(
+        await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
     bool isOnline =
         await _onlineDB.createRec(lessonName, _userDataBase!.getUserName, time);
     if (isOnline == true) {
       _localDataBase.updateUploadStatus(
           lessonName, _userDataBase!.getUserName, true);
-      emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
+      emit(MainState(
+          await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
     } else {
       _localDataBase.updateUploadStatus(
           lessonName, _userDataBase!.getUserName, false);
@@ -127,13 +147,15 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _deleteReg(String lessonName, Emitter emit) async {
-    _localDataBase.deleteRec(lessonName, _userDataBase!.getUserName);
-    emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
+    await _localDataBase.deleteRec(lessonName, _userDataBase!.getUserName);
+    emit(MainState(
+        await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
     bool isOnline =
         await _onlineDB.deleteRec(lessonName, _userDataBase!.getUserName);
     if (isOnline == true) {
       _localDataBase.deleteRec(lessonName, _userDataBase!.getUserName);
-      emit(MainState(await _todayLessons(_userDataBase!.getUserName)));
+      emit(MainState(
+          await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
     }
     //else {
     //   //TODO : cache for later upload
@@ -169,7 +191,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   void _onInviteEvent(InviteEvent event, Emitter<QueueState> emit) {
-    //TODO: implement
+    //TODO: implement invite
   }
 
   Future<void> _onRegisterUserEvent(
@@ -181,6 +203,39 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     } else {
       add(UserAuthenticatedEvent());
     }
+  }
+
+  Future<void> _createGroup() async {
+    GoogleSignIn googleSignIn = GoogleSignIn(
+      clientId:
+          "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
+      scopes: [
+        'https://www.googleapis.com/auth/drive.file',
+      ],
+    );
+
+    await googleSignIn.signIn();
+    final httpClient = (await googleSignIn.authenticatedClient())!;
+    final driveApi = DriveApi(httpClient);
+    final folder = await driveApi.files.create(File(
+        mimeType: 'application/vnd.google-apps.folder', name: "Очередь работ"));
+    final file = File(
+      parents: [folder.id!],
+      mimeType:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      name: "Очередь работ",
+    );
+    final storage = FirebaseStorage.instance
+        .ref()
+        .child("defaultTable")
+        .child("queue.xlsx");
+    final data = await storage.getData();
+    final stream = List<int>.from(data!.toList()).map((e) => [e]);
+    Media media = Media(Stream.fromIterable(stream), stream.length);
+    final onlineFile = await driveApi.files.create(file, uploadMedia: media);
+    final permisson = Permission(role: "writer", type: "anyone");
+    await driveApi.permissions.create(permisson, onlineFile.id!);
+    log(onlineFile.id!);
   }
 
   // Future<void> getData() async {}

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
+import 'package:queue/presentation/screens/admin_view.dart';
 // import 'package:queue/navigation.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
@@ -20,8 +22,19 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int currentPage = 0;
   late final PageController pageController;
+  late bool isAdmin;
+  late Image backgroundImage;
   @override
   void initState() {
+    final bloc = context.read<QueueBloc>();
+    final state = (bloc.state as MainState);
+    isAdmin = state.isAdmin;
+    backgroundImage = Image.memory(
+      base64.decode(bloc.backgroundImageEncoded!),
+      width: 50,
+      height: 50,
+      repeat: ImageRepeat.repeat,
+    );
     pageController = PageController(initialPage: 0);
     super.initState();
   }
@@ -42,61 +55,52 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: BlocBuilder<QueueBloc, QueueState>(
-            builder: (context, state) {
-              if (state is UserUnAuthenticatedState) {
-                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) { TODO: delete - navigation moved to seperate file
-                //   Navigator.of(context)
-                //       .pushReplacementNamed(Routes.loginScreen);
-                // });
-              }
-              try {
-                MainState mainState = state as MainState;
-                return Stack(
-                  children: [
-                    Positioned.fill(
-                        child: Image.asset(
-                      'assets/panda.png',
-                      width: 50,
-                      height: 50,
-                      repeat: ImageRepeat.repeat,
-                    )),
-                    MediaQuery.of(context).size.width < 600
-                        ? const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ConnectionStatusWidget(),
-                            ],
-                          )
-                        : const Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              ConnectionStatusWidget(),
-                            ],
-                          ),
-                    Material(
-                      color: Colors.transparent,
-                      elevation: 20,
-                      child: PageView(
-                        controller: pageController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          TodayView(mainState: mainState),
-                          const QRScannerView()
-                        ],
+        body: Stack(children: [
+          Positioned.fill(child: backgroundImage),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: BlocBuilder<QueueBloc, QueueState>(
+              builder: (context, state) {
+                try {
+                  MainState mainState = state as MainState;
+                  return Stack(
+                    children: [
+                      MediaQuery.of(context).size.width < 600
+                          ? const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ConnectionStatusWidget(),
+                              ],
+                            )
+                          : const Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                ConnectionStatusWidget(),
+                              ],
+                            ),
+                      Material(
+                        color: Colors.transparent,
+                        elevation: 20,
+                        child: PageView(
+                          controller: pageController,
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            TodayView(mainState: mainState),
+                            const QRScannerView(),
+                            const AdminView()
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              } catch (e) {
-                log("Wrong state at transition. Not critical");
-                return const Scaffold();
-              }
-            },
+                    ],
+                  );
+                } catch (e) {
+                  log("Wrong state at transition. Not critical");
+                  return const Scaffold();
+                }
+              },
+            ),
           ),
-        ),
+        ]),
         bottomNavigationBar: NavigationBar(
             selectedIndex: currentPage,
             onDestinationSelected: (value) {
@@ -112,11 +116,15 @@ class _MainScreenState extends State<MainScreen> {
                 currentPage = value;
               });
             },
-            destinations: const [
-              NavigationDestination(
+            destinations: [
+              const NavigationDestination(
                   icon: Icon(Icons.today_outlined), label: "Today"),
-              NavigationDestination(
-                  icon: Icon(Icons.qr_code_outlined), label: "Qr scanner")
+              const NavigationDestination(
+                  icon: Icon(Icons.qr_code_outlined), label: "Qr scanner"),
+              if (isAdmin)
+                const NavigationDestination(
+                    icon: Icon(Icons.admin_panel_settings_outlined),
+                    label: "Admin settings")
             ]),
       ),
     );

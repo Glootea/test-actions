@@ -4,7 +4,8 @@ import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 // import 'package:queue/navigation.dart';
-import 'package:queue/presentation/widgets/padding.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
+import 'package:google_sign_in_web/google_sign_in_web.dart' as web;
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -37,6 +38,8 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
+
+typedef HandleSignInFn = Future<void> Function();
 
 class LoginView extends StatefulWidget {
   const LoginView({this.errorMessage, super.key});
@@ -73,8 +76,19 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+  Widget buildSignInButton({HandleSignInFn? onPressed}) {
+    return (GoogleSignInPlatform.instance as web.GoogleSignInPlugin)
+        .renderButton(configuration: web.GSIButtonConfiguration());
+  }
+
   @override
   Widget build(BuildContext context) {
+    // GoogleSignIn googleSignIn = GoogleSignIn(
+    //   scopes: [
+    //     'email',
+    //     'https://www.googleapis.com/auth/drive.file',
+    //   ],
+    // );
     return Scaffold(
         body: SizedBox(
       width: MediaQuery.of(context).size.width,
@@ -83,61 +97,75 @@ class _LoginViewState extends State<LoginView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const MyPadding(),
               Text(
-                "Приложение очереди",
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const MyPadding(),
-              const MyPadding(),
-              Text(
-                "Введи ключ: ",
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const MyPadding(),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: controller,
-                  maxLength: 32,
-                  maxLines: 1,
-                  onChanged: (value) => setState(() {}),
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                      errorText: controller.text.length == 32
-                          ? null
-                          : "Длина ключа должна составлять 32"),
-                ),
-              ),
-              const MyPadding(),
+                  "Для регистрации группы войдите через google для создания таблицы"),
+              // buildSignInButton(
+              //   onPressed: _handleSignIn,
+              // ),
               OutlinedButton(
-                  onPressed: () => context
-                      .read<QueueBloc>()
-                      .add(UserAuthenticateEvent(controller.text)),
-                  child: Text("Войти",
-                      style: Theme.of(context).textTheme.bodyMedium)),
-              const MyPadding(),
-              Text(
-                "Ключ отправлен в лс с #queue",
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    ?.copyWith(color: Colors.blue),
-              ),
-              const MyPadding(),
-              const MyPadding(),
-              Text("Много буков: ",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.copyWith(color: Colors.white)),
-              const MyPadding(),
-              Text(
-                  """Приложение для ведения очереди сдачи работ для группы ИНБО-01-22 МИРЭА.\n\nПреимущества:\n- офлайн доступ\n- возможность продолжения очереди с прошлой пары\n- учитывается время записи, а не время отправки сообщения на сервер\n- возможность записать с помощью друга при отсутсвии интернета\n- организованность ведения очереди\n- независимость от наличия старост\n\nНаписано на Flutter за пару вечеров""",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.white))
+                  onPressed: () async {
+                    // await GoogleSignIn().signIn();
+                    context.read<QueueBloc>().add(CreateGroupEvent());
+                  },
+                  child: Text("Войти")),
+
+              // buildSignInButton(
+              //     onPressed: () async => await GoogleSignIn().signIn()),
+              // const MyPadding(),
+              // Text(
+              //   "Приложение очереди",
+              //   style: Theme.of(context).textTheme.headlineLarge,
+              // ),
+              // const MyPadding(),
+              // const MyPadding(),
+              // Text(
+              //   "Введи ключ: ",
+              //   style: Theme.of(context).textTheme.headlineSmall,
+              // ),
+              // const MyPadding(),
+              // SizedBox(
+              //   width: 300,
+              //   child: TextField(
+              //     controller: controller,
+              //     maxLength: 32,
+              //     maxLines: 1,
+              //     onChanged: (value) => setState(() {}),
+              //     style: const TextStyle(color: Colors.white),
+              //     decoration: InputDecoration(
+              //         errorText: controller.text.length == 32
+              //             ? null
+              //             : "Длина ключа должна составлять 32"),
+              //   ),
+              // ),
+              // const MyPadding(),
+              // OutlinedButton(
+              //     onPressed: () => context
+              //         .read<QueueBloc>()
+              //         .add(UserAuthenticateEvent(controller.text)),
+              //     child: Text("Войти",
+              //         style: Theme.of(context).textTheme.bodyMedium)),
+              // const MyPadding(),
+              // Text(
+              //   "Ключ отправлен в лс с #queue",
+              //   style: Theme.of(context)
+              //       .textTheme
+              //       .labelLarge
+              //       ?.copyWith(color: Colors.blue),
+              // ),
+              // const MyPadding(),
+              // const MyPadding(),
+              // Text("Много буков: ",
+              //     style: Theme.of(context)
+              //         .textTheme
+              //         .headlineSmall
+              //         ?.copyWith(color: Colors.white)),
+              // const MyPadding(),
+              // Text(
+              //     """Приложение для ведения очереди сдачи работ для группы ИНБО-01-22 МИРЭА.\n\nПреимущества:\n- офлайн доступ\n- возможность продолжения очереди с прошлой пары\n- учитывается время записи, а не время отправки сообщения на сервер\n- возможность записать с помощью друга при отсутсвии интернета\n- организованность ведения очереди\n- независимость от наличия старост\n\nНаписано на Flutter за пару вечеров""",
+              //     style: Theme.of(context)
+              //         .textTheme
+              //         .bodyMedium
+              //         ?.copyWith(color: Colors.white))
             ]),
       ),
     ));

@@ -20,6 +20,8 @@ class NoUserEvent extends QueueEvent {
   NoUserEvent([this.errorMessage]);
 }
 
+class CreateGroupEvent extends QueueEvent {}
+
 // --- main screen ---
 
 class CreateRegEvent extends QueueEvent {

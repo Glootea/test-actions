@@ -22,8 +22,17 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isAdminMeta =
+      const VerificationMeta('isAdmin');
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  late final GeneratedColumn<bool> isAdmin = GeneratedColumn<bool>(
+      'is_admin', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_admin" IN (0, 1))'));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, isAdmin];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -43,6 +52,10 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('is_admin')) {
+      context.handle(_isAdminMeta,
+          isAdmin.isAcceptableOrUnknown(data['is_admin']!, _isAdminMeta));
+    }
     return context;
   }
 
@@ -56,6 +69,8 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      isAdmin: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_admin']),
     );
   }
 
@@ -68,12 +83,16 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
 class Student extends DataClass implements Insertable<Student> {
   final int id;
   final String name;
-  const Student({required this.id, required this.name});
+  final bool? isAdmin;
+  const Student({required this.id, required this.name, this.isAdmin});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || isAdmin != null) {
+      map['is_admin'] = Variable<bool>(isAdmin);
+    }
     return map;
   }
 
@@ -81,6 +100,9 @@ class Student extends DataClass implements Insertable<Student> {
     return StudentsCompanion(
       id: Value(id),
       name: Value(name),
+      isAdmin: isAdmin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isAdmin),
     );
   }
 
@@ -90,6 +112,7 @@ class Student extends DataClass implements Insertable<Student> {
     return Student(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      isAdmin: serializer.fromJson<bool?>(json['isAdmin']),
     );
   }
   @override
@@ -98,55 +121,72 @@ class Student extends DataClass implements Insertable<Student> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'isAdmin': serializer.toJson<bool?>(isAdmin),
     };
   }
 
-  Student copyWith({int? id, String? name}) => Student(
+  Student copyWith(
+          {int? id,
+          String? name,
+          Value<bool?> isAdmin = const Value.absent()}) =>
+      Student(
         id: id ?? this.id,
         name: name ?? this.name,
+        isAdmin: isAdmin.present ? isAdmin.value : this.isAdmin,
       );
   @override
   String toString() {
     return (StringBuffer('Student(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('isAdmin: $isAdmin')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, isAdmin);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Student && other.id == this.id && other.name == this.name);
+      (other is Student &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.isAdmin == this.isAdmin);
 }
 
 class StudentsCompanion extends UpdateCompanion<Student> {
   final Value<int> id;
   final Value<String> name;
+  final Value<bool?> isAdmin;
   const StudentsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.isAdmin = const Value.absent(),
   });
   StudentsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.isAdmin = const Value.absent(),
   }) : name = Value(name);
   static Insertable<Student> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<bool>? isAdmin,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (isAdmin != null) 'is_admin': isAdmin,
     });
   }
 
-  StudentsCompanion copyWith({Value<int>? id, Value<String>? name}) {
+  StudentsCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<bool?>? isAdmin}) {
     return StudentsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      isAdmin: isAdmin ?? this.isAdmin,
     );
   }
 
@@ -159,6 +199,9 @@ class StudentsCompanion extends UpdateCompanion<Student> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (isAdmin.present) {
+      map['is_admin'] = Variable<bool>(isAdmin.value);
+    }
     return map;
   }
 
@@ -166,7 +209,8 @@ class StudentsCompanion extends UpdateCompanion<Student> {
   String toString() {
     return (StringBuffer('StudentsCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('isAdmin: $isAdmin')
           ..write(')'))
         .toString();
   }
@@ -967,18 +1011,202 @@ class DatedLessonsCompanion extends UpdateCompanion<DatedLesson> {
   }
 }
 
+class $UserInfoTable extends UserInfo
+    with TableInfo<$UserInfoTable, UserInfoData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserInfoTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+      'key', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+      'value', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [key, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_info';
+  @override
+  VerificationContext validateIntegrity(Insertable<UserInfoData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+          _keyMeta, key.isAcceptableOrUnknown(data['key']!, _keyMeta));
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  UserInfoData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserInfoData(
+      key: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
+      value: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
+    );
+  }
+
+  @override
+  $UserInfoTable createAlias(String alias) {
+    return $UserInfoTable(attachedDatabase, alias);
+  }
+}
+
+class UserInfoData extends DataClass implements Insertable<UserInfoData> {
+  final String key;
+  final String value;
+  const UserInfoData({required this.key, required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  UserInfoCompanion toCompanion(bool nullToAbsent) {
+    return UserInfoCompanion(
+      key: Value(key),
+      value: Value(value),
+    );
+  }
+
+  factory UserInfoData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserInfoData(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  UserInfoData copyWith({String? key, String? value}) => UserInfoData(
+        key: key ?? this.key,
+        value: value ?? this.value,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('UserInfoData(')
+          ..write('key: $key, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserInfoData &&
+          other.key == this.key &&
+          other.value == this.value);
+}
+
+class UserInfoCompanion extends UpdateCompanion<UserInfoData> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<int> rowid;
+  const UserInfoCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserInfoCompanion.insert({
+    required String key,
+    required String value,
+    this.rowid = const Value.absent(),
+  })  : key = Value(key),
+        value = Value(value);
+  static Insertable<UserInfoData> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserInfoCompanion copyWith(
+      {Value<String>? key, Value<String>? value, Value<int>? rowid}) {
+    return UserInfoCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserInfoCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   late final $StudentsTable students = $StudentsTable(this);
   late final $LessonsTable lessons = $LessonsTable(this);
   late final $RecsTable recs = $RecsTable(this);
   late final $DatedLessonsTable datedLessons = $DatedLessonsTable(this);
+  late final $UserInfoTable userInfo = $UserInfoTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [students, lessons, recs, datedLessons];
+      [students, lessons, recs, datedLessons, userInfo];
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);

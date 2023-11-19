@@ -19,10 +19,16 @@ class Lessons extends Table {
 class Students extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  BoolColumn get isAdmin => boolean().nullable()();
 }
 
 class DatedLessons extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get lessonID => integer().references(Lessons, #id)();
   DateTimeColumn get date => dateTime()();
+}
+
+class UserInfo extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
 }

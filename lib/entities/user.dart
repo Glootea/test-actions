@@ -1,5 +1,5 @@
-class User {
+class UserEntity {
   final String name;
-
-  User(this.name);
+  final bool isAdmin;
+  UserEntity(this.name, {this.isAdmin = false});
 }

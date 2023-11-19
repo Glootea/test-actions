@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:queue/entities/lesson.dart';
 
 sealed class QueueState {}
@@ -11,8 +12,16 @@ class LoadingState extends QueueState {}
 
 class MainState extends QueueState {
   final List<LessonEntity> todayLessons;
-
-  MainState(this.todayLessons);
+  final bool isAdmin;
+  MainState(this.todayLessons, this.isAdmin);
+  @override
+  bool operator ==(Object other) {
+    if (other is! MainState) return false;
+    final r = isAdmin == other.isAdmin &&
+        listEquals(todayLessons, other.todayLessons);
+    print(r);
+    return r;
+  }
 }
 
 // --- upload

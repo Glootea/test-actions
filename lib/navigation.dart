@@ -13,10 +13,10 @@ import 'package:go_router/go_router.dart';
 
 class _Routes {
   static String mainScreen = '/home';
-  static String loginScreen = '/';
+  static String loginScreen = '/login';
   static String uploadScreen = '/upload/:info';
   static String inviteScreen = '/invite';
-  static String loadingScreen = '/loading';
+  static String loadingScreen = '/';
 }
 
 // class AppRouter {
@@ -52,7 +52,8 @@ class _Routes {
 // }
 
 // GoRouter configuration
-GoRouter router(Bloc bloc) => GoRouter(
+
+GoRouter getRouter(Bloc bloc) => GoRouter(
       redirect: (BuildContext context, GoRouterState state) {
         final bloc = context.read<QueueBloc>();
         final blocState = bloc.state;
@@ -71,7 +72,8 @@ GoRouter router(Bloc bloc) => GoRouter(
         return null;
       },
       initialLocation: _Routes.mainScreen,
-      refreshListenable: _GoRouterRefreshStream(bloc.stream),
+      refreshListenable: _GoRouterRefreshStream(
+          bloc.stream.asyncMap<QueueState>((event) => event as QueueState)),
       routes: [
         GoRoute(
             path: _Routes.loginScreen,
@@ -94,11 +96,16 @@ GoRouter router(Bloc bloc) => GoRouter(
     );
 
 class _GoRouterRefreshStream extends ChangeNotifier {
-  _GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
+  QueueState? last;
+  _GoRouterRefreshStream(Stream<QueueState> stream) {
     _subscription = stream.asBroadcastStream().listen(
-          (dynamic _) => notifyListeners(),
-        );
+      (QueueState current) {
+        if (last.runtimeType != current.runtimeType) {
+          last = current;
+          notifyListeners();
+        }
+      },
+    );
   }
 
   late final StreamSubscription<dynamic> _subscription;
