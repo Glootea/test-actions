@@ -5,7 +5,9 @@ import 'package:encrypt/encrypt.dart';
 import 'package:queue/secret.dart';
 
 class Encryption {
-  static final _encrypter = Encrypter(AES(Key.fromBase64(ENCRIPTION_KEY)));
+  static final ENCRIPTION_KEY = '';
+  static final _encrypter =
+      Encrypter(AES(Key.fromBase64(ENCRIPTION_KEY))); // TODO: get key
   static final _iv = IV.fromBase64(ENCRIPTION_KEY.substring(0, 4));
 
   static String encryct(String data) {

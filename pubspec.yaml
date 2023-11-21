@@ -55,6 +55,7 @@ dependencies:
   google_sign_in_platform_interface: ^2.4.2
   google_sign_in_web: ^0.12.1
   firebase_storage: ^11.5.1
+  gap: ^3.0.1
 
 dev_dependencies:
   flutter_test:

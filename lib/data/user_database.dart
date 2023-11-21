@@ -1,26 +1,28 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:queue/data/database/database.dart';
 
 class UserDataBase {
-  final String _userName;
-  String get getUserName => _userName;
-  static const _userKey = "userName";
-  static const _storage = FlutterSecureStorage();
+  final LocalDatabase _storage;
+  String? _userName;
+  String get getUserName => _userName!;
 
-  UserDataBase._(this._userName);
-
-  static Future<UserDataBase?> configuredUserDataBase() async {
-    final value = await _storage.read(key: _userKey);
-    if (value != null) {
-      return UserDataBase._(value);
+  UserDataBase._(this._storage);
+  static Future<UserDataBase> getConfiguredUserDataBase(
+      LocalDatabase storage) async {
+    final db = UserDataBase._(storage);
+    final userName = await storage.getUserName();
+    if (userName != null) {
+      db.fillUser(userName);
     }
-    return null;
+    return db;
   }
 
-  static Future<void> fillUser(String userName) async {
-    await _storage.write(key: _userKey, value: userName);
+  void fillUser(String userName) {
+    _storage.setUserName(userName);
   }
 
-  Future<void> logOut() async {
-    await _storage.delete(key: _userKey);
+  bool get userExist => _userName?.isNotEmpty ?? false;
+
+  void logOut() {
+    _storage.deleteUserName();
   }
 }

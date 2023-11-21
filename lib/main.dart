@@ -21,14 +21,15 @@ void main() async {
   } catch (e) {
     print(e.toString());
   }
-  final userDataBase = await UserDataBase.configuredUserDataBase();
   LocalDatabase lessonDatabase = LocalDatabase();
+  final userDataBase =
+      await UserDataBase.getConfiguredUserDataBase(lessonDatabase);
 
   runApp(BlocProvider(
       create: (context) =>
           QueueBloc(userDataBase, lessonDatabase, LoadingState())
-            // ..add(FindUserEvent()),
-            ..add(UserAuthenticateEvent("Рыбкин Александр Владимирович")),
+            ..add(FindUserEvent()),
+      // ..add(UserAuthenticateEvent("Рыбкин Александр Владимирович")),
       // child: Consumer<QueueBloc>(
       //   child: MyApp(),
       //   builder: (_, value, __) {
@@ -62,17 +63,36 @@ class MyApp extends StatelessWidget {
               surface: Colors.black38,
               onSurface: Colors.white),
           textTheme: Typography.dense2021.copyWith(
+              // bodySmall: Theme.of(context).textTheme.body,
               headlineLarge: Theme.of(context)
                   .textTheme
                   .headlineLarge
                   ?.copyWith(
                       color: Colors.white, backgroundColor: Colors.black87),
-              bodyMedium: Theme.of(context).textTheme.bodyMedium,
+              displayLarge: Theme.of(context)
+                  .textTheme
+                  .displayLarge
+                  ?.copyWith(color: Colors.white),
+              displaySmall: Theme.of(context)
+                  .textTheme
+                  .displaySmall
+                  ?.copyWith(color: Colors.white),
+              bodyMedium: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: Colors.white),
               bodyLarge: Theme.of(context)
                   .textTheme
                   .bodyLarge
                   ?.copyWith(color: Colors.white),
-              headlineSmall: Theme.of(context).textTheme.headlineSmall),
+              headlineMedium: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(color: Colors.white),
+              headlineSmall: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(color: Colors.white)),
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
               textStyle: const TextStyle(color: Colors.black),

@@ -25,7 +25,7 @@ class LocalDatabase extends _$LocalDatabase {
             startTime: "17:30",
             endTime: "22:50",
             weekDay: 7));
-        into(students).insert(const Student(
+        into(students).insert(Student(
             id: 0, name: "Рыбкин Александр Владимирович", isAdmin: true));
         into(recs).insert(Rec(
             id: 0,
@@ -188,6 +188,26 @@ class LocalDatabase extends _$LocalDatabase {
     }
   }
 
+  //-- user related
+  final _backgroundImageKey = "backgroundImage";
+  final _userNameKey = "userName";
+
+  Future<String?> getUserName() async {
+    return (await (select(userInfo)
+              ..where((tbl) => tbl.key.equals(_userNameKey)))
+            .getSingleOrNull())
+        ?.value;
+  }
+
+  void setUserName(String userName) {
+    (update(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).write(
+        UserInfoCompanion(key: Value(_userNameKey), value: Value(userName)));
+  }
+
+  void deleteUserName() {
+    (delete(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).go();
+  }
+
   Future<bool> isAdmin(String studentName) async {
     return (await (select(students)
                   ..where((tbl) => tbl.name.equals(studentName)))
@@ -198,7 +218,7 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<String?> getBackgroundImage() async {
     return (await (select(userInfo)
-              ..where((tbl) => tbl.key.equals("backgroundImage")))
+              ..where((tbl) => tbl.key.equals(_backgroundImageKey)))
             .getSingle())
         .value;
   }

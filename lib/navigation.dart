@@ -5,8 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
+import 'package:queue/presentation/screens/create_group_screen.dart';
 import 'package:queue/presentation/screens/invite_screen.dart';
-import 'package:queue/presentation/screens/login_screen.dart';
+import 'package:queue/presentation/screens/welcome_screen.dart';
 import 'package:queue/presentation/screens/main_screen.dart';
 import 'package:queue/presentation/screens/upload_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -17,41 +18,9 @@ class _Routes {
   static String uploadScreen = '/upload/:info';
   static String inviteScreen = '/invite';
   static String loadingScreen = '/';
+  static String createGroupScreen = '$loginScreen/$createGroupSubPath';
+  static String createGroupSubPath = 'create';
 }
-
-// class AppRouter {
-//   final QueueBloc bloc;
-//   AppRouter(this.bloc);
-
-//   Route onGenerateRoute(RouteSettings settings) {
-//     switch (settings.name) {
-//       case '/' || '':
-//         return MaterialPageRoute(builder: (context) => const LoginScreen());
-//       case 'home':
-//         return MaterialPageRoute(builder: (context) => const MainScreen());
-//       case 'upload':
-//         {
-//           return MaterialPageRoute(
-//               builder: (context) =>
-//                   UploadScreen(settings.arguments.toString()));
-//         }
-//       case 'invite':
-//         {
-//           return MaterialPageRoute(
-//               builder: (context) =>
-//                   InviteScreen(settings.arguments.toString()));
-//         }
-//       default:
-//         throw Exception("Unknown route exception");
-//     }
-//   }
-
-//   void dispose() {
-//     bloc.close();
-//   }
-// }
-
-// GoRouter configuration
 
 GoRouter getRouter(Bloc bloc) => GoRouter(
       redirect: (BuildContext context, GoRouterState state) {
@@ -63,7 +32,11 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
           bloc.add(UploadFromLinkEvent(state.pathParameters['info']!));
         } else {
           if (blocState is MainState) return _Routes.mainScreen;
-          if (blocState is UserUnAuthenticatedState) return _Routes.loginScreen;
+          if (blocState is UserUnAuthenticatedState) {
+            return (blocState.createGroupState)
+                ? _Routes.createGroupScreen
+                : _Routes.loginScreen;
+          }
           if (blocState is UploadFromLinkState) return _Routes.uploadScreen;
           if (blocState is InviteState) return _Routes.inviteScreen;
           if (blocState is LoadingState) return _Routes.loadingScreen;
@@ -77,7 +50,12 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
       routes: [
         GoRoute(
             path: _Routes.loginScreen,
-            builder: (context, state) => const LoginScreen()),
+            routes: [
+              GoRoute(
+                  path: _Routes.createGroupSubPath,
+                  builder: (context, state) => const CreateGroupScreen())
+            ],
+            builder: (context, state) => const WelcomeScreen()),
         GoRoute(
             path: _Routes.loadingScreen,
             builder: (context, state) => const LoadingView()),
@@ -100,10 +78,11 @@ class _GoRouterRefreshStream extends ChangeNotifier {
   _GoRouterRefreshStream(Stream<QueueState> stream) {
     _subscription = stream.asBroadcastStream().listen(
       (QueueState current) {
-        if (last.runtimeType != current.runtimeType) {
-          last = current;
-          notifyListeners();
-        }
+        // if (last.runtimeType != current.runtimeType) {
+        //   last = current;
+        //   notifyListeners();
+        // }
+        notifyListeners();
       },
     );
   }

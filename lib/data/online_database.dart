@@ -11,7 +11,7 @@ class OnlineDataBase {
   static Worksheet? _sheet;
   static List<String>? _nameColumn;
   static List<String>? _subjectRow;
-
+  final TABLEURL = ''; //TODO: get ss id
   Future<List<RecEntity>> getData() async {
     final result = <RecEntity>[];
     try {

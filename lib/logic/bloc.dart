@@ -15,11 +15,11 @@ import 'package:googleapis/drive/v3.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
-  UserDataBase? _userDataBase;
+  UserDataBase _userDataBase;
   final LocalDatabase _localDataBase;
   final OnlineDataBase _onlineDB = OnlineDataBase();
   String? backgroundImageEncoded;
-  String get userName => _userDataBase!.getUserName;
+  String get userName => _userDataBase.getUserName;
   bool? _isAdminBacked;
   Future<bool> get _isAdmin async {
     _isAdminBacked ??= await _localDataBase.isAdmin(userName);
@@ -63,7 +63,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
         }
         emit(
           MainState(
-              await _todayLessons(_userDataBase!.getUserName), await _isAdmin),
+              await _todayLessons(_userDataBase.getUserName), await _isAdmin),
         );
       },
       transformer: sequential(),
@@ -94,23 +94,29 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     on<InviteEvent>((event, emit) => _onInviteEvent(event, emit));
     on<RegisterUserEvent>(
         (event, emit) async => await _onRegisterUserEvent(event, emit));
+
+    // login screen
+
+    on<CreateGroupIntentionEvent>((event, emit) =>
+        emit(UserUnAuthenticatedState(null, createGroupState: true)));
   }
 
 // --- Functions
 
   // --- user Authentication ---
   Future<void> _findUser() async {
-    if (_userDataBase == null) {
-      add(NoUserEvent());
-    } else {
+    if (_userDataBase.userExist) {
       add(UserAuthenticatedEvent());
+    } else {
+      add(NoUserEvent());
     }
   }
 
   Future<void> _authenticateUser(String userName) async {
-    await UserDataBase.fillUser(userName);
-    _userDataBase = await UserDataBase.configuredUserDataBase();
-    if (_userDataBase == null) {
+    _userDataBase.fillUser(userName);
+    _userDataBase =
+        await UserDataBase.getConfiguredUserDataBase(_localDataBase);
+    if (_userDataBase.userExist) {
       add(NoUserEvent("Пользователь c таким ключем не найден"));
     } else {
       await _getBackgroundImage();
@@ -119,8 +125,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> userLogOut() async {
-    await _userDataBase?.logOut();
-    _userDataBase = null;
+    _userDataBase.logOut();
+
     add(NoUserEvent());
   }
 
@@ -128,34 +134,33 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _createReg(String lessonName, Emitter emit) async {
     DateTime time = DateTime.now();
-    await _localDataBase.createRec(
-        lessonName, _userDataBase!.getUserName, time);
+    await _localDataBase.createRec(lessonName, _userDataBase.getUserName, time);
     emit(MainState(
-        await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
+        await _todayLessons(_userDataBase.getUserName), await _isAdmin));
     bool isOnline =
-        await _onlineDB.createRec(lessonName, _userDataBase!.getUserName, time);
+        await _onlineDB.createRec(lessonName, _userDataBase.getUserName, time);
     if (isOnline == true) {
       _localDataBase.updateUploadStatus(
-          lessonName, _userDataBase!.getUserName, true);
+          lessonName, _userDataBase.getUserName, true);
       emit(MainState(
-          await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
+          await _todayLessons(_userDataBase.getUserName), await _isAdmin));
     } else {
       _localDataBase.updateUploadStatus(
-          lessonName, _userDataBase!.getUserName, false);
+          lessonName, _userDataBase.getUserName, false);
       //TODO : cache for later upload
     }
   }
 
   Future<void> _deleteReg(String lessonName, Emitter emit) async {
-    await _localDataBase.deleteRec(lessonName, _userDataBase!.getUserName);
+    await _localDataBase.deleteRec(lessonName, _userDataBase.getUserName);
     emit(MainState(
-        await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
+        await _todayLessons(_userDataBase.getUserName), await _isAdmin));
     bool isOnline =
-        await _onlineDB.deleteRec(lessonName, _userDataBase!.getUserName);
+        await _onlineDB.deleteRec(lessonName, _userDataBase.getUserName);
     if (isOnline == true) {
-      _localDataBase.deleteRec(lessonName, _userDataBase!.getUserName);
+      _localDataBase.deleteRec(lessonName, _userDataBase.getUserName);
       emit(MainState(
-          await _todayLessons(_userDataBase!.getUserName), await _isAdmin));
+          await _todayLessons(_userDataBase.getUserName), await _isAdmin));
     }
     //else {
     //   //TODO : cache for later upload
@@ -196,9 +201,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _onRegisterUserEvent(
       RegisterUserEvent event, Emitter<QueueState> emit) async {
-    await UserDataBase.fillUser(event.inviteState.userName);
-    _userDataBase = await UserDataBase.configuredUserDataBase();
-    if (_userDataBase == null) {
+    _userDataBase.fillUser(event.inviteState.userName);
+    _userDataBase =
+        await UserDataBase.getConfiguredUserDataBase(_localDataBase);
+    if (_userDataBase.userExist) {
       add(NoUserEvent("Пользователь c таким ключем не найден"));
     } else {
       add(UserAuthenticatedEvent());

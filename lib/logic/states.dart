@@ -5,7 +5,8 @@ sealed class QueueState {}
 
 class UserUnAuthenticatedState extends QueueState {
   String? errorMessage;
-  UserUnAuthenticatedState(this.errorMessage);
+  bool createGroupState;
+  UserUnAuthenticatedState(this.errorMessage, {this.createGroupState = false});
 }
 
 class LoadingState extends QueueState {}

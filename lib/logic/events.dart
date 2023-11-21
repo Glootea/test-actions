@@ -1,3 +1,4 @@
+import 'package:queue/data/database/database.dart';
 import 'package:queue/logic/states.dart';
 
 sealed class QueueEvent {}
@@ -56,4 +57,19 @@ class RegisterUserEvent extends QueueEvent {
   final InviteState inviteState;
 
   RegisterUserEvent(this.inviteState);
+}
+
+// --- group creation
+
+class CreateGroupIntentionEvent extends QueueEvent {}
+
+class RegisterGroupEvent extends QueueEvent {
+  final String? firstName;
+  final String? lastName;
+  final String? groupName;
+  final List<Lesson>? lessons;
+  final List<Student>? students;
+
+  RegisterGroupEvent(this.firstName, this.lastName, this.groupName,
+      this.lessons, this.students);
 }
