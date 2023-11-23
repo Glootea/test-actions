@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:queue/data/database/database.dart';
+import 'package:queue/data/database/local_database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';

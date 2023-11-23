@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:queue/data/database/database.dart';
+import 'package:queue/data/database/local_database.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 
@@ -129,7 +129,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                             const Gap(16),
                             IconButton(
                                 onPressed: () {},
-                                icon: Icon(Icons.delete_outline))
+                                icon: const Icon(Icons.delete_outline))
                           ]),
                           trailing: Switch(
                               value: students[count - 1].isAdmin ?? false,

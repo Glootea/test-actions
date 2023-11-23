@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:math' as math;
 import 'package:gsheets/gsheets.dart';
 import 'package:queue/entities/rec.dart';
-import 'package:queue/secret.dart';
 import 'package:queue/secret/table_credentials.dart';
 
 class OnlineDataBase {

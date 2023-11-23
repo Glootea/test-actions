@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart';
 
-import 'package:queue/secret.dart';
 
 class Encryption {
-  static final ENCRIPTION_KEY = '';
+  static const ENCRIPTION_KEY = '';
   static final _encrypter =
       Encrypter(AES(Key.fromBase64(ENCRIPTION_KEY))); // TODO: get key
   static final _iv = IV.fromBase64(ENCRIPTION_KEY.substring(0, 4));

@@ -5,8 +5,6 @@ import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 // import 'package:queue/navigation.dart';
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
-import 'package:google_sign_in_web/google_sign_in_web.dart' as web;
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -71,10 +69,10 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
-  Widget buildSignInButton({HandleSignInFn? onPressed}) {
-    return (GoogleSignInPlatform.instance as web.GoogleSignInPlugin)
-        .renderButton(configuration: web.GSIButtonConfiguration());
-  }
+  // Widget buildSignInButton({HandleSignInFn? onPressed}) {
+  //   return (GoogleSignInPlatform.instance as web.GoogleSignInPlugin)
+  //       .renderButton(configuration: web.GSIButtonConfiguration());
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +93,8 @@ class _LoginViewState extends State<LoginView> {
                   children: [
                     const Gap(16),
                     Align(
-                      child: Image.asset('panda.png', width: 150, height: 150),
+                      child: Image.asset('assets/panda.png',
+                          width: 150, height: 150),
                     ), // TODO: change to app icon
                     const Gap(16),
                     Text(

@@ -1,4 +1,4 @@
-import 'package:queue/data/database/database.dart';
+import 'package:queue/data/database/local_database.dart';
 import 'package:queue/logic/states.dart';
 
 sealed class QueueEvent {}

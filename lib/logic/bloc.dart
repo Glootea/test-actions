@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:queue/data/database/database.dart';
+import 'package:queue/data/database/local_database.dart';
 import 'package:queue/data/online_database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/entities/lesson.dart';
