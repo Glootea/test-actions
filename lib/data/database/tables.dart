@@ -11,9 +11,6 @@ class Recs extends Table {
 class Lessons extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  TextColumn get startTime => text()();
-  TextColumn get endTime => text()();
-  IntColumn get weekDay => integer()();
 }
 
 class Students extends Table {
@@ -22,10 +19,20 @@ class Students extends Table {
   BoolColumn get isAdmin => boolean().nullable()();
 }
 
+class WeeklyLessons extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get lessonID => integer().references(Lessons, #id)();
+  TextColumn get startTime => text()();
+  TextColumn get endTime => text()();
+  IntColumn get weekDay => integer()();
+}
+
 class DatedLessons extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get lessonID => integer().references(Lessons, #id)();
   DateTimeColumn get date => dateTime()();
+  TextColumn get startTime => text()();
+  TextColumn get endTime => text()();
 }
 
 class UserInfo extends Table {

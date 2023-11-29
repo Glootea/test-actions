@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart' show TimeOfDay;
-import 'package:queue/extension.dart';
 import 'connection.dart' as impl;
 import 'package:queue/data/database/tables.dart';
 import 'package:queue/entities/lesson.dart';
@@ -9,7 +8,8 @@ import 'package:queue/entities/rec.dart';
 part 'local_database.g.dart';
 // ... the TodoItems table definition stays the same
 
-@DriftDatabase(tables: [Recs, Lessons, Students, DatedLessons, UserInfo])
+@DriftDatabase(
+    tables: [Recs, Lessons, Students, WeeklyLessons, DatedLessons, UserInfo])
 class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(impl.connect());
 
@@ -64,23 +64,26 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<List<LessonEntity>> todayLessons(
       DateTime today, int weekday, String studentName) async {
-    final selected = await (select(lessons)
+    final selected = await (select(weeklyLessons)
           ..where((tbl) => tbl.weekDay.equals(weekday)))
-        .get();
-    final result = selected.map((row) async {
-      String lessonName = row.name;
+        .join([
+      leftOuterJoin(lessons, weeklyLessons.lessonID.equalsExp(lessons.id))
+    ]).get();
+    final result = selected.map((rawRow) async {
+      final row = rawRow.rawData.data;
+      String lessonName = row['name'];
       List<RecEntity> recs = await getRecs(lessonName);
       RecEntity? studentRec =
           recs.where((element) => element.userName == studentName).firstOrNull;
-      String name = row.name;
-      TimeOfDay startTime = row.startTime.toTimeOfDay;
-      TimeOfDay endTime = row.endTime.toTimeOfDay;
+
+      TimeOfDay startTime = row['startTime'].toTimeOfDay;
+      TimeOfDay endTime = row['endTime'].toTimeOfDay;
       if (studentRec == null) {
-        return LessonEntity(name, startTime, endTime, recs);
+        return LessonEntity(lessonName, startTime, endTime, recs);
       } else {
         int position = recs.indexOf(studentRec) + 1;
         return LessonEntity(
-            name, startTime, endTime, recs, studentRec, position);
+            lessonName, startTime, endTime, recs, studentRec, position);
       }
     }).toList();
     final output = <LessonEntity>[];
