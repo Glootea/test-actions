@@ -15,19 +15,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   try {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
     print(e.toString());
   }
   LocalDatabase lessonDatabase = LocalDatabase();
-  final userDataBase =
-      await UserDataBase.getConfiguredUserDataBase(lessonDatabase);
+  final userDataBase = await UserDataBase.getConfiguredUserDataBase(lessonDatabase);
 
   runApp(BlocProvider(
-      create: (context) =>
-          QueueBloc(userDataBase, lessonDatabase, LoadingState())
-            ..add(FindUserEvent()),
+      create: (context) => QueueBloc(userDataBase, lessonDatabase, LoadingState())..add(FindUserEvent()),
       // ..add(UserAuthenticateEvent("Рыбкин Александр Владимирович")),
       // child: Consumer<QueueBloc>(
       //   child: MyApp(),
@@ -63,42 +59,21 @@ class MyApp extends StatelessWidget {
               onSurface: Colors.white),
           textTheme: Typography.dense2021.copyWith(
               // bodySmall: Theme.of(context).textTheme.body,
-              headlineLarge: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(
-                      color: Colors.white, backgroundColor: Colors.black87),
-              displayLarge: Theme.of(context)
-                  .textTheme
-                  .displayLarge
-                  ?.copyWith(color: Colors.white),
-              displaySmall: Theme.of(context)
-                  .textTheme
-                  .displaySmall
-                  ?.copyWith(color: Colors.white),
-              bodyMedium: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Colors.white),
-              bodyLarge: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: Colors.white),
-              headlineMedium: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(color: Colors.white),
-              headlineSmall: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(color: Colors.white)),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(
-              textStyle: const TextStyle(color: Colors.black),
-              backgroundColor: Colors.white.withOpacity(0.8),
-              side: const BorderSide(color: Colors.black, width: 1.5),
-            ),
-          ),
+              headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
+              displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
+              displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
+              bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+              bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
+              headlineMedium: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+              headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
+
+          // outlinedButtonTheme: OutlinedButtonThemeData(
+          //   style: OutlinedButton.styleFrom(
+          //     textStyle: const TextStyle(color: Colors.black),
+          //     backgroundColor: Colors.white.withOpacity(0.8),
+          //     side: const BorderSide(color: Colors.black, width: 1.5),
+          //   ),
+          // ),
           useMaterial3: true,
         ));
     // home: const LoginScreen(),

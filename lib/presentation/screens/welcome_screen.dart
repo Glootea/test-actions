@@ -15,15 +15,13 @@ class WelcomeScreen extends StatelessWidget {
     return SafeArea(
       child: BlocBuilder<QueueBloc, QueueState>(buildWhen: (previous, current) {
         if (previous.runtimeType != current.runtimeType) return true;
-        if (previous is UserUnAuthenticatedState &&
-            current is UserUnAuthenticatedState) {
+        if (previous is UserUnAuthenticatedState && current is UserUnAuthenticatedState) {
           return previous.hashCode != current.hashCode;
         }
         return false;
       }, builder: (context, state) {
         if (state is UserUnAuthenticatedState) {
-          return LoginView(
-              errorMessage: state.errorMessage, key: ValueKey(state.hashCode));
+          return LoginView(errorMessage: state.errorMessage, key: ValueKey(state.hashCode));
         }
 
         return const LoadingView();
@@ -52,11 +50,7 @@ class _LoginViewState extends State<LoginView> {
             context: context,
             builder: (context) => AlertDialog(
               title: Text(errorMessage),
-              actions: [
-                OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text("Ok"))
-              ],
+              actions: [OutlinedButton(onPressed: () => Navigator.of(context).pop(), child: const Text("Ok"))],
             ),
           ));
     }
@@ -93,8 +87,7 @@ class _LoginViewState extends State<LoginView> {
                   children: [
                     const Gap(16),
                     Align(
-                      child: Image.asset('assets/panda.png',
-                          width: 150, height: 150),
+                      child: Image.asset('assets/panda.png', width: 150, height: 150),
                     ), // TODO: change to app icon
                     const Gap(16),
                     Text(
@@ -102,33 +95,27 @@ class _LoginViewState extends State<LoginView> {
                       style: Theme.of(context).textTheme.displayLarge,
                     ),
                     const Gap(16),
-                    Text("Для студентов",
-                        style: Theme.of(context).textTheme.displaySmall),
+                    Text("Для студентов", style: Theme.of(context).textTheme.displaySmall),
                     const Gap(16),
-                    const Text(
-                        "Единственным способом авторизации является ссылка, выданная старостой"),
+                    const Text("Единственным способом авторизации является ссылка, выданная старостой"),
                     const Gap(16),
                     Row(
                       children: [
                         Expanded(
-                          child: Text("Для старост",
-                              overflow: TextOverflow.clip,
-                              style: Theme.of(context).textTheme.displaySmall),
+                          child: Text("Для старост", overflow: TextOverflow.clip, style: Theme.of(context).textTheme.displaySmall),
                         ),
                         const Gap(32),
                         OutlinedButton(
                           style: Theme.of(context).outlinedButtonTheme.style,
                           onPressed: () {
-                            context
-                                .read<QueueBloc>()
-                                .add(CreateGroupIntentionEvent());
+                            context.read<QueueBloc>().add(CreateGroupIntentionEvent());
                           },
                           child: Text(
                             "Новая группа",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: Colors.black),
+                            // style: Theme.of(context)
+                            //     .textTheme
+                            //     .bodyMedium
+                            //     ?.copyWith(color: Colors.black),
                           ),
                         ),
                       ],

@@ -6,7 +6,8 @@ import 'package:queue/data/database/local_database.dart';
 import 'package:queue/entities/lesson.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
-import 'package:queue/presentation/widgets/info_list.dart';
+import 'package:queue/logic/states.dart';
+import 'package:queue/presentation/widgets/info_list/info_list.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});
@@ -39,10 +40,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                       onPressed: () => context.pop(),
                       child: Text(
                         "OK",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.black),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black),
                       ))
                 ],
               )));
@@ -64,8 +62,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Заполните поля",
-                    style: Theme.of(context).textTheme.headlineSmall),
+                Text("Заполните поля", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
                 TextField(
                   onChanged: (value) => firstName = value,
@@ -74,14 +71,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 const Gap(16),
                 TextField(
                   onChanged: (value) => lastName = value,
-                  decoration:
-                      const InputDecoration.collapsed(hintText: 'Фамилия'),
+                  decoration: const InputDecoration.collapsed(hintText: 'Фамилия'),
                 ),
                 const Gap(16),
                 TextField(
                   onChanged: (value) => groupName = value,
-                  decoration: const InputDecoration.collapsed(
-                      hintText: 'Название группы'),
+                  decoration: const InputDecoration.collapsed(hintText: 'Название группы'),
                 ),
                 const Gap(16),
                 Row(
@@ -104,33 +99,25 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 const Gap(16),
                 InfoList<Student>(students),
                 const Gap(16),
-                Text("Добавьте занятия",
-                    style: Theme.of(context).textTheme.headlineSmall),
+                Text("Добавьте занятия", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
                 InfoList<LessonSettingEntity>(lessons),
                 const Gap(16),
-                Text(
-                    "Войдите через Google аккаунт и предоставьте необходимые разрешения, чтобы завершить настройку",
+                Text("Войдите через Google аккаунт и предоставьте необходимые разрешения, чтобы завершить настройку",
                     style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
                 OutlinedButton(
                     onPressed: () {
-                      if ((firstName?.isEmpty ?? true) ||
-                          (lastName?.isEmpty ?? true) ||
-                          (groupName?.isEmpty ?? true)) {
+                      if ((firstName?.isEmpty ?? true) || (lastName?.isEmpty ?? true) || (groupName?.isEmpty ?? true)) {
                         errorMessage = "Необходимо заполнить все поля";
                         setState(() {});
                       } else {
-                        context.read<QueueBloc>().add(RegisterGroupEvent(
-                            firstName, lastName, groupName, [], []));
+                        context.read<QueueBloc>().add(RegisterGroupEvent(firstName, lastName, groupName, [], []));
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       "Войти через Google",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: Colors.black),
+                      // style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black),
                     ))
               ],
             ),

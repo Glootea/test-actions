@@ -20,6 +20,10 @@ extension TimeArithmetic on TimeOfDay {
     if (minute <= other.minute) return true;
     return false;
   }
+
+  String toShortString() {
+    return '$hour:${minute < 10 ? '0$minute' : minute}';
+  }
 }
 
 extension TimeFromString on String {
