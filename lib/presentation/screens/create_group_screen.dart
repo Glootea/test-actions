@@ -6,7 +6,6 @@ import 'package:queue/data/database/local_database.dart';
 import 'package:queue/entities/lesson.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
-import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/widgets/info_list/info_list.dart';
 
 class CreateGroupScreen extends StatefulWidget {

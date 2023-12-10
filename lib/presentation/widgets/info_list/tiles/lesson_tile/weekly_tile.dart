@@ -14,17 +14,13 @@ const Map<int, String> weekdays = {
   7: 'Вс',
 };
 
-class WeeklyLessonTile extends StatefulWidget {
+class WeeklyLessonTile extends TimeChooser {
   final Animation<double> animation;
-  final GlobalKey<AnimatedListState> _listKey;
   final List<WeeklyLessonSettingEntity> weeklyLessons;
-  final int weeklyLessonIndex;
-  final void Function(Set<int>) onWeekDayChanged;
-  final void Function() onDeleteButtonPressed;
-  final void Function(TimeOfDay, TimeOfDay) onTimeChanged;
-  const WeeklyLessonTile(
-      this.animation, this._listKey, this.weeklyLessons, this.weeklyLessonIndex, this.onWeekDayChanged, this.onDeleteButtonPressed, this.onTimeChanged,
-      {super.key});
+  final int outerCount;
+
+  const WeeklyLessonTile(this.animation, this.weeklyLessons, this.outerCount,
+      {required super.innerCount, required super.onDeleteButtonPressed, required super.onTimeChanged, super.key});
 
   @override
   State<WeeklyLessonTile> createState() => _WeeklyLessonTileState();
@@ -34,7 +30,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
-        key: ValueKey(widget.weeklyLessons[widget.weeklyLessonIndex]),
+        key: ValueKey(widget.weeklyLessons[widget.innerCount]),
         sizeFactor: widget.animation,
         child: Column(children: [
           // const Divider(thickness: 4),
@@ -56,10 +52,11 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                 showSelectedIcon: false,
                                 multiSelectionEnabled: true,
                                 segments: [1, 2, 3, 4, 5, 6, 7].map((e) => ButtonSegment(value: e, label: Text(weekdays[e] ?? ' '))).toList(),
-                                selected: widget.weeklyLessons[widget.weeklyLessonIndex].weekday.toSet(),
+                                selected: widget.weeklyLessons[widget.innerCount].weekday.toSet(),
                                 onSelectionChanged: (value) {
                                   setState(() {
-                                    widget.onWeekDayChanged(value);
+                                    // widget.onWeekDayChanged(value);
+                                    widget.weeklyLessons[widget.innerCount] = widget.weeklyLessons[widget.innerCount].copyWith(weekday: value.toList());
                                   });
                                   newSetState(() {});
                                 },
@@ -83,17 +80,17 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                               final time = await showTimePicker(
                                                   context: context,
                                                   initialTime: TimeOfDay(
-                                                      hour: widget.weeklyLessons[widget.weeklyLessonIndex].startTime.hour,
-                                                      minute: widget.weeklyLessons[widget.weeklyLessonIndex].startTime.minute));
+                                                      hour: widget.weeklyLessons[widget.innerCount].startTime.hour,
+                                                      minute: widget.weeklyLessons[widget.innerCount].startTime.minute));
 
                                               if (time != null) {
                                                 setState(() {
-                                                  widget.onTimeChanged(time, widget.weeklyLessons[widget.weeklyLessonIndex].endTime);
+                                                  widget.onTimeChanged(time, widget.weeklyLessons[widget.innerCount].endTime);
                                                 });
                                                 newSetState(() {});
                                               }
                                             },
-                                            child: Text(widget.weeklyLessons[widget.weeklyLessonIndex].startTime.toShortString())),
+                                            child: Text(widget.weeklyLessons[widget.innerCount].startTime.toShortString())),
                                       )
                                     ],
                                   ),
@@ -112,17 +109,17 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                               final time = await showTimePicker(
                                                   context: context,
                                                   initialTime: TimeOfDay(
-                                                      hour: widget.weeklyLessons[widget.weeklyLessonIndex].endTime.hour,
-                                                      minute: widget.weeklyLessons[widget.weeklyLessonIndex].endTime.minute));
+                                                      hour: widget.weeklyLessons[widget.innerCount].endTime.hour,
+                                                      minute: widget.weeklyLessons[widget.innerCount].endTime.minute));
 
                                               if (time != null) {
                                                 setState(() {
-                                                  widget.onTimeChanged(widget.weeklyLessons[widget.weeklyLessonIndex].startTime, time);
+                                                  widget.onTimeChanged(widget.weeklyLessons[widget.innerCount].startTime, time);
                                                 });
                                                 newSetState(() {});
                                               }
                                             },
-                                            child: Text(widget.weeklyLessons[widget.weeklyLessonIndex].endTime.toShortString())),
+                                            child: Text(widget.weeklyLessons[widget.innerCount].endTime.toShortString())),
                                       ),
                                     ],
                                   )
@@ -145,15 +142,16 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                     const Text('  •   '),
                     Expanded(
                       child: Text(
-                        widget.weeklyLessons[widget.weeklyLessonIndex].weekday.map((e) => weekdays[e]).toString().replaceAll('(', '').replaceAll(')', ''),
+                        widget.weeklyLessons[widget.innerCount].weekday.map((e) => weekdays[e]).toString().replaceAll('(', '').replaceAll(')', ''),
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                       ),
                     ),
-                    const Spacer(),
                     Text(
-                        ": ${widget.weeklyLessons[widget.weeklyLessonIndex].startTime.toShortString()} - ${widget.weeklyLessons[widget.weeklyLessonIndex].endTime.toShortString()}"),
-                    TextButton(onPressed: widget.onDeleteButtonPressed, child: const Icon(Icons.delete_outline))
+                        ": ${widget.weeklyLessons[widget.innerCount].startTime.toShortString()} - ${widget.weeklyLessons[widget.innerCount].endTime.toShortString()}"),
+                    TextButton(
+                        onPressed: () => widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),
+                        child: const Icon(Icons.delete_outline))
                   ],
                 ),
               )),

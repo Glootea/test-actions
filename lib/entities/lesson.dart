@@ -26,29 +26,42 @@ final class LessonSettingEntity {
   }
 }
 
-final class WeeklyLessonSettingEntity {
+abstract final class LessonTime {
   final TimeOfDay startTime;
   final TimeOfDay endTime;
+  const LessonTime(this.startTime, this.endTime);
+
+  LessonTime copyWith({TimeOfDay? startTime, TimeOfDay? endTime});
+}
+
+abstract class TimeChooser extends StatefulWidget {
+  final int innerCount;
+  final void Function(TimeOfDay, TimeOfDay) onTimeChanged;
+  final void Function(double) onDeleteButtonPressed;
+  const TimeChooser({required this.innerCount, required this.onTimeChanged, required this.onDeleteButtonPressed, super.key});
+}
+
+final class WeeklyLessonSettingEntity extends LessonTime {
   final List<int> weekday;
-  WeeklyLessonSettingEntity(this.startTime, this.endTime, this.weekday);
+  WeeklyLessonSettingEntity(super.startTime, super.endTime, this.weekday);
+  @override
   WeeklyLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<int>? weekday}) {
     return WeeklyLessonSettingEntity(
-      startTime ?? this.startTime,
-      endTime ?? this.endTime,
+      startTime ?? super.startTime,
+      endTime ?? super.endTime,
       weekday ?? this.weekday,
     );
   }
 }
 
-final class DatedLessonSettingEntity {
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
+final class DatedLessonSettingEntity extends LessonTime {
   final List<DateTime> date;
-  DatedLessonSettingEntity(this.startTime, this.endTime, this.date);
+  DatedLessonSettingEntity(super.startTime, super.endTime, this.date);
+  @override
   DatedLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<DateTime>? date}) {
     return DatedLessonSettingEntity(
-      startTime ?? this.startTime,
-      endTime ?? this.endTime,
+      startTime ?? super.startTime,
+      endTime ?? super.endTime,
       date ?? this.date,
     );
   }

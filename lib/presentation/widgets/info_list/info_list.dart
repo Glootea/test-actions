@@ -29,29 +29,55 @@ class InfoList<E> extends StatelessWidget {
           } else {
             switch (E) {
               case Student:
-                return StudentInfoTile(animation, _listKey, list as List<Student>, count);
+                return StudentInfoTile(animation, list as List<Student>, count, (double height) => _onDeleteButtonPressed(count, height));
               case LessonSettingEntity:
-                return LessonInfoTile(animation, _listKey, list as List<LessonSettingEntity>, count);
+                return LessonInfoTile(animation, list as List<LessonSettingEntity>, count, (double height) => _onDeleteButtonPressed(count, height));
               case WeeklyLessonSettingEntity:
-                return WeeklyLessonTile(animation, _listKey, list as List<WeeklyLessonSettingEntity>, outerCount ?? 0, (value) {
-                  list[outerCount ?? 0] = (list[outerCount ?? 0] as WeeklyLessonSettingEntity).copyWith(weekday: value.toList()) as E;
-                  print((list[outerCount ?? 0] as WeeklyLessonSettingEntity).weekday);
-                }, () {
-                  list.removeAt(outerCount ?? 0);
-                  _listKey.currentState?.removeItem(outerCount ?? 0, (context, animation) => AddNewTile(animation, _listKey, list));
-                }, (value1, value2) {
-                  list[outerCount ?? 0] = (list[outerCount ?? 0] as WeeklyLessonSettingEntity).copyWith(startTime: value1, endTime: value2) as E;
-                });
+                assert(outerCount != null);
+                return WeeklyLessonTile(animation, list as List<WeeklyLessonSettingEntity>, outerCount ?? 0,
+                    innerCount: count,
+                    onDeleteButtonPressed: (double height) => _onDeleteButtonPressed(count, height),
+                    onTimeChanged: (startTime, endTime) => _onTimeChanged<WeeklyLessonSettingEntity>(count, startTime, endTime));
               case DatedLessonSettingEntity:
-                return DatedLessonTile(animation, _listKey, list as List<DatedLessonSettingEntity>, count, () {
-                  list.removeAt(outerCount ?? 0);
-                  _listKey.currentState?.removeItem(outerCount ?? 0, (context, animation) => AddNewTile(animation, _listKey, list));
-                });
+                assert(outerCount != null);
+                return DatedLessonTile(animation, list as List<DatedLessonSettingEntity>, outerCount ?? 0,
+                    innerCount: count,
+                    onDeleteButtonPressed: (double height) => _onDeleteButtonPressed(count, height),
+                    onTimeChanged: (startTime, endTime) => _onTimeChanged<DatedLessonSettingEntity>(count, startTime, endTime));
               default:
-                Container();
+                throw UnimplementedError("Unimplemented info for tile creation");
             }
           }
-          return Container();
         });
+  }
+
+  void _onDeleteButtonPressed(int count, double height) {
+    list.removeAt(count);
+    _listKey.currentState?.removeItem(count, (context, animation) => _DeletedTile(height, animation), duration: Duration(milliseconds: height.toInt() * 4));
+  }
+
+  void _onTimeChanged<T extends LessonTime>(int count, TimeOfDay startTime, TimeOfDay endTime) {
+    list[count] = (list[count] as T).copyWith(startTime: startTime, endTime: endTime) as E;
+  }
+}
+
+class _DeletedTile extends StatelessWidget {
+  final double height;
+  final Animation<double> animation;
+  const _DeletedTile(this.height, this.animation);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizeTransition(
+        sizeFactor: animation,
+        child: SizedBox(
+          height: height,
+          child: const Center(
+            child: Icon(
+              Icons.delete_forever_outlined,
+              color: Colors.red,
+            ),
+          ),
+        ));
   }
 }

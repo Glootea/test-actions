@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:queue/entities/lesson.dart';
 import 'package:queue/presentation/widgets/info_list/info_list.dart';
-import 'package:queue/presentation/widgets/info_list/tiles/add_new_tile.dart';
 
 class LessonInfoTile extends StatefulWidget {
   final Animation<double> animation;
-  final GlobalKey<AnimatedListState> _listKey;
   final List<LessonSettingEntity> lessons;
   final int count;
-  const LessonInfoTile(this.animation, this._listKey, this.lessons, this.count, {super.key});
+  final void Function(double) onDeleteButtonPressed;
+  const LessonInfoTile(this.animation, this.lessons, this.count, this.onDeleteButtonPressed, {super.key});
 
   @override
   State<LessonInfoTile> createState() => _LessonInfoTileState();
@@ -52,9 +51,7 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                         OutlinedButton(
                           child: const Icon(Icons.delete_forever_outlined),
                           onPressed: () {
-                            widget.lessons.removeAt(widget.count);
-                            widget._listKey.currentState
-                                ?.removeItem(widget.count, (context, animation) => AddNewTile(animation, widget._listKey, widget.lessons));
+                            widget.onDeleteButtonPressed;
                           },
                         ),
                       ],
@@ -71,8 +68,8 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                     ),
                     const Gap(16),
                     widget.lessons[widget.count].useWeekly
-                        ? InfoList<WeeklyLessonSettingEntity>(weeklyLessons)
-                        : InfoList<DatedLessonSettingEntity>(datedLessons),
+                        ? InfoList<WeeklyLessonSettingEntity>(weeklyLessons, outerCount: widget.count)
+                        : InfoList<DatedLessonSettingEntity>(datedLessons, outerCount: widget.count),
                   ],
                 ),
               ),

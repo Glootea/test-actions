@@ -5,10 +5,10 @@ import 'package:drift/drift.dart' as drift;
 
 class StudentInfoTile extends StatefulWidget {
   final Animation<double> animation;
-  final GlobalKey<AnimatedListState> _listKey;
   final List<Student> students;
   final int count;
-  const StudentInfoTile(this.animation, this._listKey, this.students, this.count, {super.key});
+  final Function(double) onDeleteButtonPressed;
+  const StudentInfoTile(this.animation, this.students, this.count, this.onDeleteButtonPressed, {super.key});
 
   @override
   State<StudentInfoTile> createState() => _StudentInfoTileState();
@@ -43,7 +43,7 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
                 const Gap(16),
                 IconButton(
                     onPressed: () {
-                      _onDeleteButtonPressed(context, widget.count, widget._listKey);
+                      widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height);
                     },
                     icon: const Icon(Icons.delete_outline))
               ]),
@@ -57,32 +57,5 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
             ),
           ],
         ));
-  }
-
-  void _onDeleteButtonPressed(BuildContext context, int count, GlobalKey<AnimatedListState> listKey) {
-    listKey.currentState?.removeItem(count, (count, a) => RemovedItemFromInfoList(a), duration: const Duration(milliseconds: 500));
-    widget.students.removeAt(count);
-    for (int i = count; i < widget.students.length; i++) {
-      widget.students[i] = widget.students[i].copyWith(id: i + 1);
-    }
-  }
-}
-
-class RemovedItemFromInfoList extends StatelessWidget {
-  final Animation<double> a;
-  const RemovedItemFromInfoList(this.a, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizeTransition(
-      sizeFactor: a.drive(CurveTween(curve: Curves.easeInOut)),
-      child: ListTile(
-        title: Align(
-            child: Icon(
-          Icons.delete_outline_outlined,
-          color: Theme.of(context).colorScheme.error,
-        )),
-      ),
-    );
   }
 }

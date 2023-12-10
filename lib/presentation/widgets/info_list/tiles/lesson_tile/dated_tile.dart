@@ -1,19 +1,17 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:queue/entities/lesson.dart';
 import 'package:queue/extension.dart';
-import 'package:queue/presentation/widgets/info_list/tiles/student_tile.dart';
 
-class DatedLessonTile extends StatefulWidget {
+class DatedLessonTile extends TimeChooser {
   final Animation<double> animation;
-  final GlobalKey<AnimatedListState> listKey;
   final List<DatedLessonSettingEntity> datedLessons;
-  final int count;
-  final Function onDeleteButtonPressed;
-  const DatedLessonTile(this.animation, this.listKey, this.datedLessons, this.count, this.onDeleteButtonPressed, {super.key});
+  final int outerCount;
+
+  const DatedLessonTile(this.animation, this.datedLessons, this.outerCount,
+      {required super.innerCount, required super.onDeleteButtonPressed, required super.onTimeChanged, super.key});
 
   @override
   State<DatedLessonTile> createState() => _DatedLessonTileTileState();
@@ -25,7 +23,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
-      key: ValueKey(widget.datedLessons[widget.count]),
+      key: ValueKey(widget.datedLessons[widget.innerCount]),
       sizeFactor: widget.animation,
       child: Column(
         children: [
@@ -40,9 +38,9 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                               width: double.maxFinite,
                               height: 400,
                               child: GridView.builder(
-                                  itemCount: widget.datedLessons[widget.count].date.length + 1,
+                                  itemCount: widget.datedLessons[widget.innerCount].date.length + 1,
                                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: MediaQuery.of(context).size.width ~/ 120),
-                                  itemBuilder: (context, count) => (count == widget.datedLessons[widget.count].date.length)
+                                  itemBuilder: (context, count) => (count == widget.datedLessons[widget.innerCount].date.length)
                                       ? SizedBox(
                                           height: 48,
                                           width: 64,
@@ -50,7 +48,6 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                             child: OutlinedButton(
                                                 onPressed: () async {
                                                   final result = await showDatePicker(
-                                                      locale: const Locale('ru', 'RU'),
                                                       context: context,
                                                       firstDate: DateTime.now(),
                                                       initialDate: lastSelectedDate,
@@ -58,7 +55,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                                   lastSelectedDate = result;
                                                   if (result != null) {
                                                     setState(() {
-                                                      widget.datedLessons[widget.count].date.add(result);
+                                                      widget.datedLessons[widget.innerCount].date.add(result);
                                                     });
                                                     newSetState(() {});
                                                   }
@@ -73,7 +70,6 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                             child: OutlinedButton(
                                               onPressed: () async {
                                                 final result = await showDatePicker(
-                                                    locale: const Locale('ru', 'RU'),
                                                     context: context,
                                                     firstDate: DateTime.now(),
                                                     initialDate: lastSelectedDate,
@@ -81,13 +77,13 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                                 lastSelectedDate = result;
                                                 if (result != null) {
                                                   setState(() {
-                                                    widget.datedLessons[widget.count].date[count] = result;
+                                                    widget.datedLessons[widget.innerCount].date[count] = result;
                                                   });
                                                   newSetState(() {});
                                                 }
                                               },
                                               child: Text(
-                                                DateFormat('dd.MM').format(widget.datedLessons[widget.count].date[count]),
+                                                DateFormat('dd.MM').format(widget.datedLessons[widget.innerCount].date[count]),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.visible,
                                               ),
@@ -108,16 +104,16 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                     const Gap(16),
                                     OutlinedButton(
                                       onPressed: () async {
-                                        widget.datedLessons[widget.count] = widget.datedLessons[widget.count].copyWith(
+                                        widget.datedLessons[widget.innerCount] = widget.datedLessons[widget.innerCount].copyWith(
                                             startTime: await showTimePicker(
                                                 context: context,
                                                 initialTime: TimeOfDay(
-                                                    hour: widget.datedLessons[widget.count].startTime.hour,
-                                                    minute: widget.datedLessons[widget.count].startTime.minute)));
+                                                    hour: widget.datedLessons[widget.innerCount].startTime.hour,
+                                                    minute: widget.datedLessons[widget.innerCount].startTime.minute)));
                                         setState(() {});
                                         newSetState(() {});
                                       },
-                                      child: Text(widget.datedLessons[widget.count].startTime.toShortString()),
+                                      child: Text(widget.datedLessons[widget.innerCount].startTime.toShortString()),
                                     )
                                   ],
                                 ),
@@ -130,16 +126,16 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                     const Gap(16),
                                     OutlinedButton(
                                       onPressed: () async {
-                                        widget.datedLessons[widget.count] = widget.datedLessons[widget.count].copyWith(
+                                        widget.datedLessons[widget.innerCount] = widget.datedLessons[widget.innerCount].copyWith(
                                             endTime: await showTimePicker(
                                                 context: context,
                                                 initialTime: TimeOfDay(
-                                                    hour: widget.datedLessons[widget.count].endTime.hour,
-                                                    minute: widget.datedLessons[widget.count].endTime.minute)));
+                                                    hour: widget.datedLessons[widget.innerCount].endTime.hour,
+                                                    minute: widget.datedLessons[widget.innerCount].endTime.minute)));
                                         setState(() {});
                                         newSetState(() {});
                                       },
-                                      child: Text(widget.datedLessons[widget.count].endTime.toShortString()),
+                                      child: Text(widget.datedLessons[widget.innerCount].endTime.toShortString()),
                                     )
                                   ],
                                 )
@@ -151,9 +147,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            widget.listKey.currentState?.removeItem(widget.count, (context, animation) => RemovedItemFromInfoList(animation),
-                                duration: const Duration(milliseconds: 500));
-                            widget.datedLessons[widget.count].date.removeAt(widget.count);
+                            widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height);
                             context.pop();
                           },
                           child: const Text("Удалить"),
@@ -168,13 +162,16 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                   const Text('  •   '),
                   Expanded(
                     child: Text(
-                      '${widget.datedLessons[widget.count].date.map((e) => DateFormat('dd.MM').format(e))}'.replaceAll('(', '').replaceAll(')', ''),
-                      maxLines: null,
+                      '${widget.datedLessons[widget.innerCount].date.map((e) => DateFormat('dd.MM').format(e))}'.replaceAll('(', '').replaceAll(')', ''),
+                      overflow: TextOverflow.ellipsis,
                       // overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Text(' ${widget.datedLessons[widget.count].startTime.toShortString()} - ${widget.datedLessons[widget.count].endTime.toShortString()}'),
-                  TextButton(onPressed: () => widget.onDeleteButtonPressed, child: const Icon(Icons.delete_outline))
+                  Text(
+                      ': ${widget.datedLessons[widget.innerCount].startTime.toShortString()} - ${widget.datedLessons[widget.innerCount].endTime.toShortString()}'),
+                  TextButton(
+                      onPressed: () => widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),
+                      child: const Icon(Icons.delete_outline))
                 ],
               ),
             ),
