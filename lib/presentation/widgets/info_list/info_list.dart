@@ -20,6 +20,7 @@ class InfoList<E> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedList(
+        physics: const NeverScrollableScrollPhysics(),
         key: _listKey,
         shrinkWrap: true,
         initialItemCount: list.length + 1,
@@ -69,14 +70,15 @@ class _DeletedTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
-        sizeFactor: animation,
+        sizeFactor: CurvedAnimation(
+          curve: Curves.easeInOut,
+          reverseCurve: Curves.easeInOut,
+          parent: animation,
+        ),
         child: SizedBox(
           height: height,
-          child: const Center(
-            child: Icon(
-              Icons.delete_forever_outlined,
-              color: Colors.red,
-            ),
+          child: Center(
+            child: Icon(Icons.delete_forever_outlined, color: Theme.of(context).colorScheme.error),
           ),
         ));
   }

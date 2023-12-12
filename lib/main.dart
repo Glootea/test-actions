@@ -15,7 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform, name: "queue");
   } catch (e) {
     print(e.toString());
   }
@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
     final QueueBloc bloc = context.read<QueueBloc>();
     final router = getRouter(bloc);
     return MaterialApp.router(
+        builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child ?? Container()),
         routerConfig: router,
         theme: ThemeData(
           colorScheme: const ColorScheme(

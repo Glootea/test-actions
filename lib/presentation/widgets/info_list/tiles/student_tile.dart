@@ -45,7 +45,7 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
                     onPressed: () {
                       widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height);
                     },
-                    icon: const Icon(Icons.delete_outline))
+                    icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error))
               ]),
               trailing: Switch(
                   value: widget.students[widget.count].isAdmin ?? false,

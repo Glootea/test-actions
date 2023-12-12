@@ -33,7 +33,7 @@ class AddNewTile<E> extends StatelessWidget {
                     DatedLessonSettingEntity => 'время, которое повторяется в определенные дни',
                     _ => 'вариант, который никто не увидит'
                   }}",
-                  style: Theme.of(context).textTheme.bodyMedium),
+                  style: (E == LessonSettingEntity || E == Student) ? Theme.of(context).textTheme.titleMedium : Theme.of(context).textTheme.bodyMedium),
             ),
           ),
         ],

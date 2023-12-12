@@ -22,15 +22,10 @@ class _LessonWidgetState extends State<LessonWidget> {
 
   late bool displayedRegState;
 
-  bool get regIsActive => (timeToStart < timerStartDelay &&
-      const TimeOfDay(hour: 0, minute: 0) < timetillEnd);
-  bool get showTimer =>
-      timeToStart < const TimeOfDay(hour: 0, minute: 30) &&
-      timerStartDelay < timeToStart;
-  TimeOfDay get timeToStart =>
-      widget.lesson.startTime - TimeOfDay.fromDateTime(now);
-  TimeOfDay get timetillEnd =>
-      widget.lesson.endTime - TimeOfDay.fromDateTime(now);
+  bool get regIsActive => (timeToStart < timerStartDelay && const TimeOfDay(hour: 0, minute: 0) < timetillEnd);
+  bool get showTimer => timeToStart < const TimeOfDay(hour: 0, minute: 30) && timerStartDelay < timeToStart;
+  TimeOfDay get timeToStart => widget.lesson.startTime - TimeOfDay.fromDateTime(now);
+  TimeOfDay get timetillEnd => widget.lesson.endTime - TimeOfDay.fromDateTime(now);
 
   late Timer timer;
 
@@ -63,11 +58,7 @@ class _LessonWidgetState extends State<LessonWidget> {
             curve: Curves.easeInOut,
             duration: const Duration(milliseconds: 1200),
             decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                color: Theme.of(context)
-                    .colorScheme
-                    .primaryContainer
-                    .withOpacity(0.9)),
+                borderRadius: const BorderRadius.all(Radius.circular(20)), color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.9)),
             child: Stack(children: [
               Column(
                 children: [
@@ -111,9 +102,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                               child: (widget.lesson.userRec == null)
                                   ? (!showTimer)
                                       ? Text(
-                                          displayedRegState
-                                              ? "Запись открыта"
-                                              : "Запись закрыта",
+                                          displayedRegState ? "Запись открыта" : "Запись закрыта",
                                           textAlign: TextAlign.left,
                                         )
                                       : TimerStartReg(widget.lesson.startTime)
@@ -122,8 +111,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                                     )),
                         ),
                         const Spacer(),
-                        if (displayedRegState || widget.lesson.userRec != null)
-                          SizedBox(height: 40, child: RecButton(widget.lesson)),
+                        if (displayedRegState || widget.lesson.userRec != null) SizedBox(height: 40, child: RecButton(widget.lesson)),
                         const MySmallPadding(),
                       ],
                     ),
@@ -133,29 +121,20 @@ class _LessonWidgetState extends State<LessonWidget> {
                     Row(
                       children: [
                         const MySmallPadding(),
-                        Text(
-                            widget.lesson.userQueuePosition == 0
-                                ? "Очередь\nнедоступна"
-                                : "Вы ${widget.lesson.userQueuePosition} в очереди",
-                            textAlign: TextAlign.start,
-                            style: Theme.of(context).textTheme.headlineSmall),
+                        Text(widget.lesson.userQueuePosition == 0 ? "Очередь\nнедоступна" : "Вы ${widget.lesson.userQueuePosition} в очереди",
+                            textAlign: TextAlign.start, style: Theme.of(context).textTheme.headlineSmall),
                         const Spacer(),
                         Icon(
                           Icons.save_outlined,
                           size: 20,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSecondaryContainer,
+                          color: Theme.of(context).colorScheme.onSecondaryContainer,
                         ),
                         const MySmallPadding(),
-                        (widget.lesson.userRec != null &&
-                                (widget.lesson.userRec!.isUploaded ?? true))
+                        (widget.lesson.userRec != null && (widget.lesson.userRec!.isUploaded ?? true))
                             ? Icon(
                                 Icons.wifi_outlined,
                                 size: 20,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSecondaryContainer,
+                                color: Theme.of(context).colorScheme.onSecondaryContainer,
                               )
                             : Icon(
                                 Icons.wifi_off_outlined,
@@ -163,8 +142,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                                 color: Theme.of(context).colorScheme.error,
                               ),
                         const MySmallPadding(),
-                        SizedBox(
-                            height: 40, child: QrButton(widget.lesson.name)),
+                        SizedBox(height: 40, child: QrButton(widget.lesson.name)),
                         const MySmallPadding(),
                       ],
                     ),
@@ -190,8 +168,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                                         const MySmallPadding(),
                                         Text("${index + 1}"),
                                         const Spacer(),
-                                        Text(
-                                            widget.lesson.recs[index].userName),
+                                        Text(widget.lesson.recs[index].userName),
                                         const MySmallPadding(),
                                       ],
                                     ))
@@ -199,9 +176,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                         ),
                       )),
                       sizeCurve: Curves.easeInOut,
-                      crossFadeState: expanded
-                          ? CrossFadeState.showSecond
-                          : CrossFadeState.showFirst,
+                      crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                       duration: const Duration(milliseconds: 1200)),
                   const MySmallPadding(),
                 ],

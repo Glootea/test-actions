@@ -33,41 +33,23 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                 builder: (context) => AlertDialog(
                       title: const Text("Создание времени занятий в отдельные дни"),
                       content: StatefulBuilder(
-                        builder: (context, newSetState) => Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                        builder: (context, newSetState) => Column(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.start, children: [
                           SizedBox(
-                              width: double.maxFinite,
-                              height: 400,
+                            width: MediaQuery.of(context).size.width * .7,
+                            height: 200,
+                            child: Scrollbar(
                               child: GridView.builder(
+                                  primary: true,
+                                  shrinkWrap: true,
                                   itemCount: widget.datedLessons[widget.innerCount].date.length + 1,
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: MediaQuery.of(context).size.width ~/ 120),
-                                  itemBuilder: (context, count) => (count == widget.datedLessons[widget.innerCount].date.length)
-                                      ? SizedBox(
-                                          height: 48,
-                                          width: 64,
-                                          child: Center(
-                                            child: OutlinedButton(
-                                                onPressed: () async {
-                                                  final result = await showDatePicker(
-                                                      context: context,
-                                                      firstDate: DateTime.now(),
-                                                      initialDate: lastSelectedDate,
-                                                      lastDate: DateTime.now().add(const Duration(days: 365)));
-                                                  lastSelectedDate = result;
-                                                  if (result != null) {
-                                                    setState(() {
-                                                      widget.datedLessons[widget.innerCount].date.add(result);
-                                                    });
-                                                    newSetState(() {});
-                                                  }
-                                                },
-                                                child: const Text('+')),
-                                          ),
-                                        )
-                                      : SizedBox(
-                                          height: 48,
-                                          width: 64,
-                                          child: Center(
-                                            child: OutlinedButton(
+                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: MediaQuery.of(context).size.width * .7 ~/ 120),
+                                  itemBuilder: (context, count) {
+                                    if (count == widget.datedLessons[widget.innerCount].date.length) {
+                                      return SizedBox(
+                                        height: 48,
+                                        width: 64,
+                                        child: Center(
+                                          child: OutlinedButton(
                                               onPressed: () async {
                                                 final result = await showDatePicker(
                                                     context: context,
@@ -77,18 +59,68 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                                 lastSelectedDate = result;
                                                 if (result != null) {
                                                   setState(() {
-                                                    widget.datedLessons[widget.innerCount].date[count] = result;
+                                                    widget.datedLessons[widget.innerCount].date.add(result);
                                                   });
                                                   newSetState(() {});
                                                 }
                                               },
-                                              child: Text(
-                                                DateFormat('dd.MM').format(widget.datedLessons[widget.innerCount].date[count]),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.visible,
+                                              child: const Text('+')),
+                                        ),
+                                      );
+                                    } else {
+                                      return SizedBox(
+                                          height: 48,
+                                          width: 64,
+                                          child: Stack(children: [
+                                            Center(
+                                              child: OutlinedButton(
+                                                onPressed: () async {
+                                                  final result = await showDatePicker(
+                                                      context: context,
+                                                      firstDate: DateTime.now(),
+                                                      initialDate: lastSelectedDate,
+                                                      lastDate: DateTime.now().add(const Duration(days: 365)));
+                                                  lastSelectedDate = result;
+                                                  if (result != null) {
+                                                    setState(() {
+                                                      widget.datedLessons[widget.innerCount].date[count] = result;
+                                                    });
+                                                    newSetState(() {});
+                                                  }
+                                                },
+                                                child: Text(
+                                                  DateFormat('dd.MM').format(widget.datedLessons[widget.innerCount].date[count]),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.visible,
+                                                ),
                                               ),
                                             ),
-                                          )))),
+                                            Align(
+                                              alignment: Alignment.topRight,
+                                              child: SizedBox(
+                                                width: 32,
+                                                height: 32,
+                                                child: TextButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        widget.datedLessons[widget.innerCount].date.removeAt(count);
+                                                      });
+                                                      newSetState(() {});
+                                                    },
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons.close_outlined,
+                                                        color: Theme.of(context).colorScheme.error,
+                                                      ),
+                                                    )),
+                                              ),
+                                            )
+                                          ]));
+                                    }
+                                  }),
+                            ),
+                          ),
+                          const Gap(16),
                           const Gap(16),
                           SizedBox(
                             height: 96,
@@ -144,16 +176,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                           )
                         ]),
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height);
-                            context.pop();
-                          },
-                          child: const Text("Удалить"),
-                        ),
-                        TextButton(onPressed: () => context.pop(), child: const Text('OK'))
-                      ],
+                      actions: [TextButton(onPressed: () => context.pop(), child: const Text('OK'))],
                     )),
             child: ColoredBox(
               color: Colors.transparent,
@@ -171,7 +194,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                       ': ${widget.datedLessons[widget.innerCount].startTime.toShortString()} - ${widget.datedLessons[widget.innerCount].endTime.toShortString()}'),
                   TextButton(
                       onPressed: () => widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),
-                      child: const Icon(Icons.delete_outline))
+                      child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error))
                 ],
               ),
             ),

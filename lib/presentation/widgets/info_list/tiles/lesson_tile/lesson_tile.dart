@@ -45,14 +45,19 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                             initialValue: widget.lessons[widget.count].name,
                             onChanged: (value) => widget.lessons[widget.count] = widget.lessons[widget.count].copyWith(name: value),
                             decoration: const InputDecoration(hintText: "Название занятия"),
+                            focusNode:
+                                (widget.count == widget.lessons.length - 1 && widget.lessons[widget.count].name.isEmpty) ? (FocusNode()..requestFocus()) : null,
                           ),
                         ),
                         const Gap(16),
                         OutlinedButton(
-                          child: const Icon(Icons.delete_forever_outlined),
+                          style: ButtonStyle(
+                            side: MaterialStateProperty.all(BorderSide(color: Theme.of(context).colorScheme.error)),
+                          ),
                           onPressed: () {
-                            widget.onDeleteButtonPressed;
+                            widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height);
                           },
+                          child: Icon(Icons.delete_forever_outlined, color: Theme.of(context).colorScheme.error),
                         ),
                       ],
                     ),
