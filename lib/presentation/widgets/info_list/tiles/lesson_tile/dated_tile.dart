@@ -24,7 +24,11 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
   Widget build(BuildContext context) {
     return SizeTransition(
       key: ValueKey(widget.datedLessons[widget.innerCount]),
-      sizeFactor: widget.animation,
+      sizeFactor: CurvedAnimation(
+        curve: Curves.easeInOut,
+        reverseCurve: Curves.easeInOut,
+        parent: widget.animation,
+      ),
       child: Column(
         children: [
           GestureDetector(
@@ -47,7 +51,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                     if (count == widget.datedLessons[widget.innerCount].date.length) {
                                       return SizedBox(
                                         height: 48,
-                                        width: 64,
+                                        width: 96,
                                         child: Center(
                                           child: OutlinedButton(
                                               onPressed: () async {
@@ -68,54 +72,62 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                         ),
                                       );
                                     } else {
-                                      return SizedBox(
-                                          height: 48,
-                                          width: 64,
-                                          child: Stack(children: [
-                                            Center(
-                                              child: OutlinedButton(
-                                                onPressed: () async {
-                                                  final result = await showDatePicker(
-                                                      context: context,
-                                                      firstDate: DateTime.now(),
-                                                      initialDate: lastSelectedDate,
-                                                      lastDate: DateTime.now().add(const Duration(days: 365)));
-                                                  lastSelectedDate = result;
-                                                  if (result != null) {
-                                                    setState(() {
-                                                      widget.datedLessons[widget.innerCount].date[count] = result;
-                                                    });
-                                                    newSetState(() {});
-                                                  }
-                                                },
-                                                child: Text(
-                                                  DateFormat('dd.MM').format(widget.datedLessons[widget.innerCount].date[count]),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.visible,
-                                                ),
-                                              ),
-                                            ),
-                                            Align(
-                                              alignment: Alignment.topRight,
-                                              child: SizedBox(
-                                                width: 32,
-                                                height: 32,
-                                                child: TextButton(
-                                                    onPressed: () {
+                                      return Center(
+                                        child: SizedBox(
+                                          height: 72,
+                                          width: 96,
+                                          child: Center(
+                                            child: Stack(children: [
+                                              Center(
+                                                child: OutlinedButton(
+                                                  onPressed: () async {
+                                                    final result = await showDatePicker(
+                                                        context: context,
+                                                        firstDate: DateTime.now(),
+                                                        initialDate: lastSelectedDate,
+                                                        lastDate: DateTime.now().add(const Duration(days: 365)));
+                                                    lastSelectedDate = result;
+                                                    if (result != null) {
                                                       setState(() {
-                                                        widget.datedLessons[widget.innerCount].date.removeAt(count);
+                                                        widget.datedLessons[widget.innerCount].date[count] = result;
                                                       });
                                                       newSetState(() {});
-                                                    },
-                                                    child: Center(
-                                                      child: Icon(
-                                                        Icons.close_outlined,
-                                                        color: Theme.of(context).colorScheme.error,
-                                                      ),
-                                                    )),
+                                                    }
+                                                  },
+                                                  child: Text(
+                                                    DateFormat('dd.MM').format(widget.datedLessons[widget.innerCount].date[count]),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.visible,
+                                                  ),
+                                                ),
                                               ),
-                                            )
-                                          ]));
+                                              Positioned(
+                                                height: 24,
+                                                width: 148,
+                                                child: Center(
+                                                  child: SizedBox(
+                                                    width: 32,
+                                                    height: 32,
+                                                    child: TextButton(
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            widget.datedLessons[widget.innerCount].date.removeAt(count);
+                                                          });
+                                                          newSetState(() {});
+                                                        },
+                                                        child: Center(
+                                                          child: Icon(
+                                                            Icons.close_outlined,
+                                                            color: Theme.of(context).colorScheme.error,
+                                                          ),
+                                                        )),
+                                                  ),
+                                                ),
+                                              )
+                                            ]),
+                                          ),
+                                        ),
+                                      );
                                     }
                                   }),
                             ),

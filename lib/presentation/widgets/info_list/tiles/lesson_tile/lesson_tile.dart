@@ -25,7 +25,11 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
   Widget build(BuildContext context) {
     return SizeTransition(
         key: ValueKey(widget.lessons[widget.count]),
-        sizeFactor: widget.animation,
+        sizeFactor: CurvedAnimation(
+          curve: Curves.easeInOut,
+          reverseCurve: Curves.easeInOut,
+          parent: widget.animation,
+        ),
         child:
             // Student field
             //TODO: create component with outer functions
@@ -42,9 +46,11 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            initialValue: widget.lessons[widget.count].name,
+                            initialValue: widget.lessons[widget.count].name.isEmpty ? null : widget.lessons[widget.count].name,
                             onChanged: (value) => widget.lessons[widget.count] = widget.lessons[widget.count].copyWith(name: value),
                             decoration: const InputDecoration(hintText: "Название занятия"),
+                            validator: (value) => value?.isEmpty ?? true ? "Необходимо заполнить поле" : null,
+                            autovalidateMode: AutovalidateMode.always,
                             focusNode:
                                 (widget.count == widget.lessons.length - 1 && widget.lessons[widget.count].name.isEmpty) ? (FocusNode()..requestFocus()) : null,
                           ),

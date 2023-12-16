@@ -31,7 +31,11 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
   Widget build(BuildContext context) {
     return SizeTransition(
         key: ValueKey(widget.weeklyLessons[widget.innerCount]),
-        sizeFactor: widget.animation,
+        sizeFactor: CurvedAnimation(
+          curve: Curves.easeInOut,
+          reverseCurve: Curves.easeInOut,
+          parent: widget.animation,
+        ),
         child: Column(children: [
           // const Divider(thickness: 4),
           GestureDetector(
@@ -73,7 +77,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                     children: [
                                       Text(
                                         "Начало",
-                                        style: Theme.of(context).textTheme.titleLarge,
+                                        style: Theme.of(context).textTheme.headlineMedium,
                                       ),
                                       const Gap(32),
                                       SizedBox(
@@ -102,7 +106,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                     children: [
                                       Text(
                                         "Конец",
-                                        style: Theme.of(context).textTheme.titleLarge,
+                                        style: Theme.of(context).textTheme.headlineMedium,
                                       ),
                                       const Gap(32),
                                       SizedBox(

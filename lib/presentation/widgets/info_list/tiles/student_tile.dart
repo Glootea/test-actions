@@ -19,7 +19,11 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
   Widget build(BuildContext context) {
     return SizeTransition(
         key: ValueKey(widget.students[widget.count]),
-        sizeFactor: widget.animation,
+        sizeFactor: CurvedAnimation(
+          curve: Curves.easeInOut,
+          reverseCurve: Curves.easeInOut,
+          parent: widget.animation,
+        ),
         child: Column(
           children: [
             (widget.count != 0) ? const Divider() : Container(),

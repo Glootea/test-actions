@@ -11,7 +11,11 @@ class AddNewTile<E> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
-      sizeFactor: animation.drive(CurveTween(curve: Curves.easeInOut)),
+      sizeFactor: CurvedAnimation(
+        curve: Curves.easeInOut,
+        reverseCurve: Curves.easeInOut,
+        parent: animation,
+      ),
       child: Column(
         children: [
           // (list.isNotEmpty) ? const Divider() : Container(),

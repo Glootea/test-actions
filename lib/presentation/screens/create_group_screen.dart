@@ -63,19 +63,25 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               children: [
                 Text("Заполните поля", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
-                TextField(
+                TextFormField(
                   onChanged: (value) => firstName = value,
-                  decoration: const InputDecoration.collapsed(hintText: 'Имя'),
+                  decoration: const InputDecoration(hintText: 'Имя'),
+                  validator: (value) => value?.isEmpty ?? true ? "Необходимо заполнить поле" : null,
+                  autovalidateMode: AutovalidateMode.always,
                 ),
                 const Gap(16),
-                TextField(
+                TextFormField(
                   onChanged: (value) => lastName = value,
-                  decoration: const InputDecoration.collapsed(hintText: 'Фамилия'),
+                  decoration: const InputDecoration(hintText: 'Фамилия'),
+                  validator: (value) => value?.isEmpty ?? true ? "Необходимо заполнить поле" : null,
+                  autovalidateMode: AutovalidateMode.always,
                 ),
                 const Gap(16),
-                TextField(
+                TextFormField(
                   onChanged: (value) => groupName = value,
-                  decoration: const InputDecoration.collapsed(hintText: 'Название группы'),
+                  decoration: const InputDecoration(hintText: 'Название группы'),
+                  validator: (value) => value?.isEmpty ?? true ? "Необходимо заполнить поле" : null,
+                  autovalidateMode: AutovalidateMode.always,
                 ),
                 const Gap(16),
                 Row(
@@ -107,8 +113,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 const Gap(16),
                 OutlinedButton(
                     onPressed: () {
-                      if ((firstName?.isEmpty ?? true) || (lastName?.isEmpty ?? true) || (groupName?.isEmpty ?? true)) {
-                        errorMessage = "Необходимо заполнить все поля";
+                      // TODO: add validation and mapping lists
+                      if ((firstName?.isEmpty ?? true) || (lastName?.isEmpty ?? true) || (groupName?.isEmpty ?? true) || students.isEmpty || lessons.isEmpty) {
+                        errorMessage = "Необходимо заполнить все поля, добавить хотя бы одного студента и занятие";
                         setState(() {});
                       } else {
                         context.read<QueueBloc>().add(RegisterGroupEvent(firstName, lastName, groupName, [], []));
