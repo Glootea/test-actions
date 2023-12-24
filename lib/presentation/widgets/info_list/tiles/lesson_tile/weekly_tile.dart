@@ -59,11 +59,11 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                           textAlign: TextAlign.center,
                                         )))
                                     .toList(),
-                                selected: widget.weeklyLessons[widget.innerCount].weekday.toSet(),
+                                selected: widget.weeklyLessons[widget.innerCount].weekdays.toSet(),
                                 onSelectionChanged: (value) {
                                   setState(() {
                                     // widget.onWeekDayChanged(value);
-                                    widget.weeklyLessons[widget.innerCount] = widget.weeklyLessons[widget.innerCount].copyWith(weekday: value.toList());
+                                    widget.weeklyLessons[widget.innerCount] = widget.weeklyLessons[widget.innerCount].copyWith(weekdays: value.toList());
                                   });
                                   newSetState(() {});
                                 },
@@ -150,7 +150,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                     const Text('  •   '),
                     Expanded(
                       child: Text(
-                        widget.weeklyLessons[widget.innerCount].weekday.map((e) => weekdays[e]).toString().replaceAll('(', '').replaceAll(')', ''),
+                        widget.weeklyLessons[widget.innerCount].weekdays.map((e) => weekdays[e]).toString().replaceAll('(', '').replaceAll(')', ''),
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                       ),

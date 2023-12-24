@@ -6,7 +6,7 @@ sealed class QueueState {}
 class UserUnAuthenticatedState extends QueueState {
   String? errorMessage;
   bool createGroupState;
-  UserUnAuthenticatedState(this.errorMessage, {this.createGroupState = false});
+  UserUnAuthenticatedState({this.errorMessage, this.createGroupState = false});
 }
 
 class LoadingState extends QueueState {}
@@ -18,8 +18,7 @@ class MainState extends QueueState {
   @override
   bool operator ==(Object other) {
     if (other is! MainState) return false;
-    final r = isAdmin == other.isAdmin &&
-        listEquals(todayLessons, other.todayLessons);
+    final r = isAdmin == other.isAdmin && listEquals(todayLessons, other.todayLessons);
     print(r);
     return r;
   }

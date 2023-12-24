@@ -37,9 +37,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 actions: [
                   OutlinedButton(
                       onPressed: () => context.pop(),
-                      child: Text(
+                      child: const Text(
                         "OK",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black),
                       ))
                 ],
               )));
@@ -107,22 +106,20 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 Text("Добавьте занятия", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
                 InfoList<LessonSettingEntity>(lessons),
-                const Gap(16),
-                Text("Войдите через Google аккаунт и предоставьте необходимые разрешения, чтобы завершить настройку",
-                    style: Theme.of(context).textTheme.headlineSmall),
+                // const Gap(16),
+                // Text("", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
                 OutlinedButton(
                     onPressed: () {
-                      // TODO: add validation and mapping lists
                       if ((firstName?.isEmpty ?? true) || (lastName?.isEmpty ?? true) || (groupName?.isEmpty ?? true) || students.isEmpty || lessons.isEmpty) {
                         errorMessage = "Необходимо заполнить все поля, добавить хотя бы одного студента и занятие";
                         setState(() {});
                       } else {
-                        context.read<QueueBloc>().add(RegisterGroupEvent(firstName, lastName, groupName, [], []));
+                        context.read<QueueBloc>().add(RegisterGroupEvent(firstName!, lastName!, groupName!, lessons, students));
                       }
                     },
                     child: const Text(
-                      "Войти через Google",
+                      "Сохранить и продолжить",
                       // style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black),
                     ))
               ],

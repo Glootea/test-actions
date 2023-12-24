@@ -1,12 +1,14 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:queue/data/database/local_database.dart';
 import 'package:queue/data/online_database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/entities/lesson.dart';
 import 'package:queue/entities/rec.dart';
+import 'package:queue/firebase_options.dart';
 import 'package:queue/logic/encryprion.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
@@ -17,10 +19,12 @@ import 'package:firebase_storage/firebase_storage.dart';
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase _userDataBase;
   final LocalDatabase _localDataBase;
-  final OnlineDataBase _onlineDB = OnlineDataBase();
+  OnlineDataBase? _onlineDBBacked;
+  Future<OnlineDataBase> get _onlineDB async => _onlineDBBacked ?? await _configureOnlineDB();
   String? backgroundImageEncoded;
   String get userName => _userDataBase.getUserName;
   bool? _isAdminBacked;
+  GoogleSignIn? _googleSignIn;
   Future<bool> get _isAdmin async {
     _isAdminBacked ??= await _localDataBase.isAdmin(userName);
     return _isAdminBacked!;
@@ -46,7 +50,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       transformer: sequential(),
     );
     on<NoUserEvent>(
-      (event, emit) => emit(UserUnAuthenticatedState(event.errorMessage)),
+      (event, emit) => emit(UserUnAuthenticatedState(errorMessage: event.errorMessage)),
       transformer: sequential(),
     );
     on<UserAuthenticateEvent>(
@@ -56,7 +60,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     on<UserAuthenticatedEvent>(
       (event, emit) async {
         try {
-          List<RecEntity> list = await _onlineDB.getData();
+          List<RecEntity> list = await (await _onlineDB).getData();
           _localDataBase.import(list);
         } catch (e) {
           log("Failed to import db due to load failure");
@@ -72,7 +76,6 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       transformer: sequential(),
     );
 
-    on<CreateGroupEvent>((event, emit) async => await _createGroup());
 //---mainScreen ---
 
     on<CreateRegEvent>(
@@ -96,18 +99,22 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     // login screen
 
     on<CreateGroupIntentionEvent>((event, emit) async {
-      GoogleSignIn googleSignIn = GoogleSignIn(
+      _googleSignIn = GoogleSignIn(
         clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
         scopes: [
           'https://www.googleapis.com/auth/drive.file',
         ],
       );
-      await googleSignIn.signOut();
-      final user = await googleSignIn.signIn();
+      await _googleSignIn!.signOut();
+      final user = await _googleSignIn!.signIn();
       if (user != null) {
-        emit(UserUnAuthenticatedState(null, createGroupState: true));
+        emit(UserUnAuthenticatedState(createGroupState: true));
+      } else {
+        emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
       }
     });
+
+    on<RegisterGroupEvent>((event, emit) async => await _registerGroup(event, emit));
   }
 
 // --- Functions
@@ -144,7 +151,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     DateTime time = DateTime.now();
     await _localDataBase.createRec(lessonName, _userDataBase.getUserName, time);
     emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    bool isOnline = await _onlineDB.createRec(lessonName, _userDataBase.getUserName, time);
+    bool isOnline = await (await _onlineDB).createRec(lessonName, _userDataBase.getUserName, time);
     if (isOnline == true) {
       _localDataBase.updateUploadStatus(lessonName, _userDataBase.getUserName, true);
       emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
@@ -157,7 +164,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   Future<void> _deleteReg(String lessonName, Emitter emit) async {
     await _localDataBase.deleteRec(lessonName, _userDataBase.getUserName);
     emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    bool isOnline = await _onlineDB.deleteRec(lessonName, _userDataBase.getUserName);
+    bool isOnline = await (await _onlineDB).deleteRec(lessonName, _userDataBase.getUserName);
     if (isOnline == true) {
       _localDataBase.deleteRec(lessonName, _userDataBase.getUserName);
       emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
@@ -173,10 +180,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     try {
       String link = Encryption.decrypt(event.link);
       emit(UploadFromLinkState(isLoading: true));
-      if (await _onlineDB.uploadFromQuery(link)) {
+      if (await (await _onlineDB).uploadFromQuery(link)) {
         emit(UploadFromLinkState(isLoading: false, message: "Запись успешно добавлена"));
       } else {
-        final result = await _onlineDB.recExist(link);
+        final result = await (await _onlineDB).recExist(link);
         if (result != null) {
           emit(UploadFromLinkState(
               isLoading: false,
@@ -206,31 +213,45 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     }
   }
 
-  Future<void> _createGroup() async {
-    GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
-      scopes: [
-        'https://www.googleapis.com/auth/drive.file',
-      ],
-    );
-
-    await googleSignIn.signIn();
-    final httpClient = (await googleSignIn.authenticatedClient())!;
+  Future<void> _registerGroup(RegisterGroupEvent event, Emitter<QueueState> emit) async {
+    if (_googleSignIn?.currentUser == null) {
+      await _googleSignIn?.signIn();
+    }
+    if (_googleSignIn == null) {
+      throw Exception("Google sign in not initialized");
+    }
+    final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
     final folder = await driveApi.files.create(File(mimeType: 'application/vnd.google-apps.folder', name: "Очередь работ"));
     final file = File(
       parents: [folder.id!],
-      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      mimeType: "application/vnd.google-apps.spreadsheet",
       name: "Очередь работ",
     );
-    final storage = FirebaseStorage.instance.ref().child("defaultTable").child("queue.xlsx");
+    if (Firebase.apps.isEmpty) {
+      Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    }
+    final storage = FirebaseStorage.instance.ref().child("defaultTable").child("TemplateQueue.xlsx");
     final data = await storage.getData();
     final stream = List<int>.from(data!.toList()).map((e) => [e]);
     Media media = Media(Stream.fromIterable(stream), stream.length);
     final onlineFile = await driveApi.files.create(file, uploadMedia: media);
-    final permisson = Permission(role: "writer", type: "anyone");
+    final permisson = Permission(role: "writer", type: "user", emailAddress: "queue-410@queue-401413.iam.gserviceaccount.com");
     await driveApi.permissions.create(permisson, onlineFile.id!);
     log(onlineFile.id!);
+    _localDataBase.setTableID(onlineFile.id!);
+    _localDataBase.insertLessons(event.lessons);
+    _localDataBase.insertStudents(event.students);
+    await (await _onlineDB).fillStudents(event.students);
+    await (await _onlineDB).fillLessons(event.lessons);
+  }
+
+  Future<OnlineDataBase> _configureOnlineDB() async {
+    final id = await _localDataBase.getTableID();
+    if (id == null) throw Exception("Table id not found. Configure database first");
+    _onlineDBBacked = OnlineDataBase(id);
+    print(id);
+    return _onlineDBBacked!;
   }
 
   // Future<void> getData() async {}

@@ -15,12 +15,12 @@ final class LessonEntity {
 /// Used in settings menu
 final class LessonSettingEntity {
   final String name;
-  final LessonEntity? weeklyLesson;
-  final List<WeeklyLessonSettingEntity>? datedLessons;
+  final List<WeeklyLessonSettingEntity> weeklyLesson;
+  final List<DatedLessonSettingEntity> datedLessons;
   final bool useWeekly;
-  LessonSettingEntity(this.name, {this.weeklyLesson, this.datedLessons, this.useWeekly = true});
+  LessonSettingEntity(this.name, {this.weeklyLesson = const [], this.datedLessons = const [], this.useWeekly = true});
 
-  LessonSettingEntity copyWith({String? name, LessonEntity? weeklyLesson, List<WeeklyLessonSettingEntity>? datedLessons, bool? useWeekly}) {
+  LessonSettingEntity copyWith({String? name, List<WeeklyLessonSettingEntity>? weeklyLesson, List<DatedLessonSettingEntity>? datedLessons, bool? useWeekly}) {
     return LessonSettingEntity(name ?? this.name,
         weeklyLesson: weeklyLesson ?? this.weeklyLesson, datedLessons: datedLessons ?? this.datedLessons, useWeekly: useWeekly ?? this.useWeekly);
   }
@@ -42,14 +42,14 @@ abstract class TimeChooser extends StatefulWidget {
 }
 
 final class WeeklyLessonSettingEntity extends LessonTime {
-  final List<int> weekday;
-  WeeklyLessonSettingEntity(super.startTime, super.endTime, this.weekday);
+  final List<int> weekdays;
+  WeeklyLessonSettingEntity(super.startTime, super.endTime, this.weekdays);
   @override
-  WeeklyLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<int>? weekday}) {
+  WeeklyLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<int>? weekdays}) {
     return WeeklyLessonSettingEntity(
       startTime ?? super.startTime,
       endTime ?? super.endTime,
-      weekday ?? this.weekday,
+      weekdays ?? this.weekdays,
     );
   }
 }

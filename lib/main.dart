@@ -15,7 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform, name: "queue");
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
     print(e.toString());
   }

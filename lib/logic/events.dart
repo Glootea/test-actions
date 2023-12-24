@@ -1,4 +1,5 @@
 import 'package:queue/data/database/local_database.dart';
+import 'package:queue/entities/lesson.dart';
 import 'package:queue/logic/states.dart';
 
 sealed class QueueEvent {}
@@ -20,8 +21,6 @@ class NoUserEvent extends QueueEvent {
   String? errorMessage;
   NoUserEvent([this.errorMessage]);
 }
-
-class CreateGroupEvent extends QueueEvent {}
 
 // --- main screen ---
 
@@ -64,12 +63,11 @@ class RegisterUserEvent extends QueueEvent {
 class CreateGroupIntentionEvent extends QueueEvent {}
 
 class RegisterGroupEvent extends QueueEvent {
-  final String? firstName;
-  final String? lastName;
-  final String? groupName;
-  final List<Lesson>? lessons;
-  final List<Student>? students;
+  final String firstName;
+  final String lastName;
+  final String groupName;
+  final List<LessonSettingEntity> lessons;
+  final List<Student> students;
 
-  RegisterGroupEvent(this.firstName, this.lastName, this.groupName,
-      this.lessons, this.students);
+  RegisterGroupEvent(this.firstName, this.lastName, this.groupName, this.lessons, this.students);
 }
