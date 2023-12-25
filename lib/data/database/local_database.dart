@@ -152,8 +152,8 @@ class LocalDatabase extends _$LocalDatabase {
     return (select(lessons)).get();
   }
 
-  Future<void> insertStudents(List<Student> list) async {
-    await students.insertAll(list.map((e) => StudentsCompanion(name: Value(e.name), isAdmin: Value(e.isAdmin))).toList());
+  Future<void> insertStudents(List<StudentsCompanion> list) async {
+    await students.insertAll(list.map((e) => StudentsCompanion(name: e.name, isAdmin: e.isAdmin)).toList());
   }
 
   Future<void> setTableID(String url) async {

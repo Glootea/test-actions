@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:queue/data/database/local_database.dart';
@@ -5,7 +6,7 @@ import 'package:drift/drift.dart' as drift;
 
 class StudentInfoTile extends StatefulWidget {
   final Animation<double> animation;
-  final List<Student> students;
+  final List<StudentsCompanion> students;
   final int count;
   final Function(double) onDeleteButtonPressed;
   const StudentInfoTile(this.animation, this.students, this.count, this.onDeleteButtonPressed, {super.key});
@@ -34,11 +35,12 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
               title: Row(children: [
                 Expanded(
                     child: TextFormField(
-                  focusNode: (widget.count == widget.students.length - 1 && widget.students[widget.count].name.isEmpty) ? (FocusNode()..requestFocus()) : null,
+                  focusNode:
+                      (widget.count == widget.students.length - 1 && widget.students[widget.count].name.value.isEmpty) ? (FocusNode()..requestFocus()) : null,
                   key: UniqueKey(),
-                  initialValue: widget.students[widget.count].name,
+                  initialValue: widget.students[widget.count].name.value,
                   onChanged: (value) {
-                    widget.students[widget.count] = widget.students[widget.count].copyWith(name: value);
+                    widget.students[widget.count] = widget.students[widget.count].copyWith(name: Value(value));
                   },
                   decoration: const InputDecoration(hintText: "Фамилия и имя студента"),
                   autovalidateMode: AutovalidateMode.always,
@@ -52,7 +54,7 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
                     icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error))
               ]),
               trailing: Switch(
-                  value: widget.students[widget.count].isAdmin ?? false,
+                  value: widget.students[widget.count].isAdmin.value ?? false,
                   onChanged: (value) {
                     setState(() {
                       widget.students[widget.count] = widget.students[widget.count].copyWith(isAdmin: drift.Value(value));

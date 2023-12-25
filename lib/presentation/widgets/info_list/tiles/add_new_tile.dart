@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:queue/data/database/local_database.dart';
 import 'package:queue/entities/lesson.dart';
@@ -31,7 +32,7 @@ class AddNewTile<E> extends StatelessWidget {
               ),
               title: Text(
                   "Добавить ${switch (E) {
-                    Student => 'студента',
+                    StudentsCompanion => 'студента',
                     LessonSettingEntity => 'занятие',
                     WeeklyLessonSettingEntity => 'время, которое повторяется каждую неделю',
                     DatedLessonSettingEntity => 'время, которое повторяется в определенные дни',
@@ -51,8 +52,8 @@ class AddNewTile<E> extends StatelessWidget {
       duration: const Duration(milliseconds: 500),
     );
     switch (E) {
-      case Student:
-        list.add(Student(id: list.length, name: '') as E);
+      case StudentsCompanion:
+        list.add(const StudentsCompanion(name: Value('')) as E);
       case LessonSettingEntity:
         list.add(LessonSettingEntity('') as E);
       case WeeklyLessonSettingEntity:

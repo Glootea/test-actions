@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -20,7 +21,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   String? lastName;
   String? groupName;
   int id = 1;
-  List<Student> students = [];
+  List<StudentsCompanion> students = [];
   List<LessonSettingEntity> lessons = [];
   String? errorMessage;
   @override
@@ -101,7 +102,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   ],
                 ),
                 const Gap(16),
-                InfoList<Student>(students),
+                InfoList<StudentsCompanion>(students),
                 const Gap(16),
                 Text("Добавьте занятия", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
@@ -115,7 +116,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                         errorMessage = "Необходимо заполнить все поля, добавить хотя бы одного студента и занятие";
                         setState(() {});
                       } else {
-                        context.read<QueueBloc>().add(RegisterGroupEvent(firstName!, lastName!, groupName!, lessons, students));
+                        context.read<QueueBloc>().add(RegisterGroupEvent(firstName!, lastName!, groupName!, lessons,
+                            [StudentsCompanion(name: Value('${firstName!} ${lastName!}'), isAdmin: const Value(true))] + students));
                       }
                     },
                     child: const Text(

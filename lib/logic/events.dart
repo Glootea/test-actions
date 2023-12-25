@@ -67,7 +67,7 @@ class RegisterGroupEvent extends QueueEvent {
   final String lastName;
   final String groupName;
   final List<LessonSettingEntity> lessons;
-  final List<Student> students;
+  final List<StudentsCompanion> students;
 
   RegisterGroupEvent(this.firstName, this.lastName, this.groupName, this.lessons, this.students);
 }

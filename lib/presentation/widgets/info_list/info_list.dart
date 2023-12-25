@@ -29,8 +29,8 @@ class InfoList<E> extends StatelessWidget {
             return AddNewTile<E>(animation, _listKey, list);
           } else {
             switch (E) {
-              case Student:
-                return StudentInfoTile(animation, list as List<Student>, count, (double height) => _onDeleteButtonPressed(count, height));
+              case StudentsCompanion:
+                return StudentInfoTile(animation, list as List<StudentsCompanion>, count, (double height) => _onDeleteButtonPressed(count, height));
               case LessonSettingEntity:
                 return LessonInfoTile(animation, list as List<LessonSettingEntity>, count, (double height) => _onDeleteButtonPressed(count, height));
               case WeeklyLessonSettingEntity:

@@ -1,20 +1,17 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:queue/data/database/local_database.dart';
 import 'package:queue/data/online_database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/entities/lesson.dart';
 import 'package:queue/entities/rec.dart';
-import 'package:queue/firebase_options.dart';
 import 'package:queue/logic/encryprion.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:googleapis/drive/v3.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase _userDataBase;
@@ -217,9 +214,9 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     if (_googleSignIn?.currentUser == null) {
       await _googleSignIn?.signIn();
     }
-    if (_googleSignIn == null) {
-      throw Exception("Google sign in not initialized");
-    }
+    // if (_googleSignIn == null) {
+    //   throw Exception("Google sign in not initialized");
+    // }
     final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
     final folder = await driveApi.files.create(File(mimeType: 'application/vnd.google-apps.folder', name: "Очередь работ"));
@@ -228,17 +225,17 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       mimeType: "application/vnd.google-apps.spreadsheet",
       name: "Очередь работ",
     );
-    if (Firebase.apps.isEmpty) {
-      Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    }
-    final storage = FirebaseStorage.instance.ref().child("defaultTable").child("TemplateQueue.xlsx");
-    final data = await storage.getData();
-    final stream = List<int>.from(data!.toList()).map((e) => [e]);
-    Media media = Media(Stream.fromIterable(stream), stream.length);
-    final onlineFile = await driveApi.files.create(file, uploadMedia: media);
+    // if (Firebase.apps.isEmpty) {
+    //   Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    // }
+    // final storage = FirebaseStorage.instance.ref().child("defaultTable").child("TemplateQueue.xlsx");
+    // final data = await storage.getData();
+    // final stream = List<int>.from(data!.toList()).map((e) => [e]);
+    // Media media = Media(Stream.fromIterable(stream), stream.length);
+    final onlineFile = await driveApi.files.create(file);
     final permisson = Permission(role: "writer", type: "user", emailAddress: "queue-410@queue-401413.iam.gserviceaccount.com");
     await driveApi.permissions.create(permisson, onlineFile.id!);
-    log(onlineFile.id!);
+    // TODO: autorize user fully
     _localDataBase.setTableID(onlineFile.id!);
     _localDataBase.insertLessons(event.lessons);
     _localDataBase.insertStudents(event.students);
@@ -249,7 +246,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   Future<OnlineDataBase> _configureOnlineDB() async {
     final id = await _localDataBase.getTableID();
     if (id == null) throw Exception("Table id not found. Configure database first");
-    _onlineDBBacked = OnlineDataBase(id);
+    _onlineDBBacked = await OnlineDataBase.instance(id);
     print(id);
     return _onlineDBBacked!;
   }
