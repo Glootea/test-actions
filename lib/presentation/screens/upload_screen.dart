@@ -1,11 +1,9 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/navigation.dart';
 import 'package:queue/presentation/widgets/padding.dart';
 
 class UploadScreen extends StatefulWidget {
@@ -30,11 +28,11 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<QueueBloc, QueueState>(buildWhen: (previous, current) {
       if (previous.runtimeType != current.runtimeType) {
-        if (current is! UploadFromLinkState) {
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
-          });
-        }
+        // if (current is! UploadFromLinkState) { TODO : navigation moved to seperate file
+        //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        //     Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
+        //   });
+        // }
         return true;
       }
       if (previous is UploadFromLinkState && current is UploadFromLinkState) {

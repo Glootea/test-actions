@@ -1,5 +1,6 @@
-class User {
+@Deprecated("Use table generated class") // TODO: add studentEntity as LessonSettingEntity to avoid interacting with db directly
+class UserEntity {
   final String name;
-
-  User(this.name);
+  final bool isAdmin;
+  UserEntity(this.name, {this.isAdmin = false});
 }

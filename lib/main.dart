@@ -1,92 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:queue/data/database/database.dart';
+import 'package:queue/data/database/local_database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/logic/bloc.dart';
+import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/navigation.dart';
+import 'package:queue/navigation.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final userDataBase = await UserDataBase.configuredUserDataBase();
+  usePathUrlStrategy();
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    print(e.toString());
+  }
   LocalDatabase lessonDatabase = LocalDatabase();
+  final userDataBase = await UserDataBase.getConfiguredUserDataBase(lessonDatabase);
 
   runApp(BlocProvider(
-      create: (context) =>
-          QueueBloc(userDataBase, lessonDatabase, LoadingState()),
-      child: Consumer<QueueBloc>(
-        builder: (context, value, child) {
-          // value.add(FindUserEvent());
-          return MyApp(value);
-        },
-      )));
+      create: (context) => QueueBloc(userDataBase, lessonDatabase, LoadingState())..add(FindUserEvent()),
+      // ..add(UserAuthenticateEvent("Рыбкин Александр Владимирович")),
+      // child: Consumer<QueueBloc>(
+      //   child: MyApp(),
+      //   builder: (_, value, __) {
+      //     // return MyApp();
+      //   },
+      // )));
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp(this.bloc, {super.key});
-  final QueueBloc bloc;
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final router = AppRouter(bloc);
-    return MaterialApp(
-        onGenerateRoute: (settings) {
-          if (settings.name?.isNotEmpty ?? false) {
-            List<String> params = settings.name!.split('/');
-            // if (params.length > 2) {
-            settings = RouteSettings(
-                name: params[0],
-                arguments: params.length > 1
-                    ? params
-                        .sublist(1)
-                        .reduce((value, element) => value + element)
-                    : null);
-            // } else if (params.length == 2) {
-            //   settings = RouteSettings(name: params[1]);
-            // }
-          }
-          return router.onGenerateRoute(settings);
-        },
-
-        // title: 'Queue',
-        // initialRoute: "/",
-        // routes: {
-        //   "/": (context) => const LoginScreen(),
-        //   '/home': (context) => const MainScreen(),
-        //   '/upload': (context) => const LoginScreen()
-        // },
-        // onGenerateRoute: (settings) {
-        //   if (settings.name?.contains("upload") ?? false) {
-        //     String query = settings.name ?? '';
-        //     if (query.isEmpty) return null;
-        //     log(query.substring(query.indexOf('info=') + 5));
-        //     query =
-        //         Encryption.decrypt(query.substring(query.indexOf('info=') + 5));
-        //     log(query);
-        //     final result = OnlineDataBase.uploadFromQuery(query);
-        //     // result.then((value) => showDialog(context: context,
-        //     //   builder: (context) =>  Container(
-        //     //         showCloseIcon: true,
-        //     //         content: Text(value
-        //     //             ? "Спасибо за помощь!"
-        //     //             : "Не удалось загрузить данные"))));
-        //     result.then((value) {
-        //       log("finished");
-        //       MaterialPageRoute(
-        //           builder: ((_) => BlocConsumer<QueueBloc, QueueState>(
-        //               listener: (context, state) => {},
-        //               builder: (localContext, _) {
-        //                 print("in consumer");
-        //                 bloc.add(FindUserEvent());
-        //                 print("in consumer");
-        //                 return child ?? const Placeholder();
-        //               })));
-        //     });
-        //   }
-        //   return null;
-        // },
+    final QueueBloc bloc = context.read<QueueBloc>();
+    final router = getRouter(bloc);
+    return MaterialApp.router(
+        builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child ?? Container()),
+        routerConfig: router,
         theme: ThemeData(
           colorScheme: const ColorScheme(
               brightness: Brightness.dark,
@@ -101,24 +59,23 @@ class MyApp extends StatelessWidget {
               surface: Colors.black38,
               onSurface: Colors.white),
           textTheme: Typography.dense2021.copyWith(
-              headlineLarge: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(
-                      color: Colors.white, backgroundColor: Colors.black87),
-              bodyMedium: Theme.of(context).textTheme.bodyMedium,
-              bodyLarge: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: Colors.white),
-              headlineSmall: Theme.of(context).textTheme.headlineSmall),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: OutlinedButton.styleFrom(
-              textStyle: const TextStyle(color: Colors.black),
-              backgroundColor: Colors.white.withOpacity(0.8),
-              side: const BorderSide(color: Colors.black, width: 1.5),
-            ),
-          ),
+              // bodySmall: Theme.of(context).textTheme.body,
+              headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
+              displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
+              displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
+              titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+              bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+              bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
+              headlineMedium: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+              headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
+
+          // outlinedButtonTheme: OutlinedButtonThemeData(
+          //   style: OutlinedButton.styleFrom(
+          //     textStyle: const TextStyle(color: Colors.black),
+          //     backgroundColor: Colors.white.withOpacity(0.8),
+          //     side: const BorderSide(color: Colors.black, width: 1.5),
+          //   ),
+          // ),
           useMaterial3: true,
         ));
     // home: const LoginScreen(),
