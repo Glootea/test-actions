@@ -131,15 +131,15 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<void> insertLessons(List<LessonSettingEntity> list) async {
     await Future.wait(list.map((lesson) async {
-      int id = await lessons.insertOne(LessonsCompanion(name: Value(lesson.name)));
+      int id = await lessons.insertOne(LessonsCompanion(name: Value(lesson.name), onlineID: Value(''))); // TODO: get onlineID
       if (lesson.useWeekly) {
-        await weeklyLessons.insertAll(lesson.weeklyLesson
+        await weeklyLessons.insertAll(lesson.weeklyLessons!
             .map((lesson) => lesson.weekdays.map((weekday) => WeeklyLessonsCompanion(
                 lessonID: Value(id), weekDay: Value(weekday), startTime: Value(lesson.startTime.toString()), endTime: Value(lesson.endTime.toString()))))
             .toList()
             .expand((element) => element));
       } else {
-        await datedLessons.insertAll(lesson.datedLessons
+        await datedLessons.insertAll(lesson.datedLessons!
             .map((lesson) => lesson.date.map((date) => DatedLessonsCompanion(
                 lessonID: Value(id), date: Value(date), startTime: Value(lesson.startTime.toString()), endTime: Value(lesson.endTime.toString()))))
             .toList()
@@ -156,15 +156,12 @@ class LocalDatabase extends _$LocalDatabase {
     await students.insertAll(list.map((e) => StudentsCompanion(name: e.name, isAdmin: e.isAdmin)).toList());
   }
 
-  Future<void> setTableID(String url) async {
-    // (update(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).write(UserInfoCompanion(key: Value(_tableIDKey), value: Value(url)));
-    (delete(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).go();
+  Future<void> setInfoTableID(String url) async {
+    // (delete(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).go();
     into(userInfo).insert(UserInfoCompanion(key: Value(_tableIDKey), value: Value(url)), mode: InsertMode.insertOrReplace);
   }
 
-  Future<String?> getTableID() async {
-    // TODO: throws no element
-    print(await (select(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).get());
+  Future<String?> getInfoTableID() async {
     return (await (select(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).getSingleOrNull())?.value;
   }
 }

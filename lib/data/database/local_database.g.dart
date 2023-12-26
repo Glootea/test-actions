@@ -235,8 +235,14 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _onlineIDMeta =
+      const VerificationMeta('onlineID');
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  late final GeneratedColumn<String> onlineID = GeneratedColumn<String>(
+      'online_i_d', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, onlineID];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -256,6 +262,12 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('online_i_d')) {
+      context.handle(_onlineIDMeta,
+          onlineID.isAcceptableOrUnknown(data['online_i_d']!, _onlineIDMeta));
+    } else if (isInserting) {
+      context.missing(_onlineIDMeta);
+    }
     return context;
   }
 
@@ -269,6 +281,8 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      onlineID: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}online_i_d'])!,
     );
   }
 
@@ -281,12 +295,14 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
 class Lesson extends DataClass implements Insertable<Lesson> {
   final int id;
   final String name;
-  const Lesson({required this.id, required this.name});
+  final String onlineID;
+  const Lesson({required this.id, required this.name, required this.onlineID});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['online_i_d'] = Variable<String>(onlineID);
     return map;
   }
 
@@ -294,6 +310,7 @@ class Lesson extends DataClass implements Insertable<Lesson> {
     return LessonsCompanion(
       id: Value(id),
       name: Value(name),
+      onlineID: Value(onlineID),
     );
   }
 
@@ -303,6 +320,7 @@ class Lesson extends DataClass implements Insertable<Lesson> {
     return Lesson(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      onlineID: serializer.fromJson<String>(json['onlineID']),
     );
   }
   @override
@@ -311,55 +329,69 @@ class Lesson extends DataClass implements Insertable<Lesson> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'onlineID': serializer.toJson<String>(onlineID),
     };
   }
 
-  Lesson copyWith({int? id, String? name}) => Lesson(
+  Lesson copyWith({int? id, String? name, String? onlineID}) => Lesson(
         id: id ?? this.id,
         name: name ?? this.name,
+        onlineID: onlineID ?? this.onlineID,
       );
   @override
   String toString() {
     return (StringBuffer('Lesson(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('onlineID: $onlineID')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, onlineID);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Lesson && other.id == this.id && other.name == this.name);
+      (other is Lesson &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.onlineID == this.onlineID);
 }
 
 class LessonsCompanion extends UpdateCompanion<Lesson> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> onlineID;
   const LessonsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.onlineID = const Value.absent(),
   });
   LessonsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-  }) : name = Value(name);
+    required String onlineID,
+  })  : name = Value(name),
+        onlineID = Value(onlineID);
   static Insertable<Lesson> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? onlineID,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (onlineID != null) 'online_i_d': onlineID,
     });
   }
 
-  LessonsCompanion copyWith({Value<int>? id, Value<String>? name}) {
+  LessonsCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<String>? onlineID}) {
     return LessonsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      onlineID: onlineID ?? this.onlineID,
     );
   }
 
@@ -372,6 +404,9 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (onlineID.present) {
+      map['online_i_d'] = Variable<String>(onlineID.value);
+    }
     return map;
   }
 
@@ -379,7 +414,8 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
   String toString() {
     return (StringBuffer('LessonsCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('onlineID: $onlineID')
           ..write(')'))
         .toString();
   }

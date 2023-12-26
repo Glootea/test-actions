@@ -15,12 +15,12 @@ class LessonInfoTile extends StatefulWidget {
 }
 
 class _LessonInfoTileState extends State<LessonInfoTile> {
-  final List<WeeklyLessonSettingEntity> weeklyLessons = [
-    WeeklyLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [1])
-  ];
-  final List<DatedLessonSettingEntity> datedLessons = [
-    DatedLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [DateTime.now()])
-  ];
+  // final List<WeeklyLessonSettingEntity> weeklyLessons = [
+  //   WeeklyLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [1])
+  // ];
+  // final List<DatedLessonSettingEntity> datedLessons = [
+  //   DatedLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [DateTime.now()])
+  // ];
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
@@ -79,8 +79,8 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                     ),
                     const Gap(16),
                     widget.lessons[widget.count].useWeekly
-                        ? InfoList<WeeklyLessonSettingEntity>(weeklyLessons, outerCount: widget.count)
-                        : InfoList<DatedLessonSettingEntity>(datedLessons, outerCount: widget.count),
+                        ? InfoList<WeeklyLessonSettingEntity>(widget.lessons[widget.count].weeklyLessons!, outerCount: widget.count)
+                        : InfoList<DatedLessonSettingEntity>(widget.lessons[widget.count].datedLessons!, outerCount: widget.count),
                   ],
                 ),
               ),

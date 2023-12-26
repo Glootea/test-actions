@@ -12,17 +12,20 @@ final class LessonEntity {
   LessonEntity(this.name, this.startTime, this.endTime, this.recs, [this.userRec, this.userQueuePosition]);
 }
 
-/// Used in settings menu
+/// Used in settings menu.
+/// Either [WeeklyLessonSettingEntity] weeklyLessons or [DatedLessonSettingEntity] datedLessons must be provided
 final class LessonSettingEntity {
   final String name;
-  final List<WeeklyLessonSettingEntity> weeklyLesson;
-  final List<DatedLessonSettingEntity> datedLessons;
+  final List<WeeklyLessonSettingEntity>? weeklyLessons;
+  final List<DatedLessonSettingEntity>? datedLessons;
   final bool useWeekly;
-  LessonSettingEntity(this.name, {this.weeklyLesson = const [], this.datedLessons = const [], this.useWeekly = true});
+  LessonSettingEntity(this.name, {this.weeklyLessons, this.datedLessons, this.useWeekly = true}) {
+    assert(weeklyLessons != null || datedLessons != null, "Either weeklyLessons or datedLessons must be provided");
+  }
 
   LessonSettingEntity copyWith({String? name, List<WeeklyLessonSettingEntity>? weeklyLesson, List<DatedLessonSettingEntity>? datedLessons, bool? useWeekly}) {
     return LessonSettingEntity(name ?? this.name,
-        weeklyLesson: weeklyLesson ?? this.weeklyLesson, datedLessons: datedLessons ?? this.datedLessons, useWeekly: useWeekly ?? this.useWeekly);
+        weeklyLessons: weeklyLesson ?? this.weeklyLessons, datedLessons: datedLessons ?? this.datedLessons, useWeekly: useWeekly ?? this.useWeekly);
   }
 }
 

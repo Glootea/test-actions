@@ -220,36 +220,40 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
     final folder = await driveApi.files.create(File(mimeType: 'application/vnd.google-apps.folder', name: "Очередь работ"));
-    final file = File(
-      parents: [folder.id!],
-      mimeType: "application/vnd.google-apps.spreadsheet",
-      name: "Очередь работ",
-    );
-    // if (Firebase.apps.isEmpty) {
-    //   Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    // }
-    // final storage = FirebaseStorage.instance.ref().child("defaultTable").child("TemplateQueue.xlsx");
-    // final data = await storage.getData();
-    // final stream = List<int>.from(data!.toList()).map((e) => [e]);
-    // Media media = Media(Stream.fromIterable(stream), stream.length);
-    final onlineFile = await driveApi.files.create(file);
-    final permisson = Permission(role: "writer", type: "user", emailAddress: "queue-410@queue-401413.iam.gserviceaccount.com");
-    await driveApi.permissions.create(permisson, onlineFile.id!);
+    final infoFileID = await _createFileOnDrive(folder.id!, "info", driveApi);
     // TODO: autorize user fully
-    _localDataBase.setTableID(onlineFile.id!);
+    _localDataBase.setInfoTableID(infoFileID);
+    List<Future<String>> lessonCreation = [];
+    for (final lesson in event.lessons) {
+      lessonCreation.add(Future.value(_createFileOnDrive(folder.id!, lesson.name, driveApi)));
+    }
+    final lessonIds = await Future.wait(lessonCreation);
+    await (await _onlineDB).fillStudents(event.students);
+    await (await _onlineDB).fillLessons(event.lessons, lessonIds);
     _localDataBase.insertLessons(event.lessons);
     _localDataBase.insertStudents(event.students);
-    await (await _onlineDB).fillStudents(event.students);
-    await (await _onlineDB).fillLessons(event.lessons);
   }
 
   Future<OnlineDataBase> _configureOnlineDB() async {
-    final id = await _localDataBase.getTableID();
+    final id = await _localDataBase.getInfoTableID();
+    // TODO: get map of names to id from db
     if (id == null) throw Exception("Table id not found. Configure database first");
-    _onlineDBBacked = await OnlineDataBase.instance(id);
+    _onlineDBBacked = await OnlineDataBase.instance(id, {});
     print(id);
     return _onlineDBBacked!;
   }
 
+  Future<String> _createFileOnDrive(String folderId, String name, DriveApi driveApi) async {
+    final infoFile = File(
+      parents: [folderId],
+      mimeType: "application/vnd.google-apps.spreadsheet",
+      name: name,
+    );
+    final permisson = Permission(role: "writer", type: "user", emailAddress: "queue-410@queue-401413.iam.gserviceaccount.com");
+    final onlineFile = await driveApi.files.create(infoFile);
+    await driveApi.permissions.create(permisson, onlineFile.id!);
+    log(onlineFile.id!);
+    return onlineFile.id!;
+  }
   // Future<void> getData() async {}
 }

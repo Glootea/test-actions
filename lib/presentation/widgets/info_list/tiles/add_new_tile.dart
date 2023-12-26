@@ -55,7 +55,7 @@ class AddNewTile<E> extends StatelessWidget {
       case StudentsCompanion:
         list.add(const StudentsCompanion(name: Value('')) as E);
       case LessonSettingEntity:
-        list.add(LessonSettingEntity('') as E);
+        list.add(LessonSettingEntity('', weeklyLessons: [], datedLessons: []) as E);
       case WeeklyLessonSettingEntity:
         list.add(WeeklyLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [1]) as E);
       case DatedLessonSettingEntity:

@@ -11,6 +11,7 @@ class Recs extends Table {
 class Lessons extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  TextColumn get onlineID => text()();
 }
 
 class Students extends Table {
