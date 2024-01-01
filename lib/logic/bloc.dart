@@ -34,7 +34,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _getBackgroundImage() async {
-    backgroundImageEncoded ??= await _localDataBase.getBackgroundImage();
+    backgroundImageEncoded ??= await _localDataBase.get(StoredValues.backgroundImage);
   }
 
   QueueBloc(this._userDataBase, this._localDataBase, super.initialState) {
@@ -222,7 +222,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     final folder = await driveApi.files.create(File(mimeType: 'application/vnd.google-apps.folder', name: "Очередь работ"));
     final infoFileID = await _createFileOnDrive(folder.id!, "info", driveApi);
     // TODO: autorize user fully
-    _localDataBase.setInfoTableID(infoFileID);
+    // _localDataBase.setInfoTableID(infoFileID);
+    _localDataBase.set(StoredValues.infoTableID, infoFileID);
     List<Future<String>> lessonCreation = [];
     for (final lesson in event.lessons) {
       lessonCreation.add(Future.value(_createFileOnDrive(folder.id!, lesson.name, driveApi)));
@@ -235,7 +236,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<OnlineDataBase> _configureOnlineDB() async {
-    final id = await _localDataBase.getInfoTableID();
+    final id = await _localDataBase.get(StoredValues.infoTableID);
     // TODO: get map of names to id from db
     if (id == null) throw Exception("Table id not found. Configure database first");
     _onlineDBBacked = await OnlineDataBase.instance(id, {});

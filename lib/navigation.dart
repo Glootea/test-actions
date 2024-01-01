@@ -26,16 +26,12 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
       redirect: (BuildContext context, GoRouterState state) {
         final bloc = context.read<QueueBloc>();
         final blocState = bloc.state;
-        if (state.fullPath == _Routes.uploadScreen &&
-            state.pathParameters.isNotEmpty &&
-            blocState is! UploadFromLinkState) {
+        if (state.fullPath == _Routes.uploadScreen && state.pathParameters.isNotEmpty && blocState is! UploadFromLinkState) {
           bloc.add(UploadFromLinkEvent(state.pathParameters['info']!));
         } else {
           if (blocState is MainState) return _Routes.mainScreen;
           if (blocState is UserUnAuthenticatedState) {
-            return (blocState.createGroupState)
-                ? _Routes.createGroupScreen
-                : _Routes.loginScreen;
+            return (blocState.createGroupState) ? _Routes.createGroupScreen : _Routes.loginScreen;
           }
           if (blocState is UploadFromLinkState) return _Routes.uploadScreen;
           if (blocState is InviteState) return _Routes.inviteScreen;
@@ -45,31 +41,17 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
         return null;
       },
       initialLocation: _Routes.mainScreen,
-      refreshListenable: _GoRouterRefreshStream(
-          bloc.stream.asyncMap<QueueState>((event) => event as QueueState)),
+      refreshListenable: _GoRouterRefreshStream(bloc.stream.asyncMap<QueueState>((event) => event as QueueState)),
       routes: [
         GoRoute(
             path: _Routes.loginScreen,
-            routes: [
-              GoRoute(
-                  path: _Routes.createGroupSubPath,
-                  builder: (context, state) => const CreateGroupScreen())
-            ],
-            builder: (context, state) => const WelcomeScreen()),
-        GoRoute(
-            path: _Routes.loadingScreen,
-            builder: (context, state) => const LoadingView()),
-        GoRoute(
-            path: _Routes.mainScreen,
-            builder: (context, state) => const MainScreen()),
-        GoRoute(
-            path: _Routes.uploadScreen,
-            builder: (context, state) =>
-                UploadScreen(state.uri.queryParameters['info'])),
-        GoRoute(
-            path: _Routes.inviteScreen,
-            builder: (context, state) =>
-                InviteScreen(state.uri.queryParameters['info'] ?? '')),
+            routes: [GoRoute(path: _Routes.createGroupSubPath, builder: (context, state) => const CreateGroupScreen())],
+            pageBuilder: (context, state) =>
+                _DefaultPageAnimation(child: const WelcomeScreen())), //TODO: fix page transition on macos. Used to swipe from right
+        GoRoute(path: _Routes.loadingScreen, pageBuilder: (context, state) => _DefaultPageAnimation(child: const LoadingView())),
+        GoRoute(path: _Routes.mainScreen, builder: (context, state) => const MainScreen()),
+        GoRoute(path: _Routes.uploadScreen, builder: (context, state) => UploadScreen(state.uri.queryParameters['info'])),
+        GoRoute(path: _Routes.inviteScreen, builder: (context, state) => InviteScreen(state.uri.queryParameters['info'] ?? '')),
       ],
     );
 
@@ -94,4 +76,13 @@ class _GoRouterRefreshStream extends ChangeNotifier {
     _subscription.cancel();
     super.dispose();
   }
+}
+
+class _DefaultPageAnimation extends CustomTransitionPage {
+  _DefaultPageAnimation({required Widget child})
+      : super(
+          key: const ValueKey('loading'),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(opacity: animation, child: child),
+          child: child,
+        );
 }

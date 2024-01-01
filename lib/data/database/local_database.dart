@@ -6,6 +6,7 @@ import 'package:queue/entities/lesson.dart';
 import 'package:queue/entities/rec.dart';
 
 part 'local_database.g.dart';
+part 'stored_values_enum.dart';
 // ... the TodoItems table definition stays the same
 
 @DriftDatabase(tables: [Recs, Lessons, Students, WeeklyLessons, DatedLessons, UserInfo])
@@ -91,10 +92,10 @@ class LocalDatabase extends _$LocalDatabase {
     (delete(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID))).go();
   }
 
-  Future<void> deleteAll(String lessonName) async {
+  Future<void> deleteAllRecs(String lessonName) async {
     int lessonID = await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
 
-    (delete(recs)..where((tbl) => tbl.lessonID.equals(lessonID))).go();
+    await (delete(recs)..where((tbl) => tbl.lessonID.equals(lessonID))).go();
   }
 
   Future<void> import(List<RecEntity> list) async {
@@ -105,29 +106,39 @@ class LocalDatabase extends _$LocalDatabase {
   }
 
   //-- user related
-  final _backgroundImageKey = "backgroundImage";
-  final _userNameKey = "userName";
-  final _tableIDKey = 'tableID';
-
-  Future<String?> getUserName() async {
-    return (await (select(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).getSingleOrNull())?.value;
+  // final _backgroundImageKey = "backgroundImage";
+  // final _userNameKey = "userName";
+  // final _tableIDKey = 'tableID';
+  Future<String?> get(StoredValues key) async {
+    return (await (select(userInfo)..where((tbl) => tbl.key.equals(key.toString()))).getSingleOrNull())?.value;
   }
 
-  void setUserName(String userName) {
-    into(userInfo).insert(UserInfoCompanion(key: Value(_userNameKey), value: Value(userName)), mode: InsertMode.insertOrReplace);
+  Future<int> set(StoredValues key, String value) async {
+    return into(userInfo).insert(UserInfoCompanion(key: Value(key.toString()), value: Value(value)), mode: InsertMode.insertOrReplace);
   }
 
-  void deleteUserName() {
-    (delete(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).go();
+  Future<int> clean(StoredValues key) async {
+    return (delete(userInfo)..where((tbl) => tbl.key.equals(key.toString()))).go();
   }
+  // Future<String?> getUserName() async {
+  //   return (await (select(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).getSingleOrNull())?.value;
+  // }
+
+  // void setUserName(String userName) {
+  //   into(userInfo).insert(UserInfoCompanion(key: Value(_userNameKey), value: Value(userName)), mode: InsertMode.insertOrReplace);
+  // }
+
+  // void deleteUserName() {
+  //   (delete(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).go();
+  // }
 
   Future<bool> isAdmin(String studentName) async {
     return (await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingleOrNull())?.isAdmin ?? false;
   }
 
-  Future<String?> getBackgroundImage() async {
-    return (await (select(userInfo)..where((tbl) => tbl.key.equals(_backgroundImageKey))).getSingleOrNull())?.value;
-  }
+  // Future<String?> getBackgroundImage() async {
+  //   return (await (select(userInfo)..where((tbl) => tbl.key.equals(_backgroundImageKey))).getSingleOrNull())?.value;
+  // }
 
   Future<void> insertLessons(List<LessonSettingEntity> list) async {
     await Future.wait(list.map((lesson) async {
@@ -156,12 +167,12 @@ class LocalDatabase extends _$LocalDatabase {
     await students.insertAll(list.map((e) => StudentsCompanion(name: e.name, isAdmin: e.isAdmin)).toList());
   }
 
-  Future<void> setInfoTableID(String url) async {
-    // (delete(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).go();
-    into(userInfo).insert(UserInfoCompanion(key: Value(_tableIDKey), value: Value(url)), mode: InsertMode.insertOrReplace);
-  }
+  // Future<void> setInfoTableID(String url) async {
+  //   // (delete(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).go();
+  //   into(userInfo).insert(UserInfoCompanion(key: Value(_tableIDKey), value: Value(url)), mode: InsertMode.insertOrReplace);
+  // }
 
-  Future<String?> getInfoTableID() async {
-    return (await (select(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).getSingleOrNull())?.value;
-  }
+  // Future<String?> getInfoTableID() async {
+  //   return (await (select(userInfo)..where((tbl) => tbl.key.equals(_tableIDKey))).getSingleOrNull())?.value;
+  // }
 }

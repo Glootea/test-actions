@@ -10,7 +10,7 @@ class UserDataBase {
   UserDataBase._(this._storage);
   static Future<UserDataBase> getConfiguredUserDataBase(LocalDatabase storage) async {
     final db = UserDataBase._(storage);
-    final userName = await storage.getUserName();
+    final userName = await storage.get(StoredValues.userName);
     if (userName != null) {
       db.fillUser(userName);
     }
@@ -18,13 +18,13 @@ class UserDataBase {
   }
 
   void fillUser(String userName) {
-    _storage.setUserName(userName);
+    _storage.set(StoredValues.userName, userName);
     _storage.isAdmin(userName).then((value) => _isAdmin = value);
   }
 
   bool get userExist => _userName?.isNotEmpty ?? false;
 
   void logOut() {
-    _storage.deleteUserName();
+    _storage.clean(StoredValues.userName);
   }
 }
