@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/extension.dart';
 
 const Map<int, String> weekdays = {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:queue/data/database/local_database.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/export.dart';
 import 'package:queue/presentation/widgets/info_list/tiles/add_new_tile.dart';
 import 'package:queue/presentation/widgets/info_list/tiles/lesson_tile/dated_tile.dart';
 import 'package:queue/presentation/widgets/info_list/tiles/lesson_tile/lesson_tile.dart';
@@ -8,15 +7,16 @@ import 'package:queue/presentation/widgets/info_list/tiles/lesson_tile/weekly_ti
 import 'package:queue/presentation/widgets/info_list/tiles/student_tile.dart';
 
 class InfoList<E> extends StatelessWidget {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+  final List<E> list;
+  final int? outerCount;
+
   InfoList(
     this.list, {
     this.outerCount,
     super.key,
   });
 
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  final List<E> list;
-  final int? outerCount;
   @override
   Widget build(BuildContext context) {
     return AnimatedList(
@@ -29,8 +29,8 @@ class InfoList<E> extends StatelessWidget {
             return AddNewTile<E>(animation, _listKey, list);
           } else {
             switch (E) {
-              case StudentsCompanion:
-                return StudentInfoTile(animation, list as List<StudentsCompanion>, count, (double height) => _onDeleteButtonPressed(count, height));
+              case StudentEntity:
+                return StudentInfoTile(animation, list as List<StudentEntity>, count, (double height) => _onDeleteButtonPressed(count, height));
               case LessonSettingEntity:
                 return LessonInfoTile(animation, list as List<LessonSettingEntity>, count, (double height) => _onDeleteButtonPressed(count, height));
               case WeeklyLessonSettingEntity:

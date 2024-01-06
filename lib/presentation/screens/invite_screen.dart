@@ -47,9 +47,7 @@ class _InviteScreenState extends State<InviteScreen> {
               ),
               OutlinedButton(
                   onPressed: () {
-                    context
-                        .read<QueueBloc>()
-                        .add(RegisterUserEvent(inviteState));
+                    context.read<QueueBloc>().add(RegisterUserEvent(inviteState));
                   },
                   child: Text(
                     "Верно",

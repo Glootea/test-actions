@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/data/database/local_database.dart';
+import 'package:queue/data/database/providers/local_database.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
@@ -19,19 +19,11 @@ void main() async {
   } catch (e) {
     print(e.toString());
   }
-  LocalDatabase lessonDatabase = LocalDatabase();
-  final userDataBase = await UserDataBase.getConfiguredUserDataBase(lessonDatabase);
+  // TODO: change to database service
+  LocalDatabase localDatabase = LocalDatabase();
+  final userDataBase = await UserDataBase.getConfiguredUserDataBase(localDatabase);
 
-  runApp(BlocProvider(
-      create: (context) => QueueBloc(userDataBase, lessonDatabase, LoadingState())..add(FindUserEvent()),
-      // ..add(UserAuthenticateEvent("Рыбкин Александр Владимирович")),
-      // child: Consumer<QueueBloc>(
-      //   child: MyApp(),
-      //   builder: (_, value, __) {
-      //     // return MyApp();
-      //   },
-      // )));
-      child: const MyApp()));
+  runApp(BlocProvider(create: (context) => QueueBloc(userDataBase, localDatabase, LoadingState())..add(FindUserEvent()), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

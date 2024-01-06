@@ -1,7 +1,5 @@
 import 'package:gsheets/gsheets.dart';
-import 'package:queue/data/database/local_database.dart';
-import 'package:queue/entities/lesson.dart';
-import 'package:queue/entities/rec.dart';
+import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/secret/table_credentials.dart';
 
@@ -18,15 +16,17 @@ class OnlineDataBase {
   Worksheet? _lessonsSheet;
   Worksheet? _lessonTimesSheet;
   final String _infoTableID;
-  Map<String, String> _mapLessonNameToId;
-  OnlineDataBase._(this._infoTableID, this._mapLessonNameToId);
+  // Map<String, String> mapLessonNameToId;
+  // OnlineDataBase._(this._infoTableID, this.mapLessonNameToId);
+  OnlineDataBase._(this._infoTableID);
   static OnlineDataBase? _instance;
 
-  static Future<OnlineDataBase> instance(String tableID, Map<String, String> map) async {
+  static Future<OnlineDataBase> instance(String tableID) async {
     if (_instance != null) {
       return _instance!;
     }
-    _instance = OnlineDataBase._(tableID, map);
+    _instance = OnlineDataBase._(tableID);
+    // _instance = OnlineDataBase._(tableID, map);
     final spreadsheet = await _instance!._gsheets.spreadsheet(tableID);
     if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll(["info", "names", "lessons", "lessonTimes"])) {
       return _instance!;
@@ -78,7 +78,7 @@ class OnlineDataBase {
     return result;
   }
 
-  Future<bool> createRec(String lessonName, String userName, DateTime time) async {
+  Future<bool> createRec(String lessonName, String studentName, DateTime time) async {
     // try { TODO: rewrite
     //   _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
     //   _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
@@ -155,7 +155,7 @@ class OnlineDataBase {
     return null;
   }
 
-  Future<bool> fillStudents(List<StudentsCompanion> list) async {
+  Future<bool> fillStudents(List<StudentEntity> list) async {
     // TODO: sort by alphabet, but remember to fill head(now index = 0, won't be later)
     _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
     List<Future> tasks = List.filled(2, Future.value(null), growable: false);
@@ -179,13 +179,13 @@ class OnlineDataBase {
       while (i + j < column.length && column[i + j].isNotEmpty) {
         i++;
       }
-      if (list[j].isAdmin.value ?? false) {
+      if (list[j].isAdmin) {
         adminId.add(i + j);
       }
       if (i + j >= column.length) {
-        column.add(list[j].name.value);
+        column.add(list[j].name);
       } else {
-        column[i + j] = list[j].name.value;
+        column[i + j] = list[j].name;
       }
     }
 

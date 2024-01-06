@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/export.dart';
 
 sealed class QueueState {}
 

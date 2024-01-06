@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:queue/logic/bloc.dart';
-import 'package:queue/logic/encryprion.dart';
+import 'package:queue/data/encryprion.dart';
 import 'package:queue/logic/states.dart';
 
 class QrButton extends StatelessWidget {
@@ -16,17 +16,14 @@ class QrButton extends StatelessWidget {
         onPressed: () async {
           final bloc = context.read<QueueBloc>();
           final state = bloc.state as MainState;
-          final rec = state.todayLessons
-              .firstWhere((element) => element.name == lessonName)
-              .userRec!;
+          final rec = state.todayLessons.firstWhere((element) => element.name == lessonName).userRec!;
           final dateTime = rec.time;
           String userName = rec.userName;
           String data = "&&&$lessonName&&&$userName&&&$dateTime";
           // print(
           //   Uri.https("localhost:8000", "/#upload", {"info": data}),
           // );
-          String output = "https://queue-01-22.web.app/upload/" +
-              Encryption.encryct(data).replaceAll('/', '%');
+          String output = "https://queue-01-22.web.app/upload/" + Encryption.encryct(data).replaceAll('/', '%');
 
           print(output);
 
@@ -39,8 +36,7 @@ class QrButton extends StatelessWidget {
                         14,
                         QrErrorCorrectLevel.H,
                       )..addData(output)),
-                      decoration: const PrettyQrDecoration(
-                          shape: PrettyQrSmoothSymbol(roundFactor: 0)),
+                      decoration: const PrettyQrDecoration(shape: PrettyQrSmoothSymbol(roundFactor: 0)),
                     ),
                     actions: [
                       TextButton(

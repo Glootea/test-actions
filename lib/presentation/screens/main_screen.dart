@@ -84,11 +84,7 @@ class _MainScreenState extends State<MainScreen> {
                         child: PageView(
                           controller: pageController,
                           physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            TodayView(mainState: mainState),
-                            const QRScannerView(),
-                            const AdminView()
-                          ],
+                          children: [TodayView(mainState: mainState), const QRScannerView(), const AdminView()],
                         ),
                       ),
                     ],
@@ -105,9 +101,7 @@ class _MainScreenState extends State<MainScreen> {
             selectedIndex: currentPage,
             onDestinationSelected: (value) {
               if (pageController.hasClients) {
-                pageController.animateToPage(value,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut);
+                pageController.animateToPage(value, duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
               } else {
                 build(context);
               }
@@ -117,14 +111,9 @@ class _MainScreenState extends State<MainScreen> {
               });
             },
             destinations: [
-              const NavigationDestination(
-                  icon: Icon(Icons.today_outlined), label: "Today"),
-              const NavigationDestination(
-                  icon: Icon(Icons.qr_code_outlined), label: "Qr scanner"),
-              if (isAdmin)
-                const NavigationDestination(
-                    icon: Icon(Icons.admin_panel_settings_outlined),
-                    label: "Admin settings")
+              const NavigationDestination(icon: Icon(Icons.today_outlined), label: "Today"),
+              const NavigationDestination(icon: Icon(Icons.qr_code_outlined), label: "Qr scanner"),
+              if (isAdmin) const NavigationDestination(icon: Icon(Icons.admin_panel_settings_outlined), label: "Admin settings")
             ]),
       ),
     );
@@ -142,9 +131,7 @@ class TodayView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: MediaQuery.of(context).size.width > 600
-          ? const EdgeInsets.symmetric(horizontal: 64.0)
-          : const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: MediaQuery.of(context).size.width > 600 ? const EdgeInsets.symmetric(horizontal: 64.0) : const EdgeInsets.symmetric(horizontal: 16.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,8 +151,7 @@ class TodayView extends StatelessWidget {
                 : ListView.separated(
                     shrinkWrap: true,
                     itemCount: mainState.todayLessons.length,
-                    itemBuilder: (context, index) =>
-                        LessonWidget(mainState.todayLessons[index]),
+                    itemBuilder: (context, index) => LessonWidget(mainState.todayLessons[index]),
                     separatorBuilder: (context, index) => const MyPadding(),
                   ),
             const MyPadding(),
@@ -219,8 +205,7 @@ class _QRScannerViewState extends State<QRScannerView> {
               log('Detected');
               controller.stop();
 
-              context.read<QueueBloc>().add(
-                  UploadFromLinkEvent(barcodes.barcodes.first.rawValue ?? ''));
+              context.read<QueueBloc>().add(UploadFromLinkEvent(barcodes.barcodes.first.rawValue ?? ''));
               // Navigator.of(context).pushReplacementNamed(Routes.uploadScreen); TODO: delete - navigation moved to seperate file
             }
             // onScan: (String value) { TODO: update to bloc

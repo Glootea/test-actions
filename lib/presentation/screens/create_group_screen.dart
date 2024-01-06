@@ -1,10 +1,8 @@
-import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:queue/data/database/local_database.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/export.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/presentation/widgets/info_list/info_list.dart';
@@ -21,7 +19,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   String? lastName;
   String? groupName;
   int id = 1;
-  List<StudentsCompanion> students = [];
+  List<StudentEntity> students = [];
   List<LessonSettingEntity> lessons = [];
   String? errorMessage;
   @override
@@ -102,7 +100,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   ],
                 ),
                 const Gap(16),
-                InfoList<StudentsCompanion>(students),
+                InfoList<StudentEntity>(students),
                 const Gap(16),
                 Text("Добавьте занятия", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
@@ -116,8 +114,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                         errorMessage = "Необходимо заполнить все поля, добавить хотя бы одного студента и занятие";
                         setState(() {});
                       } else {
-                        context.read<QueueBloc>().add(RegisterGroupEvent(firstName!, lastName!, groupName!, lessons,
-                            [StudentsCompanion(name: Value('${firstName!} ${lastName!}'), isAdmin: const Value(true))] + students));
+                        context.read<QueueBloc>().add(RegisterGroupEvent(
+                            firstName!, lastName!, groupName!, lessons, [StudentEntity('${firstName!} ${lastName!}', isAdmin: true)] + students));
                       }
                     },
                     child: const Text(

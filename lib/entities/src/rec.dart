@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+
+@immutable
 final class RecEntity {
   final String userName;
   final String lessonName;
@@ -13,7 +16,7 @@ final class RecEntity {
     return false;
   }
 
-  RecEntity(this.userName, this.time, this.lessonName, [this.isUploaded]);
+  const RecEntity(this.userName, this.time, this.lessonName, [this.isUploaded]);
 
   @override
   int get hashCode => userName.hashCode * time.hashCode;

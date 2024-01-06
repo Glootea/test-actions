@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'local_database.dart';
+part of '../local_database.dart';
 
 // ignore_for_file: type=lint
 class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
@@ -10,27 +10,18 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
   $StudentsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
+  late final GeneratedColumn<int> id = GeneratedColumn<int>('id', aliasedName, false,
       hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+      defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _isAdminMeta =
-      const VerificationMeta('isAdmin');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>('name', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isAdminMeta = const VerificationMeta('isAdmin');
   @override
-  late final GeneratedColumn<bool> isAdmin = GeneratedColumn<bool>(
-      'is_admin', aliasedName, true,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_admin" IN (0, 1))'));
+  late final GeneratedColumn<bool> isAdmin = GeneratedColumn<bool>('is_admin', aliasedName, true,
+      type: DriftSqlType.bool, requiredDuringInsert: false, defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("is_admin" IN (0, 1))'));
   @override
   List<GeneratedColumn> get $columns => [id, name, isAdmin];
   @override
@@ -39,22 +30,19 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
   String get actualTableName => $name;
   static const String $name = 'students';
   @override
-  VerificationContext validateIntegrity(Insertable<Student> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(Insertable<Student> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (data.containsKey('is_admin')) {
-      context.handle(_isAdminMeta,
-          isAdmin.isAcceptableOrUnknown(data['is_admin']!, _isAdminMeta));
+      context.handle(_isAdminMeta, isAdmin.isAcceptableOrUnknown(data['is_admin']!, _isAdminMeta));
     }
     return context;
   }
@@ -65,12 +53,9 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
   Student map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Student(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      isAdmin: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_admin']),
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      isAdmin: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}is_admin']),
     );
   }
 
@@ -100,14 +85,11 @@ class Student extends DataClass implements Insertable<Student> {
     return StudentsCompanion(
       id: Value(id),
       name: Value(name),
-      isAdmin: isAdmin == null && nullToAbsent
-          ? const Value.absent()
-          : Value(isAdmin),
+      isAdmin: isAdmin == null && nullToAbsent ? const Value.absent() : Value(isAdmin),
     );
   }
 
-  factory Student.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory Student.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Student(
       id: serializer.fromJson<int>(json['id']),
@@ -125,11 +107,7 @@ class Student extends DataClass implements Insertable<Student> {
     };
   }
 
-  Student copyWith(
-          {int? id,
-          String? name,
-          Value<bool?> isAdmin = const Value.absent()}) =>
-      Student(
+  Student copyWith({int? id, String? name, Value<bool?> isAdmin = const Value.absent()}) => Student(
         id: id ?? this.id,
         name: name ?? this.name,
         isAdmin: isAdmin.present ? isAdmin.value : this.isAdmin,
@@ -148,11 +126,7 @@ class Student extends DataClass implements Insertable<Student> {
   int get hashCode => Object.hash(id, name, isAdmin);
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Student &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.isAdmin == this.isAdmin);
+      identical(this, other) || (other is Student && other.id == this.id && other.name == this.name && other.isAdmin == this.isAdmin);
 }
 
 class StudentsCompanion extends UpdateCompanion<Student> {
@@ -181,8 +155,7 @@ class StudentsCompanion extends UpdateCompanion<Student> {
     });
   }
 
-  StudentsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<bool?>? isAdmin}) {
+  StudentsCompanion copyWith({Value<int>? id, Value<String>? name, Value<bool?>? isAdmin}) {
     return StudentsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -223,24 +196,18 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   $LessonsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
+  late final GeneratedColumn<int> id = GeneratedColumn<int>('id', aliasedName, false,
       hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+      defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _onlineIDMeta =
-      const VerificationMeta('onlineID');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>('name', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _onlineIDMeta = const VerificationMeta('onlineID');
   @override
-  late final GeneratedColumn<String> onlineID = GeneratedColumn<String>(
-      'online_i_d', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> onlineID =
+      GeneratedColumn<String>('online_i_d', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, name, onlineID];
   @override
@@ -249,22 +216,19 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   String get actualTableName => $name;
   static const String $name = 'lessons';
   @override
-  VerificationContext validateIntegrity(Insertable<Lesson> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(Insertable<Lesson> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (data.containsKey('online_i_d')) {
-      context.handle(_onlineIDMeta,
-          onlineID.isAcceptableOrUnknown(data['online_i_d']!, _onlineIDMeta));
+      context.handle(_onlineIDMeta, onlineID.isAcceptableOrUnknown(data['online_i_d']!, _onlineIDMeta));
     } else if (isInserting) {
       context.missing(_onlineIDMeta);
     }
@@ -277,12 +241,9 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   Lesson map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Lesson(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      onlineID: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}online_i_d'])!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      onlineID: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}online_i_d'])!,
     );
   }
 
@@ -314,8 +275,7 @@ class Lesson extends DataClass implements Insertable<Lesson> {
     );
   }
 
-  factory Lesson.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory Lesson.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Lesson(
       id: serializer.fromJson<int>(json['id']),
@@ -352,11 +312,7 @@ class Lesson extends DataClass implements Insertable<Lesson> {
   int get hashCode => Object.hash(id, name, onlineID);
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Lesson &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.onlineID == this.onlineID);
+      identical(this, other) || (other is Lesson && other.id == this.id && other.name == this.name && other.onlineID == this.onlineID);
 }
 
 class LessonsCompanion extends UpdateCompanion<Lesson> {
@@ -386,8 +342,7 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
     });
   }
 
-  LessonsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<String>? onlineID}) {
+  LessonsCompanion copyWith({Value<int>? id, Value<String>? name, Value<String>? onlineID}) {
     return LessonsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -428,84 +383,57 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
   $RecsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
+  late final GeneratedColumn<int> id = GeneratedColumn<int>('id', aliasedName, false,
       hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _studentIDMeta =
-      const VerificationMeta('studentID');
+      defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _studentIDMeta = const VerificationMeta('studentID');
   @override
-  late final GeneratedColumn<int> studentID = GeneratedColumn<int>(
-      'student_i_d', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES students (id)'));
-  static const VerificationMeta _lessonIDMeta =
-      const VerificationMeta('lessonID');
+  late final GeneratedColumn<int> studentID = GeneratedColumn<int>('student_i_d', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES students (id)'));
+  static const VerificationMeta _lessonIDMeta = const VerificationMeta('lessonID');
   @override
-  late final GeneratedColumn<int> lessonID = GeneratedColumn<int>(
-      'lesson_i_d', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
+  late final GeneratedColumn<int> lessonID = GeneratedColumn<int>('lesson_i_d', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
   static const VerificationMeta _timeMeta = const VerificationMeta('time');
   @override
-  late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
-      'time', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _uploadedMeta =
-      const VerificationMeta('uploaded');
+  late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>('time', aliasedName, false, type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _uploadedMeta = const VerificationMeta('uploaded');
   @override
-  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>(
-      'uploaded', aliasedName, true,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("uploaded" IN (0, 1))'));
+  late final GeneratedColumn<bool> uploaded = GeneratedColumn<bool>('uploaded', aliasedName, true,
+      type: DriftSqlType.bool, requiredDuringInsert: false, defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("uploaded" IN (0, 1))'));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, studentID, lessonID, time, uploaded];
+  List<GeneratedColumn> get $columns => [id, studentID, lessonID, time, uploaded];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'recs';
   @override
-  VerificationContext validateIntegrity(Insertable<Rec> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(Insertable<Rec> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('student_i_d')) {
-      context.handle(
-          _studentIDMeta,
-          studentID.isAcceptableOrUnknown(
-              data['student_i_d']!, _studentIDMeta));
+      context.handle(_studentIDMeta, studentID.isAcceptableOrUnknown(data['student_i_d']!, _studentIDMeta));
     } else if (isInserting) {
       context.missing(_studentIDMeta);
     }
     if (data.containsKey('lesson_i_d')) {
-      context.handle(_lessonIDMeta,
-          lessonID.isAcceptableOrUnknown(data['lesson_i_d']!, _lessonIDMeta));
+      context.handle(_lessonIDMeta, lessonID.isAcceptableOrUnknown(data['lesson_i_d']!, _lessonIDMeta));
     } else if (isInserting) {
       context.missing(_lessonIDMeta);
     }
     if (data.containsKey('time')) {
-      context.handle(
-          _timeMeta, time.isAcceptableOrUnknown(data['time']!, _timeMeta));
+      context.handle(_timeMeta, time.isAcceptableOrUnknown(data['time']!, _timeMeta));
     } else if (isInserting) {
       context.missing(_timeMeta);
     }
     if (data.containsKey('uploaded')) {
-      context.handle(_uploadedMeta,
-          uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta));
+      context.handle(_uploadedMeta, uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta));
     }
     return context;
   }
@@ -516,16 +444,11 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
   Rec map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Rec(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      studentID: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}student_i_d'])!,
-      lessonID: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}lesson_i_d'])!,
-      time: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}time'])!,
-      uploaded: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}uploaded']),
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      studentID: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}student_i_d'])!,
+      lessonID: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}lesson_i_d'])!,
+      time: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}time'])!,
+      uploaded: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}uploaded']),
     );
   }
 
@@ -541,12 +464,7 @@ class Rec extends DataClass implements Insertable<Rec> {
   final int lessonID;
   final DateTime time;
   final bool? uploaded;
-  const Rec(
-      {required this.id,
-      required this.studentID,
-      required this.lessonID,
-      required this.time,
-      this.uploaded});
+  const Rec({required this.id, required this.studentID, required this.lessonID, required this.time, this.uploaded});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -566,14 +484,11 @@ class Rec extends DataClass implements Insertable<Rec> {
       studentID: Value(studentID),
       lessonID: Value(lessonID),
       time: Value(time),
-      uploaded: uploaded == null && nullToAbsent
-          ? const Value.absent()
-          : Value(uploaded),
+      uploaded: uploaded == null && nullToAbsent ? const Value.absent() : Value(uploaded),
     );
   }
 
-  factory Rec.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory Rec.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Rec(
       id: serializer.fromJson<int>(json['id']),
@@ -595,13 +510,7 @@ class Rec extends DataClass implements Insertable<Rec> {
     };
   }
 
-  Rec copyWith(
-          {int? id,
-          int? studentID,
-          int? lessonID,
-          DateTime? time,
-          Value<bool?> uploaded = const Value.absent()}) =>
-      Rec(
+  Rec copyWith({int? id, int? studentID, int? lessonID, DateTime? time, Value<bool?> uploaded = const Value.absent()}) => Rec(
         id: id ?? this.id,
         studentID: studentID ?? this.studentID,
         lessonID: lessonID ?? this.lessonID,
@@ -671,12 +580,7 @@ class RecsCompanion extends UpdateCompanion<Rec> {
     });
   }
 
-  RecsCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? studentID,
-      Value<int>? lessonID,
-      Value<DateTime>? time,
-      Value<bool?>? uploaded}) {
+  RecsCompanion copyWith({Value<int>? id, Value<int>? studentID, Value<int>? lessonID, Value<DateTime>? time, Value<bool?>? uploaded}) {
     return RecsCompanion(
       id: id ?? this.id,
       studentID: studentID ?? this.studentID,
@@ -720,85 +624,63 @@ class RecsCompanion extends UpdateCompanion<Rec> {
   }
 }
 
-class $WeeklyLessonsTable extends WeeklyLessons
-    with TableInfo<$WeeklyLessonsTable, WeeklyLesson> {
+class $WeeklyLessonsTable extends WeeklyLessons with TableInfo<$WeeklyLessonsTable, WeeklyLesson> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $WeeklyLessonsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
+  late final GeneratedColumn<int> id = GeneratedColumn<int>('id', aliasedName, false,
       hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _lessonIDMeta =
-      const VerificationMeta('lessonID');
+      defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _lessonIDMeta = const VerificationMeta('lessonID');
   @override
-  late final GeneratedColumn<int> lessonID = GeneratedColumn<int>(
-      'lesson_i_d', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
-  static const VerificationMeta _startTimeMeta =
-      const VerificationMeta('startTime');
+  late final GeneratedColumn<int> lessonID = GeneratedColumn<int>('lesson_i_d', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
+  static const VerificationMeta _startTimeMeta = const VerificationMeta('startTime');
   @override
-  late final GeneratedColumn<String> startTime = GeneratedColumn<String>(
-      'start_time', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _endTimeMeta =
-      const VerificationMeta('endTime');
+  late final GeneratedColumn<String> startTime =
+      GeneratedColumn<String>('start_time', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _endTimeMeta = const VerificationMeta('endTime');
   @override
-  late final GeneratedColumn<String> endTime = GeneratedColumn<String>(
-      'end_time', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _weekDayMeta =
-      const VerificationMeta('weekDay');
+  late final GeneratedColumn<String> endTime = GeneratedColumn<String>('end_time', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _weekDayMeta = const VerificationMeta('weekDay');
   @override
-  late final GeneratedColumn<int> weekDay = GeneratedColumn<int>(
-      'week_day', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> weekDay = GeneratedColumn<int>('week_day', aliasedName, false, type: DriftSqlType.int, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, lessonID, startTime, endTime, weekDay];
+  List<GeneratedColumn> get $columns => [id, lessonID, startTime, endTime, weekDay];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'weekly_lessons';
   @override
-  VerificationContext validateIntegrity(Insertable<WeeklyLesson> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(Insertable<WeeklyLesson> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('lesson_i_d')) {
-      context.handle(_lessonIDMeta,
-          lessonID.isAcceptableOrUnknown(data['lesson_i_d']!, _lessonIDMeta));
+      context.handle(_lessonIDMeta, lessonID.isAcceptableOrUnknown(data['lesson_i_d']!, _lessonIDMeta));
     } else if (isInserting) {
       context.missing(_lessonIDMeta);
     }
     if (data.containsKey('start_time')) {
-      context.handle(_startTimeMeta,
-          startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta));
+      context.handle(_startTimeMeta, startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta));
     } else if (isInserting) {
       context.missing(_startTimeMeta);
     }
     if (data.containsKey('end_time')) {
-      context.handle(_endTimeMeta,
-          endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta));
+      context.handle(_endTimeMeta, endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta));
     } else if (isInserting) {
       context.missing(_endTimeMeta);
     }
     if (data.containsKey('week_day')) {
-      context.handle(_weekDayMeta,
-          weekDay.isAcceptableOrUnknown(data['week_day']!, _weekDayMeta));
+      context.handle(_weekDayMeta, weekDay.isAcceptableOrUnknown(data['week_day']!, _weekDayMeta));
     } else if (isInserting) {
       context.missing(_weekDayMeta);
     }
@@ -811,16 +693,11 @@ class $WeeklyLessonsTable extends WeeklyLessons
   WeeklyLesson map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return WeeklyLesson(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      lessonID: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}lesson_i_d'])!,
-      startTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}start_time'])!,
-      endTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}end_time'])!,
-      weekDay: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}week_day'])!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      lessonID: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}lesson_i_d'])!,
+      startTime: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}start_time'])!,
+      endTime: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}end_time'])!,
+      weekDay: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}week_day'])!,
     );
   }
 
@@ -836,12 +713,7 @@ class WeeklyLesson extends DataClass implements Insertable<WeeklyLesson> {
   final String startTime;
   final String endTime;
   final int weekDay;
-  const WeeklyLesson(
-      {required this.id,
-      required this.lessonID,
-      required this.startTime,
-      required this.endTime,
-      required this.weekDay});
+  const WeeklyLesson({required this.id, required this.lessonID, required this.startTime, required this.endTime, required this.weekDay});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -863,8 +735,7 @@ class WeeklyLesson extends DataClass implements Insertable<WeeklyLesson> {
     );
   }
 
-  factory WeeklyLesson.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory WeeklyLesson.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return WeeklyLesson(
       id: serializer.fromJson<int>(json['id']),
@@ -886,13 +757,7 @@ class WeeklyLesson extends DataClass implements Insertable<WeeklyLesson> {
     };
   }
 
-  WeeklyLesson copyWith(
-          {int? id,
-          int? lessonID,
-          String? startTime,
-          String? endTime,
-          int? weekDay}) =>
-      WeeklyLesson(
+  WeeklyLesson copyWith({int? id, int? lessonID, String? startTime, String? endTime, int? weekDay}) => WeeklyLesson(
         id: id ?? this.id,
         lessonID: lessonID ?? this.lessonID,
         startTime: startTime ?? this.startTime,
@@ -963,12 +828,7 @@ class WeeklyLessonsCompanion extends UpdateCompanion<WeeklyLesson> {
     });
   }
 
-  WeeklyLessonsCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? lessonID,
-      Value<String>? startTime,
-      Value<String>? endTime,
-      Value<int>? weekDay}) {
+  WeeklyLessonsCompanion copyWith({Value<int>? id, Value<int>? lessonID, Value<String>? startTime, Value<String>? endTime, Value<int>? weekDay}) {
     return WeeklyLessonsCompanion(
       id: id ?? this.id,
       lessonID: lessonID ?? this.lessonID,
@@ -1012,84 +872,63 @@ class WeeklyLessonsCompanion extends UpdateCompanion<WeeklyLesson> {
   }
 }
 
-class $DatedLessonsTable extends DatedLessons
-    with TableInfo<$DatedLessonsTable, DatedLesson> {
+class $DatedLessonsTable extends DatedLessons with TableInfo<$DatedLessonsTable, DatedLesson> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $DatedLessonsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
+  late final GeneratedColumn<int> id = GeneratedColumn<int>('id', aliasedName, false,
       hasAutoIncrement: true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _lessonIDMeta =
-      const VerificationMeta('lessonID');
+      defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _lessonIDMeta = const VerificationMeta('lessonID');
   @override
-  late final GeneratedColumn<int> lessonID = GeneratedColumn<int>(
-      'lesson_i_d', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
+  late final GeneratedColumn<int> lessonID = GeneratedColumn<int>('lesson_i_d', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-      'date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _startTimeMeta =
-      const VerificationMeta('startTime');
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>('date', aliasedName, false, type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _startTimeMeta = const VerificationMeta('startTime');
   @override
-  late final GeneratedColumn<String> startTime = GeneratedColumn<String>(
-      'start_time', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _endTimeMeta =
-      const VerificationMeta('endTime');
+  late final GeneratedColumn<String> startTime =
+      GeneratedColumn<String>('start_time', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _endTimeMeta = const VerificationMeta('endTime');
   @override
-  late final GeneratedColumn<String> endTime = GeneratedColumn<String>(
-      'end_time', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> endTime = GeneratedColumn<String>('end_time', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, lessonID, date, startTime, endTime];
+  List<GeneratedColumn> get $columns => [id, lessonID, date, startTime, endTime];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'dated_lessons';
   @override
-  VerificationContext validateIntegrity(Insertable<DatedLesson> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(Insertable<DatedLesson> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('lesson_i_d')) {
-      context.handle(_lessonIDMeta,
-          lessonID.isAcceptableOrUnknown(data['lesson_i_d']!, _lessonIDMeta));
+      context.handle(_lessonIDMeta, lessonID.isAcceptableOrUnknown(data['lesson_i_d']!, _lessonIDMeta));
     } else if (isInserting) {
       context.missing(_lessonIDMeta);
     }
     if (data.containsKey('date')) {
-      context.handle(
-          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+      context.handle(_dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
     } else if (isInserting) {
       context.missing(_dateMeta);
     }
     if (data.containsKey('start_time')) {
-      context.handle(_startTimeMeta,
-          startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta));
+      context.handle(_startTimeMeta, startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta));
     } else if (isInserting) {
       context.missing(_startTimeMeta);
     }
     if (data.containsKey('end_time')) {
-      context.handle(_endTimeMeta,
-          endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta));
+      context.handle(_endTimeMeta, endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta));
     } else if (isInserting) {
       context.missing(_endTimeMeta);
     }
@@ -1102,16 +941,11 @@ class $DatedLessonsTable extends DatedLessons
   DatedLesson map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DatedLesson(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      lessonID: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}lesson_i_d'])!,
-      date: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
-      startTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}start_time'])!,
-      endTime: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}end_time'])!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      lessonID: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}lesson_i_d'])!,
+      date: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
+      startTime: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}start_time'])!,
+      endTime: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}end_time'])!,
     );
   }
 
@@ -1127,12 +961,7 @@ class DatedLesson extends DataClass implements Insertable<DatedLesson> {
   final DateTime date;
   final String startTime;
   final String endTime;
-  const DatedLesson(
-      {required this.id,
-      required this.lessonID,
-      required this.date,
-      required this.startTime,
-      required this.endTime});
+  const DatedLesson({required this.id, required this.lessonID, required this.date, required this.startTime, required this.endTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1154,8 +983,7 @@ class DatedLesson extends DataClass implements Insertable<DatedLesson> {
     );
   }
 
-  factory DatedLesson.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory DatedLesson.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DatedLesson(
       id: serializer.fromJson<int>(json['id']),
@@ -1177,13 +1005,7 @@ class DatedLesson extends DataClass implements Insertable<DatedLesson> {
     };
   }
 
-  DatedLesson copyWith(
-          {int? id,
-          int? lessonID,
-          DateTime? date,
-          String? startTime,
-          String? endTime}) =>
-      DatedLesson(
+  DatedLesson copyWith({int? id, int? lessonID, DateTime? date, String? startTime, String? endTime}) => DatedLesson(
         id: id ?? this.id,
         lessonID: lessonID ?? this.lessonID,
         date: date ?? this.date,
@@ -1254,12 +1076,7 @@ class DatedLessonsCompanion extends UpdateCompanion<DatedLesson> {
     });
   }
 
-  DatedLessonsCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? lessonID,
-      Value<DateTime>? date,
-      Value<String>? startTime,
-      Value<String>? endTime}) {
+  DatedLessonsCompanion copyWith({Value<int>? id, Value<int>? lessonID, Value<DateTime>? date, Value<String>? startTime, Value<String>? endTime}) {
     return DatedLessonsCompanion(
       id: id ?? this.id,
       lessonID: lessonID ?? this.lessonID,
@@ -1303,22 +1120,17 @@ class DatedLessonsCompanion extends UpdateCompanion<DatedLesson> {
   }
 }
 
-class $UserInfoTable extends UserInfo
-    with TableInfo<$UserInfoTable, UserInfoData> {
+class $UserInfoTable extends UserInfo with TableInfo<$UserInfoTable, UserInfoData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $UserInfoTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _keyMeta = const VerificationMeta('key');
   @override
-  late final GeneratedColumn<String> key = GeneratedColumn<String>(
-      'key', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> key = GeneratedColumn<String>('key', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-      'value', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> value = GeneratedColumn<String>('value', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [key, value];
   @override
@@ -1327,19 +1139,16 @@ class $UserInfoTable extends UserInfo
   String get actualTableName => $name;
   static const String $name = 'user_info';
   @override
-  VerificationContext validateIntegrity(Insertable<UserInfoData> instance,
-      {bool isInserting = false}) {
+  VerificationContext validateIntegrity(Insertable<UserInfoData> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('key')) {
-      context.handle(
-          _keyMeta, key.isAcceptableOrUnknown(data['key']!, _keyMeta));
+      context.handle(_keyMeta, key.isAcceptableOrUnknown(data['key']!, _keyMeta));
     } else if (isInserting) {
       context.missing(_keyMeta);
     }
     if (data.containsKey('value')) {
-      context.handle(
-          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+      context.handle(_valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
     } else if (isInserting) {
       context.missing(_valueMeta);
     }
@@ -1352,10 +1161,8 @@ class $UserInfoTable extends UserInfo
   UserInfoData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return UserInfoData(
-      key: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
-      value: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
+      key: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}key'])!,
+      value: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}value'])!,
     );
   }
 
@@ -1384,8 +1191,7 @@ class UserInfoData extends DataClass implements Insertable<UserInfoData> {
     );
   }
 
-  factory UserInfoData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory UserInfoData.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return UserInfoData(
       key: serializer.fromJson<String>(json['key']),
@@ -1417,11 +1223,7 @@ class UserInfoData extends DataClass implements Insertable<UserInfoData> {
   @override
   int get hashCode => Object.hash(key, value);
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is UserInfoData &&
-          other.key == this.key &&
-          other.value == this.value);
+  bool operator ==(Object other) => identical(this, other) || (other is UserInfoData && other.key == this.key && other.value == this.value);
 }
 
 class UserInfoCompanion extends UpdateCompanion<UserInfoData> {
@@ -1451,8 +1253,7 @@ class UserInfoCompanion extends UpdateCompanion<UserInfoData> {
     });
   }
 
-  UserInfoCompanion copyWith(
-      {Value<String>? key, Value<String>? value, Value<int>? rowid}) {
+  UserInfoCompanion copyWith({Value<String>? key, Value<String>? value, Value<int>? rowid}) {
     return UserInfoCompanion(
       key: key ?? this.key,
       value: value ?? this.value,
@@ -1495,12 +1296,9 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   late final $DatedLessonsTable datedLessons = $DatedLessonsTable(this);
   late final $UserInfoTable userInfo = $UserInfoTable(this);
   @override
-  Iterable<TableInfo<Table, Object?>> get allTables =>
-      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  Iterable<TableInfo<Table, Object?>> get allTables => allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [students, lessons, recs, weeklyLessons, datedLessons, userInfo];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [students, lessons, recs, weeklyLessons, datedLessons, userInfo];
   @override
-  DriftDatabaseOptions get options =>
-      const DriftDatabaseOptions(storeDateTimeAsText: true);
+  DriftDatabaseOptions get options => const DriftDatabaseOptions(storeDateTimeAsText: true);
 }

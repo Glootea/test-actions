@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/presentation/widgets/padding.dart';
 import 'package:queue/presentation/widgets/qr_button.dart';

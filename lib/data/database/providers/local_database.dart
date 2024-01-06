@@ -1,12 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart' show TimeOfDay;
-import 'connection.dart' as impl;
-import 'package:queue/data/database/tables.dart';
-import 'package:queue/entities/lesson.dart';
-import 'package:queue/entities/rec.dart';
+import 'package:queue/data/database/providers/local_database/tables.dart';
+import 'package:queue/entities/export.dart';
+import 'local_database/connection.dart' as impl;
 
-part 'local_database.g.dart';
-part 'stored_values_enum.dart';
+part 'local_database/local_database.g.dart';
+part 'local_database/stored_values_enum.dart';
 // ... the TodoItems table definition stays the same
 
 @DriftDatabase(tables: [Recs, Lessons, Students, WeeklyLessons, DatedLessons, UserInfo])
@@ -68,12 +67,11 @@ class LocalDatabase extends _$LocalDatabase {
     return output;
   }
 
-  Future<void> createRec(String lessonName, String studentName, DateTime time) async {
+  Future<bool> createRec(String lessonName, String studentName, DateTime time) async {
     int studentID = await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingle().then((student) => student.id);
-
     int lessonID = await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
-
-    into(recs).insert(RecsCompanion(lessonID: Value(lessonID), studentID: Value(studentID), time: Value(time), uploaded: const Value(false)));
+    await into(recs).insert(RecsCompanion(lessonID: Value(lessonID), studentID: Value(studentID), time: Value(time), uploaded: const Value(false)));
+    return true;
   }
 
   Future<void> updateUploadStatus(String lessonName, String studentName, bool status) async {
@@ -163,8 +161,8 @@ class LocalDatabase extends _$LocalDatabase {
     return (select(lessons)).get();
   }
 
-  Future<void> insertStudents(List<StudentsCompanion> list) async {
-    await students.insertAll(list.map((e) => StudentsCompanion(name: e.name, isAdmin: e.isAdmin)).toList());
+  Future<void> insertStudents(List<StudentEntity> list) async {
+    await students.insertAll(list.map((e) => StudentsCompanion(name: Value(e.name), isAdmin: Value(e.isAdmin))).toList());
   }
 
   // Future<void> setInfoTableID(String url) async {

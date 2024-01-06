@@ -17,8 +17,7 @@ class _ConnectionStatusWidgetState extends State<ConnectionStatusWidget> {
   late final Timer timer;
   String text = '';
   ConnectivityResult connectivityResult = ConnectivityResult.none;
-  bool get isConnected => (connectivityResult == ConnectivityResult.wifi ||
-      connectivityResult == ConnectivityResult.ethernet);
+  bool get isConnected => (connectivityResult == ConnectivityResult.wifi || connectivityResult == ConnectivityResult.ethernet);
   @override
   void initState() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
@@ -28,9 +27,7 @@ class _ConnectionStatusWidgetState extends State<ConnectionStatusWidget> {
       if (timer.tick % 60 == 2 || timer.tick % 60 == 50) {
         connectivityResult = await (Connectivity().checkConnectivity());
       }
-      text = (isConnected)
-          ? "Обновление данных через ${60 - (timer.tick % 60)} секунд"
-          : "Ожидание подключения";
+      text = (isConnected) ? "Обновление данных через ${60 - (timer.tick % 60)} секунд" : "Ожидание подключения";
       if (mounted) {
         setState(() {});
       }
@@ -50,12 +47,8 @@ class _ConnectionStatusWidgetState extends State<ConnectionStatusWidget> {
       height: 40,
       width: 300,
       decoration: BoxDecoration(
-          color: isConnected
-              ? Colors.green
-              : Theme.of(context).colorScheme.errorContainer,
-          borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(16))),
+          color: isConnected ? Colors.green : Theme.of(context).colorScheme.errorContainer,
+          borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16))),
       child: Center(child: Text(text)),
     );
   }

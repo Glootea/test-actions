@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:queue/entities/rec.dart';
+import 'package:queue/entities/export.dart';
 
 ///To be displayed
+@immutable
 final class LessonEntity {
   final String name;
   final TimeOfDay startTime;
@@ -9,11 +10,12 @@ final class LessonEntity {
   final List<RecEntity> recs;
   final RecEntity? userRec;
   final int? userQueuePosition;
-  LessonEntity(this.name, this.startTime, this.endTime, this.recs, [this.userRec, this.userQueuePosition]);
+  const LessonEntity(this.name, this.startTime, this.endTime, this.recs, [this.userRec, this.userQueuePosition]);
 }
 
 /// Used in settings menu.
 /// Either [WeeklyLessonSettingEntity] weeklyLessons or [DatedLessonSettingEntity] datedLessons must be provided
+@immutable
 final class LessonSettingEntity {
   final String name;
   final List<WeeklyLessonSettingEntity>? weeklyLessons;
@@ -23,12 +25,13 @@ final class LessonSettingEntity {
     assert(weeklyLessons != null || datedLessons != null, "Either weeklyLessons or datedLessons must be provided");
   }
 
-  LessonSettingEntity copyWith({String? name, List<WeeklyLessonSettingEntity>? weeklyLesson, List<DatedLessonSettingEntity>? datedLessons, bool? useWeekly}) {
+  LessonSettingEntity copyWith({String? name, List<WeeklyLessonSettingEntity>? weeklyLessons, List<DatedLessonSettingEntity>? datedLessons, bool? useWeekly}) {
     return LessonSettingEntity(name ?? this.name,
-        weeklyLessons: weeklyLesson ?? this.weeklyLessons, datedLessons: datedLessons ?? this.datedLessons, useWeekly: useWeekly ?? this.useWeekly);
+        weeklyLessons: weeklyLessons ?? this.weeklyLessons, datedLessons: datedLessons ?? this.datedLessons, useWeekly: useWeekly ?? this.useWeekly);
   }
 }
 
+@immutable
 abstract final class LessonTime {
   final TimeOfDay startTime;
   final TimeOfDay endTime;
@@ -37,6 +40,7 @@ abstract final class LessonTime {
   LessonTime copyWith({TimeOfDay? startTime, TimeOfDay? endTime});
 }
 
+@immutable
 abstract class TimeChooser extends StatefulWidget {
   final int innerCount;
   final void Function(TimeOfDay, TimeOfDay) onTimeChanged;
@@ -46,7 +50,7 @@ abstract class TimeChooser extends StatefulWidget {
 
 final class WeeklyLessonSettingEntity extends LessonTime {
   final List<int> weekdays;
-  WeeklyLessonSettingEntity(super.startTime, super.endTime, this.weekdays);
+  const WeeklyLessonSettingEntity(super.startTime, super.endTime, this.weekdays);
   @override
   WeeklyLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<int>? weekdays}) {
     return WeeklyLessonSettingEntity(
@@ -59,7 +63,7 @@ final class WeeklyLessonSettingEntity extends LessonTime {
 
 final class DatedLessonSettingEntity extends LessonTime {
   final List<DateTime> date;
-  DatedLessonSettingEntity(super.startTime, super.endTime, this.date);
+  const DatedLessonSettingEntity(super.startTime, super.endTime, this.date);
   @override
   DatedLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<DateTime>? date}) {
     return DatedLessonSettingEntity(

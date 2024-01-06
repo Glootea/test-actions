@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/presentation/widgets/info_list/info_list.dart';
 
 class LessonInfoTile extends StatefulWidget {

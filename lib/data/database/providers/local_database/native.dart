@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,8 +15,7 @@ DatabaseConnection connect() {
 
 Future<File> get databaseFile async {
   await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
-  // We use `path_provider` to find a suitable path to store our data in.
   final appDir = await getApplicationDocumentsDirectory();
-  final dbPath = p.join(appDir.path, 'todos.db');
+  final dbPath = p.join(appDir.path, 'queue.db');
   return File(dbPath);
 }

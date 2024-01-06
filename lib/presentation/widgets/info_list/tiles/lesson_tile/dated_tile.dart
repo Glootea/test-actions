@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/extension.dart';
 
 class DatedLessonTile extends TimeChooser {

@@ -1,5 +1,4 @@
-import 'package:queue/data/database/local_database.dart';
-import 'package:queue/entities/lesson.dart';
+import 'package:queue/entities/export.dart';
 import 'package:queue/logic/states.dart';
 
 sealed class QueueEvent {}
@@ -67,7 +66,7 @@ class RegisterGroupEvent extends QueueEvent {
   final String lastName;
   final String groupName;
   final List<LessonSettingEntity> lessons;
-  final List<StudentsCompanion> students;
+  final List<StudentEntity> students;
 
   RegisterGroupEvent(this.firstName, this.lastName, this.groupName, this.lessons, this.students);
 }

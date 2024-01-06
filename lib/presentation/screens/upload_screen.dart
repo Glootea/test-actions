@@ -36,8 +36,7 @@ class _UploadScreenState extends State<UploadScreen> {
         return true;
       }
       if (previous is UploadFromLinkState && current is UploadFromLinkState) {
-        return previous.message != current.message ||
-            previous.isLoading != current.isLoading;
+        return previous.message != current.message || previous.isLoading != current.isLoading;
       }
       return false;
     }, builder: ((context, state) {
@@ -64,30 +63,23 @@ class _UploadScreenState extends State<UploadScreen> {
                       )
                     : Center(
                         child: SingleChildScrollView(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  "Спасибо за помощь!",
-                                  style:
-                                      Theme.of(context).textTheme.headlineLarge,
-                                ),
-                                const MyPadding(),
-                                Text(
-                                  state.message ?? '',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ]),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                            Text(
+                              "Спасибо за помощь!",
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            const MyPadding(),
+                            Text(
+                              state.message ?? '',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                              textAlign: TextAlign.center,
+                            ),
+                          ]),
                         ),
                       )),
             persistentFooterAlignment: AlignmentDirectional.bottomEnd,
             persistentFooterButtons: [
-              OutlinedButton(
-                  onPressed: () =>
-                      context.read<QueueBloc>().add(FindUserEvent()),
-                  child: Text("OK",
-                      style: Theme.of(context).textTheme.bodyMedium)),
+              OutlinedButton(onPressed: () => context.read<QueueBloc>().add(FindUserEvent()), child: Text("OK", style: Theme.of(context).textTheme.bodyMedium)),
             ],
           ),
         );

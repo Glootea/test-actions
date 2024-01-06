@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:queue/data/database/local_database.dart';
+import 'package:queue/data/database/providers/local_database.dart';
 
 LocalDatabase constructDb() => throw UnimplementedError();
 DatabaseConnection connect() {
@@ -7,6 +7,5 @@ DatabaseConnection connect() {
 }
 
 Never _unsupported() {
-  throw UnsupportedError(
-      'No suitable database implementation was found on this platform.');
+  throw UnsupportedError('No suitable database implementation was found on this platform.');
 }
