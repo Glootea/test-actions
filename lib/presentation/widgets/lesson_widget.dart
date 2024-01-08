@@ -9,6 +9,7 @@ import 'package:queue/presentation/widgets/timer_start_reg.dart';
 import 'package:intl/intl.dart';
 
 class LessonWidget extends StatefulWidget {
+  //TODO: fix text color to black
   final LessonEntity lesson;
   const LessonWidget(this.lesson, {super.key});
 

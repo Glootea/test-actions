@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart' show TimeOfDay;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show AssetImage, TimeOfDay;
 import 'package:queue/data/database/providers/local_database/tables.dart';
 import 'package:queue/entities/export.dart';
+import 'package:queue/extension.dart';
 import 'local_database/connection.dart' as impl;
 
 part 'local_database/local_database.g.dart';
@@ -11,9 +13,25 @@ part 'local_database/stored_values_enum.dart';
 @DriftDatabase(tables: [Recs, Lessons, Students, WeeklyLessons, DatedLessons, UserInfo])
 class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(impl.connect());
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onUpgrade: (_, a, b) async {
+        // await m.createAll();
+        if (kDebugMode) {
+          await delete(recs).go();
+          await delete(lessons).go();
+          await delete(students).go();
+          await delete(weeklyLessons).go();
+          await delete(datedLessons).go();
+          await delete(userInfo).go(); // TODO: database cleanup on every debug schemaVersion change
+        }
+      },
+    );
+  }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
   Future<List<RecEntity>> getRecs(String lessonName) =>
       (((select(recs).join([leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)), leftOuterJoin(students, recs.studentID.equalsExp(students.id))]))
                 ..where(lessons.name.equals(lessonName))
@@ -41,17 +59,26 @@ class LocalDatabase extends _$LocalDatabase {
               .get())
           .indexWhere((element) => element.read(students.name) == userName);
 
-  Future<List<LessonEntity>> todayLessons(DateTime today, int weekday, String studentName) async {
-    final selected = await (select(weeklyLessons)..where((tbl) => tbl.weekDay.equals(weekday)))
-        .join([leftOuterJoin(lessons, weeklyLessons.lessonID.equalsExp(lessons.id))]).get();
+  Future<List<LessonEntity>> todayLessons(DateTime today, String studentName) async {
+    final weekday = today.weekday;
+    // final selected = await (select(weeklyLessons)..where((tbl) => tbl.weekDay.equals(weekday))) // TODO: get dated lessons
+    // .join([crossJoin(datedLessons, weeklyLessons.id.equalsExp(datedLessons.lessonID))])
+    //     .join([leftOuterJoin(lessons, weeklyLessons.lessonID.equalsExp(lessons.id))]).get(); //TODO: fix - now returns 12 instances with growings ids
+    final selected = await (select(lessons).join([
+          leftOuterJoin(weeklyLessons, lessons.id.equalsExp(weeklyLessons.lessonID)),
+        ])
+              ..where(weeklyLessons.weekDay.equals(weekday)))
+            .get() +
+        await (select(lessons).join([leftOuterJoin(datedLessons, lessons.id.equalsExp(datedLessons.lessonID))])
+              ..where(datedLessons.date.day.equals(today.day) & datedLessons.date.month.equals(today.month) & datedLessons.date.year.equals(today.year)))
+            .get();
     final result = selected.map((rawRow) async {
-      final row = rawRow.rawData.data;
-      String lessonName = row['name'];
+      final Map row = rawRow.rawData.data.map((key, value) => MapEntry(key.split('.').last, value));
+      String lessonName = row['name']!;
       List<RecEntity> recs = await getRecs(lessonName);
       RecEntity? studentRec = recs.where((element) => element.userName == studentName).firstOrNull;
-
-      TimeOfDay startTime = row['startTime'].toTimeOfDay;
-      TimeOfDay endTime = row['endTime'].toTimeOfDay;
+      TimeOfDay startTime = (row['start_time']! as String).toTimeOfDay;
+      TimeOfDay endTime = (row['end_time']! as String).toTimeOfDay;
       if (studentRec == null) {
         return LessonEntity(lessonName, startTime, endTime, recs);
       } else {
@@ -59,11 +86,7 @@ class LocalDatabase extends _$LocalDatabase {
         return LessonEntity(lessonName, startTime, endTime, recs, studentRec, position);
       }
     }).toList();
-    final output = <LessonEntity>[];
-    for (final r in result) {
-      output.add((await r));
-    }
-
+    final output = await Future.wait(result);
     return output;
   }
 
@@ -134,35 +157,47 @@ class LocalDatabase extends _$LocalDatabase {
     return (await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingleOrNull())?.isAdmin ?? false;
   }
 
+  Future<int> updateStudent(String userName, {String? newUserName, bool? newIsAdmin}) {
+    return (update(students)..where((tbl) => tbl.name.equals(userName))).write(newIsAdmin == null
+        ? StudentsCompanion(name: newUserName == null ? Value(userName) : Value(newUserName))
+        : StudentsCompanion(name: newUserName == null ? Value(userName) : Value(newUserName), isAdmin: Value(newIsAdmin)));
+  }
   // Future<String?> getBackgroundImage() async {
   //   return (await (select(userInfo)..where((tbl) => tbl.key.equals(_backgroundImageKey))).getSingleOrNull())?.value;
   // }
 
-  Future<void> insertLessons(List<LessonSettingEntity> list) async {
+  Future<bool> insertLessons(List<LessonSettingEntity> list, List<String> onlineIds) async {
+    int i = 0;
     await Future.wait(list.map((lesson) async {
-      int id = await lessons.insertOne(LessonsCompanion(name: Value(lesson.name), onlineID: Value(''))); // TODO: get onlineID
+      int id = await lessons.insertOne(LessonsCompanion(name: Value(lesson.name), onlineID: Value(onlineIds[i]))); // TODO: get onlineID
+      i++;
       if (lesson.useWeekly) {
         await weeklyLessons.insertAll(lesson.weeklyLessons!
             .map((lesson) => lesson.weekdays.map((weekday) => WeeklyLessonsCompanion(
-                lessonID: Value(id), weekDay: Value(weekday), startTime: Value(lesson.startTime.toString()), endTime: Value(lesson.endTime.toString()))))
+                lessonID: Value(id),
+                weekDay: Value(weekday),
+                startTime: Value(lesson.startTime.toShortString()),
+                endTime: Value(lesson.endTime.toShortString()))))
             .toList()
             .expand((element) => element));
       } else {
         await datedLessons.insertAll(lesson.datedLessons!
             .map((lesson) => lesson.date.map((date) => DatedLessonsCompanion(
-                lessonID: Value(id), date: Value(date), startTime: Value(lesson.startTime.toString()), endTime: Value(lesson.endTime.toString()))))
+                lessonID: Value(id), date: Value(date), startTime: Value(lesson.startTime.toShortString()), endTime: Value(lesson.endTime.toShortString()))))
             .toList()
             .expand((element) => element));
       }
     }).toList());
+    return true;
   }
 
   Future<List<Lesson>> getLessons() {
     return (select(lessons)).get();
   }
 
-  Future<void> insertStudents(List<StudentEntity> list) async {
+  Future<bool> insertStudents(List<StudentEntity> list) async {
     await students.insertAll(list.map((e) => StudentsCompanion(name: Value(e.name), isAdmin: Value(e.isAdmin))).toList());
+    return true;
   }
 
   // Future<void> setInfoTableID(String url) async {

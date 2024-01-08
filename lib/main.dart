@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/data/database/providers/local_database.dart';
+import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
@@ -20,10 +20,10 @@ void main() async {
     print(e.toString());
   }
   // TODO: change to database service
-  LocalDatabase localDatabase = LocalDatabase();
-  final userDataBase = await UserDataBase.getConfiguredUserDataBase(localDatabase);
+  DataBaseService databaseService = await DataBaseService.instance();
+  final userDataBase = await UserDataBase.getConfiguredUserDataBase(databaseService.localDatabase);
 
-  runApp(BlocProvider(create: (context) => QueueBloc(userDataBase, localDatabase, LoadingState())..add(FindUserEvent()), child: const MyApp()));
+  runApp(BlocProvider(create: (context) => QueueBloc(userDataBase, databaseService, LoadingState())..add(FindUserEvent()), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

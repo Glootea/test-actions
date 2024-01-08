@@ -2,11 +2,7 @@ import 'package:gsheets/gsheets.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/secret/table_credentials.dart';
-
-const String _infoSheetName = 'info';
-const String _namesSheetName = 'names';
-const String _lessonsSheetName = 'lessons';
-const String _lessonTimesSheetName = 'lessonTimes';
+part 'table_strings.dart';
 
 class OnlineDataBase {
   final _gsheets = GSheets(CREDENTIALS);
@@ -21,37 +17,41 @@ class OnlineDataBase {
   OnlineDataBase._(this._infoTableID);
   static OnlineDataBase? _instance;
 
-  static Future<OnlineDataBase> instance(String tableID) async {
-    if (_instance != null) {
+  static Future<OnlineDataBase> instance({String? tableID}) async {
+    if (_instance != null && tableID == null) {
       return _instance!;
     }
-    _instance = OnlineDataBase._(tableID);
+    _instance = OnlineDataBase._(tableID!);
     // _instance = OnlineDataBase._(tableID, map);
     final spreadsheet = await _instance!._gsheets.spreadsheet(tableID);
-    if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll(["info", "names", "lessons", "lessonTimes"])) {
+    if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName])) {
       return _instance!;
     }
+    await _createInfoFileBase(spreadsheet);
+    return _instance!;
+  }
+
+  static Future<bool> _createInfoFileBase(Spreadsheet spreadsheet) async {
     final insertNames = spreadsheet.addWorksheet(_namesSheetName);
     final insertLessons = spreadsheet.addWorksheet(_lessonsSheetName);
     final insertLessonTimes = spreadsheet.addWorksheet(_lessonTimesSheetName);
     final insertInfo = spreadsheet.addWorksheet(_infoSheetName);
     final result = await Future.wait([insertInfo, insertNames, insertLessons, insertLessonTimes]);
     final _ = await spreadsheet.deleteWorksheet(spreadsheet.worksheetByTitle("Лист1") ?? (await spreadsheet.addWorksheet("Лист1")));
-    final fillInfo1 = result[0].values.insertRow(1, ["Ключи", "Значения"]);
+    final fillInfo1 = result[0].values.insertRow(1, [_keys, _values]);
     final fillInfo2 = result[0].values.insertColumn(
         1,
         [
-          "Группа",
-          "Староста",
-          "Админы",
+          _group,
+          _headMan,
+          _admins,
         ],
         fromRow: 2);
-    final fillNames = result[1].values.insertRow(1, ["Имя/Фамилия"]);
-    final fillLessons =
-        result[2].values.insertRow(1, ["id", "Название", "id таблицы", "Учитывать количество сданных работ", "Автоочистка", "Последняя очистка"]);
-    final fillLessonTimes = result[3].values.insertRow(1, ["id", "Даты", "Дни недели", "Время начала", "Время окончания"]);
+    final fillNames = result[1].values.insertRow(1, [_nameSurname]);
+    final fillLessons = result[2].values.insertRow(1, [_id, _name, _tableID, _useDoneWorkCount, _autodelete, _lastDelete]);
+    final fillLessonTimes = result[3].values.insertRow(1, [_id, _dates, _weekdays, _startTime, _endTime]);
     await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
-    return _instance!;
+    return true;
   }
 
   // final TABLEID = ''; //TODO: get ss id
@@ -158,12 +158,12 @@ class OnlineDataBase {
   Future<bool> fillStudents(List<StudentEntity> list) async {
     // TODO: sort by alphabet, but remember to fill head(now index = 0, won't be later)
     _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
-    List<Future> tasks = List.filled(2, Future.value(null), growable: false);
+    List<Future> tasks = [];
     _namesSheet = _spreadsheet!.worksheetByTitle(_namesSheetName);
     _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
     if (_namesSheet == null || _infoSheet == null) {
-      tasks[0] = _namesSheet == null ? _spreadsheet!.addWorksheet(_namesSheetName) : Future.value(null);
-      tasks[1] = _infoSheet == null ? _spreadsheet!.addWorksheet(_infoSheetName) : Future.value(null);
+      tasks.add(_namesSheet == null ? _spreadsheet!.addWorksheet(_namesSheetName) : Future.value(null));
+      tasks.add(_infoSheet == null ? _spreadsheet!.addWorksheet(_infoSheetName) : Future.value(null));
       final result = await Future.wait(tasks);
       _namesSheet = result[0];
       _infoSheet = result[1];
@@ -188,11 +188,22 @@ class OnlineDataBase {
         column[i + j] = list[j].name;
       }
     }
+    tasks = [];
+    tasks.add(_namesSheet?.values.insertColumn(1, column) ?? Future(() => null));
+    tasks.add(_infoSheet?.values.insertValueByKeys(adminId.join(', '), columnKey: _values, rowKey: _admins) ?? Future(() => null));
 
-    tasks[0] = _namesSheet?.values.insertColumn(1, column) ?? Future(() => null);
-    tasks[1] = _infoSheet?.values.insertValueByKeys(adminId.join(', '), columnKey: "Значения", rowKey: "Админы") ?? Future(() => null);
     // TODO: fill class head
     await Future.wait(tasks);
+    return true;
+  }
+
+  Future<bool> fillGroupInfo(String headManName, String groupName) async {
+    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
+    _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
+    await Future.wait([
+      _infoSheet?.values.insertValueByKeys(headManName, columnKey: _values, rowKey: _headMan) ?? Future(() => null),
+      _infoSheet?.values.insertValueByKeys(groupName, columnKey: _values, rowKey: _group) ?? Future(() => null)
+    ]);
     return true;
   }
 

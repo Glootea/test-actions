@@ -16,7 +16,6 @@ DatabaseConnection connect() {
       debugPrint('Using ${db.chosenImplementation} due to unsupported '
           'browser features: ${db.missingFeatures}');
     }
-
     return db.resolvedExecutor;
   }));
 }

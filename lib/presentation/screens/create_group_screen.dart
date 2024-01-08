@@ -114,8 +114,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                         errorMessage = "Необходимо заполнить все поля, добавить хотя бы одного студента и занятие";
                         setState(() {});
                       } else {
-                        context.read<QueueBloc>().add(RegisterGroupEvent(
-                            firstName!, lastName!, groupName!, lessons, [StudentEntity('${firstName!} ${lastName!}', isAdmin: true)] + students));
+                        context.read<QueueBloc>().add(RegisterGroupEvent(firstName!, lastName!, groupName!, lessons, students));
                       }
                     },
                     child: const Text(

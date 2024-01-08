@@ -28,7 +28,7 @@ extension TimeArithmetic on TimeOfDay {
 
 extension TimeFromString on String {
   TimeOfDay get toTimeOfDay {
-    final List<int> a = split(':').map((e) => int.parse(e)).toList();
+    final List<int> a = split('(').last.split(')').first.split(':').map((e) => int.parse(e)).toList();
     return TimeOfDay(hour: a[0], minute: a[1]);
   }
 }

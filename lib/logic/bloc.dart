@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/database/providers/local_database.dart';
 import 'package:queue/data/database/providers/online_database.dart';
 import 'package:queue/data/user_database.dart';
@@ -9,34 +9,31 @@ import 'package:queue/entities/export.dart';
 import 'package:queue/data/encryprion.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:googleapis/drive/v3.dart';
 
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase _userDataBase;
-  final LocalDatabase _localDataBase;
+  final DataBaseService _databaseService;
   OnlineDataBase? _onlineDBBacked;
   Future<OnlineDataBase> get _onlineDB async => _onlineDBBacked ?? await _configureOnlineDB();
   String? backgroundImageEncoded;
   String get userName => _userDataBase.getUserName;
   bool? _isAdminBacked;
-  GoogleSignIn? _googleSignIn;
+
   Future<bool> get _isAdmin async {
-    _isAdminBacked ??= await _localDataBase.isAdmin(userName);
+    _isAdminBacked ??= _userDataBase.isAdmin;
     return _isAdminBacked!;
   }
 
   Future<List<LessonEntity>> _todayLessons(String studentName) async {
     DateTime today = DateTime.now();
-    int weekDay = today.weekday;
-    return await _localDataBase.todayLessons(today, weekDay, studentName);
+    return await _databaseService.todayLessons(today, studentName);
   }
 
   Future<void> _getBackgroundImage() async {
-    backgroundImageEncoded ??= await _localDataBase.get(StoredValues.backgroundImage);
+    backgroundImageEncoded ??= await _databaseService.get(StoredValues.backgroundImage);
   }
 
-  QueueBloc(this._userDataBase, this._localDataBase, super.initialState) {
+  QueueBloc(this._userDataBase, this._databaseService, super.initialState) {
     // --- loading
 
     // --- user Authentication ---
@@ -57,7 +54,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       (event, emit) async {
         try {
           List<RecEntity> list = await (await _onlineDB).getData();
-          _localDataBase.import(list);
+          _databaseService.import(list);
         } catch (e) {
           log("Failed to import db due to load failure");
         }
@@ -95,14 +92,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     // login screen
 
     on<CreateGroupIntentionEvent>((event, emit) async {
-      _googleSignIn = GoogleSignIn(
-        clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
-        scopes: [
-          'https://www.googleapis.com/auth/drive.file',
-        ],
-      );
-      await _googleSignIn!.signOut();
-      final user = await _googleSignIn!.signIn();
+      final user = await _databaseService.signInGoogle();
       if (user != null) {
         emit(UserUnAuthenticatedState(createGroupState: true));
       } else {
@@ -125,14 +115,15 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _authenticateUser(String userName) async {
-    _userDataBase.fillUser(userName);
-    _userDataBase = await UserDataBase.getConfiguredUserDataBase(_localDataBase);
-    if (_userDataBase.userExist) {
-      add(NoUserEvent("Пользователь c таким ключем не найден"));
-    } else {
-      await _getBackgroundImage();
-      add(UserAuthenticatedEvent());
-    }
+    // TODO: move to database service
+    // _userDataBase.fillUser(userName);
+    // _userDataBase = await UserDataBase.getConfiguredUserDataBase(_databaseService);
+    // if (_userDataBase.userExist) {
+    //   add(NoUserEvent("Пользователь c таким ключем не найден"));
+    // } else {
+    //   await _getBackgroundImage();
+    //   add(UserAuthenticatedEvent());
+    // }
   }
 
   Future<void> userLogOut() async {
@@ -144,30 +135,30 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 //---main screen ---
 
   Future<void> _createReg(String lessonName, Emitter emit) async {
-    DateTime time = DateTime.now();
-    await _localDataBase.createRec(lessonName, _userDataBase.getUserName, time);
-    emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    bool isOnline = await (await _onlineDB).createRec(lessonName, _userDataBase.getUserName, time);
-    if (isOnline == true) {
-      _localDataBase.updateUploadStatus(lessonName, _userDataBase.getUserName, true);
-      emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    } else {
-      _localDataBase.updateUploadStatus(lessonName, _userDataBase.getUserName, false);
-      //TODO : cache for later upload
-    }
+    // TODO: move to database service
+    //   DateTime time = DateTime.now();
+    //   await _databaseService.createRec(lessonName, _userDataBase.getUserName, time);
+    //   emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
+    //   bool isOnline = await (await _onlineDB).createRec(lessonName, _userDataBase.getUserName, time);
+    //   if (isOnline == true) {
+    //     _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, true);
+    //     emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
+    //   } else {
+    //     _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, false);
+    //     //TODO : cache for later upload
+    //   }
+    // }
   }
-
   Future<void> _deleteReg(String lessonName, Emitter emit) async {
-    await _localDataBase.deleteRec(lessonName, _userDataBase.getUserName);
-    emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    bool isOnline = await (await _onlineDB).deleteRec(lessonName, _userDataBase.getUserName);
-    if (isOnline == true) {
-      _localDataBase.deleteRec(lessonName, _userDataBase.getUserName);
-      emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    }
+    //   await _databaseService.deleteRec(lessonName, _userDataBase.getUserName);
+    //   emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
+    //   bool isOnline = await (await _onlineDB).deleteRec(lessonName, _userDataBase.getUserName);
+    //   if (isOnline == true) {
+    //     _databaseService.deleteRec(lessonName, _userDataBase.getUserName);
+    //     emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
+    //   }
     //else {
     //   //TODO : cache for later upload
-    // }
   }
 
   // --- upload screen
@@ -200,60 +191,31 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _onRegisterUserEvent(RegisterUserEvent event, Emitter<QueueState> emit) async {
-    _userDataBase.fillUser(event.inviteState.userName);
-    _userDataBase = await UserDataBase.getConfiguredUserDataBase(_localDataBase);
-    if (_userDataBase.userExist) {
-      add(NoUserEvent("Пользователь c таким ключем не найден"));
-    } else {
-      add(UserAuthenticatedEvent());
-    }
+    //TODO: move to database service
+    // _userDataBase.fillUser(event.inviteState.userName);
+    // _userDataBase = await UserDataBase.getConfiguredUserDataBase(_databaseService);
+    // if (_userDataBase.userExist) {
+    //   add(NoUserEvent("Пользователь c таким ключем не найден"));
+    // } else {
+    //   add(UserAuthenticatedEvent());
+    // }
   }
 
   Future<void> _registerGroup(RegisterGroupEvent event, Emitter<QueueState> emit) async {
-    if (_googleSignIn?.currentUser == null) {
-      await _googleSignIn?.signIn();
-    }
-    // if (_googleSignIn == null) {
-    //   throw Exception("Google sign in not initialized");
-    // }
-    final httpClient = (await _googleSignIn?.authenticatedClient())!;
-    final driveApi = DriveApi(httpClient);
-    final folder = await driveApi.files.create(File(mimeType: 'application/vnd.google-apps.folder', name: "Очередь работ"));
-    final infoFileID = await _createFileOnDrive(folder.id!, "info", driveApi);
-    // TODO: autorize user fully
-    // _localDataBase.setInfoTableID(infoFileID);
-    _localDataBase.set(StoredValues.infoTableID, infoFileID);
-    List<Future<String>> lessonCreation = [];
-    for (final lesson in event.lessons) {
-      lessonCreation.add(Future.value(_createFileOnDrive(folder.id!, lesson.name, driveApi)));
-    }
-    final lessonIds = await Future.wait(lessonCreation);
-    await (await _onlineDB).fillStudents(event.students);
-    await (await _onlineDB).fillLessons(event.lessons, lessonIds);
-    _localDataBase.insertLessons(event.lessons);
-    _localDataBase.insertStudents(event.students);
+    final userName = '${event.firstName} ${event.lastName}';
+    await _userDataBase.fillUser(userName);
+    await _databaseService.registerGroup(event.lessons, [StudentEntity(userName, isAdmin: true)] + event.students, userName, event.groupName);
+    emit(MainState(await _todayLessons(userName), true));
   }
 
   Future<OnlineDataBase> _configureOnlineDB() async {
-    final id = await _localDataBase.get(StoredValues.infoTableID);
+    final id = await _databaseService.get(StoredValues.infoTableID);
     // TODO: get map of names to id from db
     if (id == null) throw Exception("Table id not found. Configure database first");
-    _onlineDBBacked = await OnlineDataBase.instance(id);
+    _onlineDBBacked = await OnlineDataBase.instance(tableID: id);
     print(id);
     return _onlineDBBacked!;
   }
 
-  Future<String> _createFileOnDrive(String folderId, String name, DriveApi driveApi) async {
-    final infoFile = File(
-      parents: [folderId],
-      mimeType: "application/vnd.google-apps.spreadsheet",
-      name: name,
-    );
-    final permisson = Permission(role: "writer", type: "user", emailAddress: "queue-410@queue-401413.iam.gserviceaccount.com");
-    final onlineFile = await driveApi.files.create(infoFile);
-    await driveApi.permissions.create(permisson, onlineFile.id!);
-    log(onlineFile.id!);
-    return onlineFile.id!;
-  }
   // Future<void> getData() async {}
 }

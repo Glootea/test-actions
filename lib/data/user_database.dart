@@ -3,7 +3,7 @@ import 'package:queue/data/database/providers/local_database.dart';
 class UserDataBase {
   final LocalDatabase _storage;
   String? _userName;
-  String get getUserName => _userName!;
+  String get getUserName => _userName ?? "sasha rybkin"; //TODO: throws null error
   bool? _isAdmin;
   bool get isAdmin => _isAdmin ?? false;
 
@@ -17,9 +17,12 @@ class UserDataBase {
     return db;
   }
 
-  void fillUser(String userName) {
-    _storage.set(StoredValues.userName, userName);
-    _storage.isAdmin(userName).then((value) => _isAdmin = value);
+  Future<void> fillUser(String userName) async {
+    //TODO: fix broken auth from memory
+    await _storage.set(StoredValues.userName, userName);
+    _userName = userName;
+    // _storage.isAdmin(userName).then((value) => _isAdmin = value);
+    // await _storage.updateStudent(userName, newIsAdmin: true);
   }
 
   bool get userExist => _userName?.isNotEmpty ?? false;
