@@ -16,7 +16,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   OnlineDataBase? _onlineDBBacked;
   Future<OnlineDataBase> get _onlineDB async => _onlineDBBacked ?? await _configureOnlineDB();
   String? backgroundImageEncoded;
-  String get userName => _userDataBase.getUserName;
+  String? get userName => _userDataBase.getUserName;
   bool? _isAdminBacked;
 
   Future<bool> get _isAdmin async {
@@ -46,10 +46,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       (event, emit) => emit(UserUnAuthenticatedState(errorMessage: event.errorMessage)),
       transformer: sequential(),
     );
-    on<UserAuthenticateEvent>(
-      (event, emit) async => await _authenticateUser(event.userID),
-      transformer: sequential(),
-    );
+    // on<UserAuthenticateEvent>(
+    //   (event, emit) async => await _authenticateUser(event.userID),
+    //   transformer: sequential(),
+    // );
     on<UserAuthenticatedEvent>(
       (event, emit) async {
         try {
@@ -59,7 +59,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
           log("Failed to import db due to load failure");
         }
         emit(
-          MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin),
+          MainState(await _todayLessons(_userDataBase.getUserName!), await _isAdmin),
         );
       },
       transformer: sequential(),
@@ -203,8 +203,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _registerGroup(RegisterGroupEvent event, Emitter<QueueState> emit) async {
     final userName = '${event.firstName} ${event.lastName}';
-    await _userDataBase.fillUser(userName);
-    await _databaseService.registerGroup(event.lessons, [StudentEntity(userName, isAdmin: true)] + event.students, userName, event.groupName);
+    await Future.wait([
+      _userDataBase.fillUser(userName),
+      _databaseService.registerGroup(event.lessons, [StudentEntity(userName, isAdmin: true)] + event.students, userName, event.groupName)
+    ]);
     emit(MainState(await _todayLessons(userName), true));
   }
 

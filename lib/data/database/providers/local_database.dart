@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show AssetImage, TimeOfDay;
 import 'package:queue/data/database/providers/local_database/tables.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
@@ -17,14 +16,14 @@ class LocalDatabase extends _$LocalDatabase {
   MigrationStrategy get migration {
     return MigrationStrategy(
       onUpgrade: (_, a, b) async {
-        // await m.createAll();
         if (kDebugMode) {
+          // database cleanup on every debug schemaVersion change
           await delete(recs).go();
           await delete(lessons).go();
           await delete(students).go();
           await delete(weeklyLessons).go();
           await delete(datedLessons).go();
-          await delete(userInfo).go(); // TODO: database cleanup on every debug schemaVersion change
+          await delete(userInfo).go();
         }
       },
     );
@@ -32,28 +31,36 @@ class LocalDatabase extends _$LocalDatabase {
 
   @override
   int get schemaVersion => 3;
-  Future<List<RecEntity>> getRecs(String lessonName) =>
-      (((select(recs).join([leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)), leftOuterJoin(students, recs.studentID.equalsExp(students.id))]))
+  Future<List<RecEntity>> getRecs(String lessonName) => (((select(recs).join([
+        leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+      ]))
                 ..where(lessons.name.equals(lessonName))
                 ..orderBy([OrderingTerm.asc(recs.time)]))
               .get())
           .then((rows) => rows.map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!)).toList());
 
   @Deprecated('Get from recs list sync')
-  Future<RecEntity?> getUserRec(String lessonName, String studentName) =>
-      (((select(recs).join([leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)), leftOuterJoin(students, recs.studentID.equalsExp(students.id))]))
+  Future<RecEntity?> getUserRec(String lessonName, String studentName) => (((select(recs).join([
+        leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+      ]))
                 ..where(lessons.name.equals(lessonName) & students.name.equals(studentName)))
               .getSingle())
           .then((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!));
 
-  Future<List<RecEntity>> getNotUploadedRecs(String userName) =>
-      (((select(recs).join([leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)), leftOuterJoin(students, recs.studentID.equalsExp(students.id))])))
+  Future<List<RecEntity>> getNotUploadedRecs(String userName) => (((select(recs).join([
+        leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+      ])))
             ..where(students.name.equals(userName) & recs.uploaded.equals(false)))
           .get()
           .then((rows) => rows.map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!)).toList());
 
-  Future<int> getQueuePlace(String lessonName, String userName) async =>
-      (await ((select(recs).join([leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)), leftOuterJoin(students, recs.studentID.equalsExp(students.id))]))
+  Future<int> getQueuePlace(String lessonName, String userName) async => (await ((select(recs).join([
+        leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+      ]))
                 ..where(lessons.name.equals(lessonName))
                 ..orderBy([OrderingTerm(expression: recs.time)]))
               .get())
@@ -61,33 +68,43 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<List<LessonEntity>> todayLessons(DateTime today, String studentName) async {
     final weekday = today.weekday;
-    // final selected = await (select(weeklyLessons)..where((tbl) => tbl.weekDay.equals(weekday))) // TODO: get dated lessons
-    // .join([crossJoin(datedLessons, weeklyLessons.id.equalsExp(datedLessons.lessonID))])
-    //     .join([leftOuterJoin(lessons, weeklyLessons.lessonID.equalsExp(lessons.id))]).get(); //TODO: fix - now returns 12 instances with growings ids
-    final selected = await (select(lessons).join([
-          leftOuterJoin(weeklyLessons, lessons.id.equalsExp(weeklyLessons.lessonID)),
-        ])
-              ..where(weeklyLessons.weekDay.equals(weekday)))
-            .get() +
-        await (select(lessons).join([leftOuterJoin(datedLessons, lessons.id.equalsExp(datedLessons.lessonID))])
-              ..where(datedLessons.date.day.equals(today.day) & datedLessons.date.month.equals(today.month) & datedLessons.date.year.equals(today.year)))
-            .get();
-    final result = selected.map((rawRow) async {
-      final Map row = rawRow.rawData.data.map((key, value) => MapEntry(key.split('.').last, value));
-      String lessonName = row['name']!;
-      List<RecEntity> recs = await getRecs(lessonName);
-      RecEntity? studentRec = recs.where((element) => element.userName == studentName).firstOrNull;
-      TimeOfDay startTime = (row['start_time']! as String).toTimeOfDay;
-      TimeOfDay endTime = (row['end_time']! as String).toTimeOfDay;
-      if (studentRec == null) {
-        return LessonEntity(lessonName, startTime, endTime, recs);
-      } else {
-        int position = recs.indexOf(studentRec) + 1;
-        return LessonEntity(lessonName, startTime, endTime, recs, studentRec, position);
-      }
+    final selected = await _selectTodayLessons(weekday, today);
+    final result = selected.map((rawRow) {
+      return _mapTypedResultToLessonEntity(rawRow, studentName);
     }).toList();
     final output = await Future.wait(result);
     return output;
+  }
+
+  Future<LessonEntity> _mapTypedResultToLessonEntity(TypedResult rawRow, String studentName) async {
+    final Map row = rawRow.rawData.data.map((key, value) => MapEntry(key.split('.').last, value));
+    final lessonName = row['name']!;
+    final recs = await getRecs(lessonName);
+    final studentRec = recs.where((element) => element.userName == studentName).firstOrNull;
+    final startTime = (row['start_time']! as String).toTimeOfDay;
+    final endTime = (row['end_time']! as String).toTimeOfDay;
+    if (studentRec == null) {
+      return LessonEntity(lessonName, startTime, endTime, recs);
+    } else {
+      final queuePosition = recs.indexOf(studentRec) + 1;
+      return LessonEntity(lessonName, startTime, endTime, recs, studentRec, queuePosition);
+    }
+  }
+
+  Future<List<TypedResult>> _selectTodayLessons(int weekday, DateTime today) async {
+    final lessonSelection = select(lessons);
+    return (await Future.wait([
+      (lessonSelection.join([
+        leftOuterJoin(weeklyLessons, lessons.id.equalsExp(weeklyLessons.lessonID)),
+      ])
+            ..where(weeklyLessons.weekDay.equals(weekday)))
+          .get(),
+      (lessonSelection.join([leftOuterJoin(datedLessons, lessons.id.equalsExp(datedLessons.lessonID))])
+            ..where(datedLessons.date.day.equals(today.day) & datedLessons.date.month.equals(today.month) & datedLessons.date.year.equals(today.year)))
+          .get()
+    ]))
+        .expand((e) => e)
+        .toList();
   }
 
   Future<bool> createRec(String lessonName, String studentName, DateTime time) async {
@@ -99,23 +116,18 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<void> updateUploadStatus(String lessonName, String studentName, bool status) async {
     int studentID = await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingle().then((student) => student.id);
-
     int lessonID = await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
-
-    (update(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID))).write(RecsCompanion(uploaded: Value(status)));
+    await (update(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID))).write(RecsCompanion(uploaded: Value(status)));
   }
 
   Future<void> deleteRec(String lessonName, String studentName) async {
     int studentID = await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingle().then((student) => student.id);
-
     int lessonID = await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
-
-    (delete(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID))).go();
+    await (delete(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID))).go();
   }
 
   Future<void> deleteAllRecs(String lessonName) async {
     int lessonID = await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
-
     await (delete(recs)..where((tbl) => tbl.lessonID.equals(lessonID))).go();
   }
 
@@ -166,10 +178,10 @@ class LocalDatabase extends _$LocalDatabase {
   //   return (await (select(userInfo)..where((tbl) => tbl.key.equals(_backgroundImageKey))).getSingleOrNull())?.value;
   // }
 
-  Future<bool> insertLessons(List<LessonSettingEntity> list, List<String> onlineIds) async {
+  Future<void> insertLessons(List<LessonSettingEntity> list, List<String> onlineIds) async {
     int i = 0;
     await Future.wait(list.map((lesson) async {
-      int id = await lessons.insertOne(LessonsCompanion(name: Value(lesson.name), onlineID: Value(onlineIds[i]))); // TODO: get onlineID
+      int id = await lessons.insertOne(LessonsCompanion(name: Value(lesson.name), onlineID: Value(onlineIds[i])));
       i++;
       if (lesson.useWeekly) {
         await weeklyLessons.insertAll(lesson.weeklyLessons!
@@ -188,16 +200,10 @@ class LocalDatabase extends _$LocalDatabase {
             .expand((element) => element));
       }
     }).toList());
-    return true;
   }
 
-  Future<List<Lesson>> getLessons() {
-    return (select(lessons)).get();
-  }
-
-  Future<bool> insertStudents(List<StudentEntity> list) async {
+  Future<void> insertStudents(List<StudentEntity> list) async {
     await students.insertAll(list.map((e) => StudentsCompanion(name: Value(e.name), isAdmin: Value(e.isAdmin))).toList());
-    return true;
   }
 
   // Future<void> setInfoTableID(String url) async {

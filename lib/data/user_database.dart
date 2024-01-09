@@ -3,7 +3,7 @@ import 'package:queue/data/database/providers/local_database.dart';
 class UserDataBase {
   final LocalDatabase _storage;
   String? _userName;
-  String get getUserName => _userName ?? "sasha rybkin"; //TODO: throws null error
+  String? get getUserName => _userName;
   bool? _isAdmin;
   bool get isAdmin => _isAdmin ?? false;
 

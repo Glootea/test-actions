@@ -19,7 +19,6 @@ void main() async {
   } catch (e) {
     print(e.toString());
   }
-  // TODO: change to database service
   DataBaseService databaseService = await DataBaseService.instance();
   final userDataBase = await UserDataBase.getConfiguredUserDataBase(databaseService.localDatabase);
 
@@ -49,7 +48,8 @@ class MyApp extends StatelessWidget {
               background: Colors.black,
               onBackground: Colors.white,
               surface: Colors.black38,
-              onSurface: Colors.white),
+              onSurface: Colors.white,
+              primaryContainer: Colors.black54),
           textTheme: Typography.dense2021.copyWith(
               // bodySmall: Theme.of(context).textTheme.body,
               headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),

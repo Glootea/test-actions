@@ -22,7 +22,6 @@ class OnlineDataBase {
       return _instance!;
     }
     _instance = OnlineDataBase._(tableID!);
-    // _instance = OnlineDataBase._(tableID, map);
     final spreadsheet = await _instance!._gsheets.spreadsheet(tableID);
     if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName])) {
       return _instance!;
@@ -31,13 +30,13 @@ class OnlineDataBase {
     return _instance!;
   }
 
-  static Future<bool> _createInfoFileBase(Spreadsheet spreadsheet) async {
+  static Future<void> _createInfoFileBase(Spreadsheet spreadsheet) async {
     final insertNames = spreadsheet.addWorksheet(_namesSheetName);
     final insertLessons = spreadsheet.addWorksheet(_lessonsSheetName);
     final insertLessonTimes = spreadsheet.addWorksheet(_lessonTimesSheetName);
     final insertInfo = spreadsheet.addWorksheet(_infoSheetName);
     final result = await Future.wait([insertInfo, insertNames, insertLessons, insertLessonTimes]);
-    final _ = await spreadsheet.deleteWorksheet(spreadsheet.worksheetByTitle("Лист1") ?? (await spreadsheet.addWorksheet("Лист1")));
+    final _ = await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0) ?? (await spreadsheet.addWorksheet("Лист1")));
     final fillInfo1 = result[0].values.insertRow(1, [_keys, _values]);
     final fillInfo2 = result[0].values.insertColumn(
         1,
@@ -51,7 +50,6 @@ class OnlineDataBase {
     final fillLessons = result[2].values.insertRow(1, [_id, _name, _tableID, _useDoneWorkCount, _autodelete, _lastDelete]);
     final fillLessonTimes = result[3].values.insertRow(1, [_id, _dates, _weekdays, _startTime, _endTime]);
     await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
-    return true;
   }
 
   // final TABLEID = ''; //TODO: get ss id
@@ -167,6 +165,7 @@ class OnlineDataBase {
       final result = await Future.wait(tasks);
       _namesSheet = result[0];
       _infoSheet = result[1];
+      tasks = [];
     }
     final result = await _namesSheet?.cells.column(1);
     if (_namesSheet == null || result == null) {
@@ -188,11 +187,8 @@ class OnlineDataBase {
         column[i + j] = list[j].name;
       }
     }
-    tasks = [];
     tasks.add(_namesSheet?.values.insertColumn(1, column) ?? Future(() => null));
     tasks.add(_infoSheet?.values.insertValueByKeys(adminId.join(', '), columnKey: _values, rowKey: _admins) ?? Future(() => null));
-
-    // TODO: fill class head
     await Future.wait(tasks);
     return true;
   }

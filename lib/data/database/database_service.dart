@@ -1,4 +1,5 @@
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:queue/data/database/providers/local_database.dart';
 import 'package:queue/data/database/providers/online_database.dart';
@@ -57,12 +58,21 @@ class DataBaseService {
   }
 
   Future<GoogleSignInAccount?> signInGoogle() async {
-    _googleSignIn = GoogleSignIn(
-      clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
-      scopes: [
-        'https://www.googleapis.com/auth/drive.file',
-      ],
-    );
+    if (kIsWeb) {
+      _googleSignIn = GoogleSignIn(
+        clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
+        scopes: [
+          'https://www.googleapis.com/auth/drive.file',
+        ],
+      );
+    } else {
+      _googleSignIn = GoogleSignIn(
+        serverClientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
+        scopes: [
+          'https://www.googleapis.com/auth/drive.file',
+        ],
+      );
+    }
     await _googleSignIn!.signOut();
     final user = await _googleSignIn!.signIn();
     return user;
@@ -70,7 +80,6 @@ class DataBaseService {
 
   Future<void> registerGroup(List<LessonSettingEntity> lessons, List<StudentEntity> students, String headManName, String groupName) async {
     if (_googleSignIn?.currentUser == null) {
-      //TODO: move to database service
       await _googleSignIn?.signIn();
     }
     if (_googleSignIn == null) {
@@ -79,19 +88,19 @@ class DataBaseService {
     final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
     final folder = await driveApi.files.create(File(mimeType: 'application/vnd.google-apps.folder', name: "Student Queue"));
-    final infoFileID = await _createFileOnDrive(folder.id!, "info", driveApi);
+    final infoFileID = await _createSpreadSheetFileOnDrive(folder.id!, "info", driveApi);
     // TODO: autorize user fully
     await set(StoredValues.infoTableID, infoFileID);
     _onlineDataBase = await OnlineDataBase.instance(tableID: infoFileID);
     List<Future<String>> lessonCreation = [];
     for (final lesson in lessons) {
-      lessonCreation.add(Future.value(_createFileOnDrive(folder.id!, lesson.name, driveApi)));
+      lessonCreation.add(Future.value(_createSpreadSheetFileOnDrive(folder.id!, lesson.name, driveApi)));
     }
     final lessonIds = await Future.wait(lessonCreation);
     await Future.wait([insertLessons(lessons, lessonIds), insertStudents(students), _onlineDataBase!.fillGroupInfo(headManName, groupName)]);
   }
 
-  Future<String> _createFileOnDrive(String folderId, String name, DriveApi driveApi) async {
+  Future<String> _createSpreadSheetFileOnDrive(String folderId, String name, DriveApi driveApi) async {
     final infoFile = File(
       parents: [folderId],
       mimeType: "application/vnd.google-apps.spreadsheet",
@@ -117,5 +126,5 @@ class DataBaseService {
       throw Exception("Online database not initialized");
     }
     Future.wait([_localDatabase.insertStudents(students), _onlineDataBase!.fillStudents(students)]);
-  } //TODO: implement
+  }
 }

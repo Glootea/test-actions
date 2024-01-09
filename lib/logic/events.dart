@@ -6,11 +6,11 @@ sealed class QueueEvent {}
 // --- user authentication
 class FindUserEvent extends QueueEvent {}
 
-class UserAuthenticateEvent extends QueueEvent {
-  final String userID;
+// class UserAuthenticateEvent extends QueueEvent {
+//   final String userID;
 
-  UserAuthenticateEvent(this.userID);
-}
+//   UserAuthenticateEvent(this.userID);
+// }
 
 class UserLogOutEvent extends QueueEvent {}
 
