@@ -30,7 +30,7 @@ class LocalDatabase extends _$LocalDatabase {
   }
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 1;
   Future<List<RecEntity>> getRecs(String lessonName) => (((select(recs).join([
         leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
         leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
@@ -186,16 +186,13 @@ class LocalDatabase extends _$LocalDatabase {
       if (lesson.useWeekly) {
         await weeklyLessons.insertAll(lesson.weeklyLessons!
             .map((lesson) => lesson.weekdays.map((weekday) => WeeklyLessonsCompanion(
-                lessonID: Value(id),
-                weekDay: Value(weekday),
-                startTime: Value(lesson.startTime.toShortString()),
-                endTime: Value(lesson.endTime.toShortString()))))
+                lessonID: Value(id), weekDay: Value(weekday), startTime: Value(lesson.startTime.toShortString), endTime: Value(lesson.endTime.toShortString))))
             .toList()
             .expand((element) => element));
       } else {
         await datedLessons.insertAll(lesson.datedLessons!
             .map((lesson) => lesson.date.map((date) => DatedLessonsCompanion(
-                lessonID: Value(id), date: Value(date), startTime: Value(lesson.startTime.toShortString()), endTime: Value(lesson.endTime.toShortString()))))
+                lessonID: Value(id), date: Value(date), startTime: Value(lesson.startTime.toShortString), endTime: Value(lesson.endTime.toShortString))))
             .toList()
             .expand((element) => element));
       }

@@ -1,5 +1,4 @@
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:queue/data/database/providers/local_database.dart';
 import 'package:queue/data/database/providers/online_database.dart';
@@ -58,21 +57,12 @@ class DataBaseService {
   }
 
   Future<GoogleSignInAccount?> signInGoogle() async {
-    if (kIsWeb) {
-      _googleSignIn = GoogleSignIn(
-        clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
-        scopes: [
-          'https://www.googleapis.com/auth/drive.file',
-        ],
-      );
-    } else {
-      _googleSignIn = GoogleSignIn(
-        serverClientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
-        scopes: [
-          'https://www.googleapis.com/auth/drive.file',
-        ],
-      );
-    }
+    _googleSignIn = GoogleSignIn(
+      clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
+      scopes: [
+        'https://www.googleapis.com/auth/drive.file',
+      ],
+    );
     await _googleSignIn!.signOut();
     final user = await _googleSignIn!.signIn();
     return user;
@@ -80,7 +70,7 @@ class DataBaseService {
 
   Future<void> registerGroup(List<LessonSettingEntity> lessons, List<StudentEntity> students, String headManName, String groupName) async {
     if (_googleSignIn?.currentUser == null) {
-      await _googleSignIn?.signIn();
+      await signInGoogle();
     }
     if (_googleSignIn == null) {
       throw Exception("Google sign in not initialized");
@@ -127,4 +117,53 @@ class DataBaseService {
     }
     Future.wait([_localDatabase.insertStudents(students), _onlineDataBase!.fillStudents(students)]);
   }
+
+  /// Provide headman's [GoogleSignInAccount] to fetch data from their Google Drive, otherwise data will be fetched from local database
+  Future<void> fetchDataFromDrive({GoogleSignInAccount? account}) async {
+    String? infoTableID = (account != null) ? await _findInfoTableOnDrive() : await get(StoredValues.infoTableID);
+    if (infoTableID == null) {
+      throw Exception("Info table not found");
+    }
+    _onlineDataBase = await OnlineDataBase.instance(tableID: infoTableID);
+    final students = await _onlineDataBase!.getStudents();
+    final headManName = await _onlineDataBase!.getHeadName();
+    _localDatabase.insertStudents(students);
+    _localDatabase.set(StoredValues.userName, headManName);
+    final (lessons, ids) = await _onlineDataBase!.getLessons();
+    _localDatabase.insertLessons(await lessons, await ids);
+  }
+
+  Future<String?> _findInfoTableOnDrive() async {
+    if (_googleSignIn?.currentUser == null) {
+      await signInGoogle();
+    }
+    if (_googleSignIn == null) {
+      throw Exception("Google sign in not initialized");
+    }
+    final httpClient = (await _googleSignIn?.authenticatedClient())!;
+    final driveApi = DriveApi(httpClient);
+    final fileList = await driveApi.files.list(q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false and name = 'Student Queue'");
+    final count = fileList.files!.length;
+    if (_checkFileCount(count)) {
+      final folderID = fileList.files!.first.id!;
+      final ssFileList =
+          await driveApi.files.list(q: "mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false and parents = '$folderID' and name = 'info'");
+      final ssCount = ssFileList.files!.length;
+      if (_checkFileCount(ssCount)) {
+        return ssFileList.files!.first.id!;
+      }
+    }
+    return null;
+  }
+
+  bool _checkFileCount(int count) {
+    if (count == 0) {
+      throw Exception("Папка с данными не найдена. Создайте новую группу"); // TODO: create and throw custom exception
+    } else if (count > 1) {
+      throw Exception("Найдено более одного файла. Удалите неактуальные папки и файлы с названием 'Student Queue'");
+    }
+    return true;
+  }
+
+  getData() {}
 }

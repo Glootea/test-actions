@@ -3,8 +3,8 @@ import 'package:queue/data/database/providers/local_database.dart';
 class UserDataBase {
   final LocalDatabase _storage;
   String? _userName;
-  String? get getUserName => _userName;
   bool? _isAdmin;
+  String? get getUserName => _userName;
   bool get isAdmin => _isAdmin ?? false;
 
   UserDataBase._(this._storage);
@@ -12,8 +12,10 @@ class UserDataBase {
     final db = UserDataBase._(storage);
     final userName = await storage.get(StoredValues.userName);
     if (userName != null) {
-      db.fillUser(userName);
+      db._userName = userName;
+      db._isAdmin = await storage.isAdmin(userName);
     }
+
     return db;
   }
 
@@ -21,13 +23,14 @@ class UserDataBase {
     //TODO: fix broken auth from memory
     await _storage.set(StoredValues.userName, userName);
     _userName = userName;
-    // _storage.isAdmin(userName).then((value) => _isAdmin = value);
-    // await _storage.updateStudent(userName, newIsAdmin: true);
+    _isAdmin = await _storage.isAdmin(userName);
   }
 
   bool get userExist => _userName?.isNotEmpty ?? false;
 
   void logOut() {
     _storage.clean(StoredValues.userName);
+    _userName = null;
+    _isAdmin = null;
   }
 }

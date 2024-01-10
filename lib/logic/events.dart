@@ -70,3 +70,5 @@ class RegisterGroupEvent extends QueueEvent {
 
   RegisterGroupEvent(this.firstName, this.lastName, this.groupName, this.lessons, this.students);
 }
+
+class LoginUsingGoogleEvent extends QueueEvent {}

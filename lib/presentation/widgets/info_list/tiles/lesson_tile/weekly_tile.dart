@@ -98,7 +98,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                                 newSetState(() {});
                                               }
                                             },
-                                            child: Text(widget.weeklyLessons[widget.innerCount].startTime.toShortString())),
+                                            child: Text(widget.weeklyLessons[widget.innerCount].startTime.toShortString)),
                                       )
                                     ],
                                   ),
@@ -127,7 +127,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                                 newSetState(() {});
                                               }
                                             },
-                                            child: Text(widget.weeklyLessons[widget.innerCount].endTime.toShortString())),
+                                            child: Text(widget.weeklyLessons[widget.innerCount].endTime.toShortString)),
                                       ),
                                     ],
                                   )
@@ -156,7 +156,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                       ),
                     ),
                     Text(
-                        ": ${widget.weeklyLessons[widget.innerCount].startTime.toShortString()} - ${widget.weeklyLessons[widget.innerCount].endTime.toShortString()}"),
+                        ": ${widget.weeklyLessons[widget.innerCount].startTime.toShortString} - ${widget.weeklyLessons[widget.innerCount].endTime.toShortString}"),
                     TextButton(
                         onPressed: () => widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),
                         child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error))

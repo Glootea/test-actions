@@ -13,6 +13,7 @@ import 'package:queue/logic/states.dart';
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase _userDataBase;
   final DataBaseService _databaseService;
+  @Deprecated("Use _databaseService instead")
   OnlineDataBase? _onlineDBBacked;
   Future<OnlineDataBase> get _onlineDB async => _onlineDBBacked ?? await _configureOnlineDB();
   String? backgroundImageEncoded;
@@ -53,8 +54,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     on<UserAuthenticatedEvent>(
       (event, emit) async {
         try {
-          List<RecEntity> list = await (await _onlineDB).getData();
-          _databaseService.import(list);
+          // List<RecEntity> list = await _databaseService.getData(); //TODO: fetch recs from online
+          // _databaseService.import(list);
         } catch (e) {
           log("Failed to import db due to load failure");
         }
@@ -65,7 +66,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       transformer: sequential(),
     );
     on<UserLogOutEvent>(
-      (event, emit) async => await userLogOut(),
+      (event, emit) async => await _userLogOut(),
       transformer: sequential(),
     );
 
@@ -101,6 +102,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     });
 
     on<RegisterGroupEvent>((event, emit) async => await _registerGroup(event, emit));
+    on<LoginUsingGoogleEvent>((event, emit) => _loginUsingGoogle(emit));
   }
 
 // --- Functions
@@ -126,10 +128,9 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     // }
   }
 
-  Future<void> userLogOut() async {
-    _userDataBase.logOut();
-
+  Future<void> _userLogOut() async {
     add(NoUserEvent());
+    _userDataBase.logOut();
   }
 
 //---main screen ---
@@ -210,6 +211,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     emit(MainState(await _todayLessons(userName), true));
   }
 
+  @Deprecated("Use database service")
   Future<OnlineDataBase> _configureOnlineDB() async {
     final id = await _databaseService.get(StoredValues.infoTableID);
     // TODO: get map of names to id from db
@@ -217,6 +219,17 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     _onlineDBBacked = await OnlineDataBase.instance(tableID: id);
     print(id);
     return _onlineDBBacked!;
+  }
+
+  Future<void> _loginUsingGoogle(Emitter<QueueState> emit) async {
+    final userSignInAccount = await _databaseService.signInGoogle();
+    if (userSignInAccount == null) {
+      emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
+    } else {
+      await _databaseService.fetchDataFromDrive(account: userSignInAccount);
+      _userDataBase = await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase);
+      emit(MainState(await _todayLessons(_userDataBase.getUserName!), await _isAdmin));
+    }
   }
 
   // Future<void> getData() async {}

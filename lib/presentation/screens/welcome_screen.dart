@@ -98,31 +98,47 @@ class _LoginViewState extends State<LoginView> {
                     Text("Для студентов", style: Theme.of(context).textTheme.displaySmall),
                     const Gap(16),
                     const Text("Единственным способом авторизации является ссылка, выданная старостой"),
+                    const Gap(32),
+                    Text("Для старост", overflow: TextOverflow.clip, style: Theme.of(context).textTheme.displaySmall),
                     const Gap(16),
                     Row(
                       children: [
-                        Expanded(
-                          child: Text("Для старост", overflow: TextOverflow.clip, style: Theme.of(context).textTheme.displaySmall),
-                        ),
-                        const Gap(32),
-                        OutlinedButton(
-                          style: Theme.of(context).outlinedButtonTheme.style,
-                          onPressed: () {
-                            context.read<QueueBloc>().add(CreateGroupIntentionEvent());
-                          },
-                          child: Text(
-                            "Новая группа",
-                            // style: Theme.of(context)
-                            //     .textTheme
-                            //     .bodyMedium
-                            //     ?.copyWith(color: Colors.black),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "• Для регистрации новой группы необходимо зарегистрироваться через Google аккаунт, указав нужную информацию.\n• Для хранения информации используется excel таблица, которая будет размещена на вашем Google Drive.\n• Приглашения организованы через ссылки",
+                                overflow: TextOverflow.clip,
+                              ),
+                            ],
                           ),
+                        ),
+                        Column(
+                          children: [
+                            OutlinedButton(
+                              style: Theme.of(context).outlinedButtonTheme.style,
+                              onPressed: () {
+                                context.read<QueueBloc>().add(CreateGroupIntentionEvent());
+                              },
+                              child: const Text(
+                                "Новая группа",
+                              ),
+                            ),
+                            const Gap(16),
+                            OutlinedButton(
+                                style: Theme.of(context).outlinedButtonTheme.style,
+                                onPressed: () {
+                                  context.read<QueueBloc>().add(LoginUsingGoogleEvent());
+                                },
+                                child: const Text(
+                                  "Войти ",
+                                )),
+                          ],
                         ),
                       ],
                     ),
                     const Gap(16),
-                    const Text(
-                        "• Для регистрации новой группы необходимо зарегистрироваться через Google аккаунт, указав нужную информацию.\n• Для хранения информации используется excel таблица, которая будет размещена на вашем Google Drive.\n• Приглашения организованы через ссылки"),
                   ],
                 ),
               ),

@@ -21,7 +21,7 @@ extension TimeArithmetic on TimeOfDay {
     return false;
   }
 
-  String toShortString() {
+  String get toShortString {
     return '$hour:${minute < 10 ? '0$minute' : minute}';
   }
 }
@@ -30,5 +30,10 @@ extension TimeFromString on String {
   TimeOfDay get toTimeOfDay {
     final List<int> a = split('(').last.split(')').first.split(':').map((e) => int.parse(e)).toList();
     return TimeOfDay(hour: a[0], minute: a[1]);
+  }
+
+  ///Used to store time in online spreadsheet to prevent from being proportion of day
+  String get toOnlineTime {
+    return "'$this";
   }
 }

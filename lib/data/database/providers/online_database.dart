@@ -193,6 +193,46 @@ class OnlineDataBase {
     return true;
   }
 
+  Future<List<StudentEntity>> getStudents() async {
+    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
+    _namesSheet = _spreadsheet!.worksheetByTitle(_namesSheetName);
+    _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
+    final names = (await _namesSheet!.cells.column(1, fromRow: 2)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
+    final admins = (await _infoSheet!.values.valueByKeys(rowKey: _admins, columnKey: _values))?.split(',').map((e) => int.parse(e));
+    return names.map((e) => StudentEntity(e, isAdmin: admins!.contains(names.indexOf(e) + 1))).toList();
+  }
+
+  Future<String> getHeadName() async {
+    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
+    _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
+    return (await _infoSheet!.cells.cellByKeys(rowKey: _headMan, columnKey: _values))!.value;
+  }
+
+  Future<(Future<List<LessonSettingEntity>>, Future<List<String>>)> getLessons() async {
+    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
+    _lessonsSheet = _spreadsheet!.worksheetByTitle(_lessonsSheetName);
+    _lessonTimesSheet = _spreadsheet!.worksheetByTitle(_lessonTimesSheetName);
+    List<String> lessonIDs = [];
+    final lessonTimes = await _lessonTimesSheet!.values.allRows(fromRow: 2);
+    final lessons = _lessonsSheet!.values
+        .allRows(fromRow: 2)
+        .then((value) => value.map((element) async {
+              lessonIDs.add(element[2]);
+              final times = lessonTimes.where((e) => e[0] == element[0]).toList().map((time) {
+                if (time[1] == '-') {
+                  return WeeklyLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, time[2].split(',').map((e) => int.parse(e)).toList());
+                } else {
+                  return DatedLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, []); // TODO: implement dates parse
+                }
+              });
+              final lesson = LessonSettingEntity(element[1],
+                  datedLessons: times.whereType<DatedLessonSettingEntity>().toList(), weeklyLessons: times.whereType<WeeklyLessonSettingEntity>().toList());
+              return lesson;
+            }))
+        .then((value) => Future.wait(value.toList()));
+    return (lessons, Future.value(lessonIDs));
+  }
+
   Future<bool> fillGroupInfo(String headManName, String groupName) async {
     _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
     _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
@@ -242,13 +282,23 @@ class OnlineDataBase {
         }
         if (lesson.useWeekly) {
           final weeklyLesson = lesson.weeklyLessons![j];
-          tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex,
-                  [lessonIndex, '-', weeklyLesson.weekdays.join(', '), weeklyLesson.startTime.toShortString(), weeklyLesson.endTime.toShortString()]) ??
+          tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
+                lessonIndex,
+                '-',
+                weeklyLesson.weekdays.join(', '),
+                weeklyLesson.startTime.toShortString.toOnlineTime,
+                weeklyLesson.endTime.toShortString.toOnlineTime
+              ]) ?? //TODO: test to online time
               Future.value(null));
         } else {
           final datedLesson = lesson.datedLessons![j];
-          tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex,
-                  [lessonIndex, datedLesson.date.join(', '), '-', datedLesson.startTime.toShortString(), datedLesson.endTime.toShortString()]) ??
+          tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
+                lessonIndex,
+                datedLesson.date.join(', '),
+                '-',
+                datedLesson.startTime.toShortString.toOnlineTime,
+                datedLesson.endTime.toShortString.toOnlineTime
+              ]) ??
               Future.value(null));
         }
       }

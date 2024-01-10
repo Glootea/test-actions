@@ -149,7 +149,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                         setState(() {});
                                         newSetState(() {});
                                       },
-                                      child: Text(widget.datedLessons[widget.innerCount].startTime.toShortString()),
+                                      child: Text(widget.datedLessons[widget.innerCount].startTime.toShortString),
                                     )
                                   ],
                                 ),
@@ -171,7 +171,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                                         setState(() {});
                                         newSetState(() {});
                                       },
-                                      child: Text(widget.datedLessons[widget.innerCount].endTime.toShortString()),
+                                      child: Text(widget.datedLessons[widget.innerCount].endTime.toShortString),
                                     )
                                   ],
                                 )
@@ -194,8 +194,7 @@ class _DatedLessonTileTileState extends State<DatedLessonTile> {
                       // overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Text(
-                      ': ${widget.datedLessons[widget.innerCount].startTime.toShortString()} - ${widget.datedLessons[widget.innerCount].endTime.toShortString()}'),
+                  Text(': ${widget.datedLessons[widget.innerCount].startTime.toShortString} - ${widget.datedLessons[widget.innerCount].endTime.toShortString}'),
                   TextButton(
                       onPressed: () => widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),
                       child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error))
