@@ -14,14 +14,19 @@ class LoadingState extends QueueState {}
 class MainState extends QueueState {
   final List<LessonEntity> todayLessons;
   final bool isAdmin;
-  MainState(this.todayLessons, this.isAdmin);
+
+  ///Should be provided to change to new
+  final Uint8List? backgroundImageDecoded;
+  MainState(this.todayLessons, this.isAdmin, {this.backgroundImageDecoded});
   @override
   bool operator ==(Object other) {
     if (other is! MainState) return false;
     final r = isAdmin == other.isAdmin && listEquals(todayLessons, other.todayLessons);
-    print(r);
     return r;
   }
+
+  @override
+  int get hashCode => todayLessons.hashCode * isAdmin.hashCode;
 }
 
 // --- upload

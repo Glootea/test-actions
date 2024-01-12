@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:queue/data/database/database_service.dart';
@@ -13,10 +15,8 @@ import 'package:queue/logic/states.dart';
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase _userDataBase;
   final DataBaseService _databaseService;
-  @Deprecated("Use _databaseService instead")
-  OnlineDataBase? _onlineDBBacked;
-  Future<OnlineDataBase> get _onlineDB async => _onlineDBBacked ?? await _configureOnlineDB();
-  String? backgroundImageEncoded;
+  OnlineDataBase get _onlineDB => _databaseService.onlineDataBase;
+  Uint8List? _bgImageBacked;
   String? get userName => _userDataBase.getUserName;
   bool? _isAdminBacked;
 
@@ -30,8 +30,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     return await _databaseService.todayLessons(today, studentName);
   }
 
-  Future<void> _getBackgroundImage() async {
-    backgroundImageEncoded ??= await _databaseService.get(StoredValues.backgroundImage);
+  Future<Uint8List> _getBackgroundImage() async {
+    _bgImageBacked =
+        base64.decode(await _databaseService.get(StoredValues.backgroundImage) ?? ''); //TODO: implement method to change image in db and notify here
+    return _bgImageBacked!;
   }
 
   QueueBloc(this._userDataBase, this._databaseService, super.initialState) {
@@ -59,8 +61,13 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
         } catch (e) {
           log("Failed to import db due to load failure");
         }
+        final result = await Future.wait([_todayLessons(_userDataBase.getUserName!), _isAdmin, _getBackgroundImage()]);
         emit(
-          MainState(await _todayLessons(_userDataBase.getUserName!), await _isAdmin),
+          MainState(
+            result[0] as List<LessonEntity>,
+            result[1] as bool,
+            backgroundImageDecoded: result[2] as Uint8List,
+          ),
         );
       },
       transformer: sequential(),
@@ -116,18 +123,6 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     }
   }
 
-  Future<void> _authenticateUser(String userName) async {
-    // TODO: move to database service
-    // _userDataBase.fillUser(userName);
-    // _userDataBase = await UserDataBase.getConfiguredUserDataBase(_databaseService);
-    // if (_userDataBase.userExist) {
-    //   add(NoUserEvent("Пользователь c таким ключем не найден"));
-    // } else {
-    //   await _getBackgroundImage();
-    //   add(UserAuthenticatedEvent());
-    // }
-  }
-
   Future<void> _userLogOut() async {
     add(NoUserEvent());
     _userDataBase.logOut();
@@ -168,10 +163,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     try {
       String link = Encryption.decrypt(event.link);
       emit(UploadFromLinkState(isLoading: true));
-      if (await (await _onlineDB).uploadFromQuery(link)) {
+      if (await (_onlineDB).uploadFromQuery(link)) {
         emit(UploadFromLinkState(isLoading: false, message: "Запись успешно добавлена"));
       } else {
-        final result = await (await _onlineDB).recExist(link);
+        final result = await (_onlineDB).recExist(link);
         if (result != null) {
           emit(UploadFromLinkState(
               isLoading: false,
@@ -193,6 +188,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _onRegisterUserEvent(RegisterUserEvent event, Emitter<QueueState> emit) async {
     //TODO: move to database service
+
     // _userDataBase.fillUser(event.inviteState.userName);
     // _userDataBase = await UserDataBase.getConfiguredUserDataBase(_databaseService);
     // if (_userDataBase.userExist) {
@@ -211,24 +207,16 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     emit(MainState(await _todayLessons(userName), true));
   }
 
-  @Deprecated("Use database service")
-  Future<OnlineDataBase> _configureOnlineDB() async {
-    final id = await _databaseService.get(StoredValues.infoTableID);
-    // TODO: get map of names to id from db
-    if (id == null) throw Exception("Table id not found. Configure database first");
-    _onlineDBBacked = await OnlineDataBase.instance(tableID: id);
-    print(id);
-    return _onlineDBBacked!;
-  }
-
   Future<void> _loginUsingGoogle(Emitter<QueueState> emit) async {
     final userSignInAccount = await _databaseService.signInGoogle();
     if (userSignInAccount == null) {
       emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
     } else {
       await _databaseService.fetchDataFromDrive(account: userSignInAccount);
-      _userDataBase = await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase);
-      emit(MainState(await _todayLessons(_userDataBase.getUserName!), await _isAdmin));
+      _userDataBase =
+          await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
+      final result = await Future.wait([_todayLessons(_userDataBase.getUserName!), _isAdmin]);
+      emit(MainState(result[0] as List<LessonEntity>, result[1] as bool));
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:queue/data/database/providers/local_database.dart';
 import 'package:queue/data/database/providers/online_database.dart';
 import 'package:queue/entities/export.dart';
 import 'package:googleapis/drive/v3.dart';
+import 'package:queue/extension.dart';
 
 class DataBaseService {
   OnlineDataBase? _onlineDataBase;
@@ -13,6 +14,10 @@ class DataBaseService {
   DataBaseService._(this._localDatabase, this._onlineDataBase);
 
   LocalDatabase get localDatabase => _localDatabase;
+  OnlineDataBase get onlineDataBase {
+    assert(_onlineDataBase != null, "OnlineDataBase has not been initialized in DataBaseService");
+    return _onlineDataBase!;
+  }
 
   static DataBaseService? _instance;
 
@@ -125,12 +130,13 @@ class DataBaseService {
       throw Exception("Info table not found");
     }
     _onlineDataBase = await OnlineDataBase.instance(tableID: infoTableID);
-    final students = await _onlineDataBase!.getStudents();
-    final headManName = await _onlineDataBase!.getHeadName();
-    _localDatabase.insertStudents(students);
-    _localDatabase.set(StoredValues.userName, headManName);
+    final result = await Future.wait([_onlineDataBase!.getStudents(), _onlineDataBase!.getHeadName()]);
+    final students = result[0] as List<StudentEntity>;
+    final headManName = result[1] as String;
+    final _ = await Future.wait([_localDatabase.insertStudents(students), _localDatabase.set(StoredValues.userName, headManName)]);
     final (lessons, ids) = await _onlineDataBase!.getLessons();
-    _localDatabase.insertLessons(await lessons, await ids);
+    final result2 = await Future.wait([lessons, ids]);
+    await _localDatabase.insertLessons(result2[0] as List<LessonSettingEntity>, result2[1] as List<String>);
   }
 
   Future<String?> _findInfoTableOnDrive() async {
@@ -158,9 +164,9 @@ class DataBaseService {
 
   bool _checkFileCount(int count) {
     if (count == 0) {
-      throw Exception("Папка с данными не найдена. Создайте новую группу"); // TODO: create and throw custom exception
+      throw MultipleFilesOnDiskException("Папка с данными не найдена. Создайте новую группу");
     } else if (count > 1) {
-      throw Exception("Найдено более одного файла. Удалите неактуальные папки и файлы с названием 'Student Queue'");
+      throw NoFileFoundOnDiskException("Найдено более одного файла. Удалите неактуальные папки и файлы с названием 'Student Queue'");
     }
     return true;
   }

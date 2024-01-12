@@ -73,7 +73,6 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                       showSelectedIcon: false,
                       selected: {widget.lessons[widget.count].useWeekly},
                       onSelectionChanged: (value) => setState(() {
-                        print(value);
                         widget.lessons[widget.count] = widget.lessons[widget.count].copyWith(useWeekly: value.first);
                       }),
                     ),

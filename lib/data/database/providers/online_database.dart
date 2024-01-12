@@ -222,7 +222,8 @@ class OnlineDataBase {
                 if (time[1] == '-') {
                   return WeeklyLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, time[2].split(',').map((e) => int.parse(e)).toList());
                 } else {
-                  return DatedLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, []); // TODO: implement dates parse
+                  final dates = time[1].split(',').map((e) => e.toDate).toList();
+                  return DatedLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, dates);
                 }
               });
               final lesson = LessonSettingEntity(element[1],
@@ -294,7 +295,7 @@ class OnlineDataBase {
           final datedLesson = lesson.datedLessons![j];
           tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
                 lessonIndex,
-                datedLesson.date.join(', '),
+                datedLesson.date.map((e) => e.toDateString).join(','),
                 '-',
                 datedLesson.startTime.toShortString.toOnlineTime,
                 datedLesson.endTime.toShortString.toOnlineTime

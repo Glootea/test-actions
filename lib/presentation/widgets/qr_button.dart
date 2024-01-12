@@ -23,10 +23,7 @@ class QrButton extends StatelessWidget {
           // print(
           //   Uri.https("localhost:8000", "/#upload", {"info": data}),
           // );
-          String output = "https://queue-01-22.web.app/upload/" + Encryption.encryct(data).replaceAll('/', '%');
-
-          print(output);
-
+          String output = "https://queue-01-22.web.app/upload/${Encryption.encryct(data).replaceAll('/', '%')}";
           await showDialog(
               context: context,
               builder: (context) => AlertDialog(

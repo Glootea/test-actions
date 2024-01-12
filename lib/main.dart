@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/database_service.dart';
@@ -16,11 +17,10 @@ void main() async {
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
-    print(e.toString());
+    log(e.toString());
   }
   DataBaseService databaseService = await DataBaseService.instance();
   final userDataBase = await UserDataBase.getConfiguredUserDataBase(databaseService.localDatabase);
-
   runApp(BlocProvider(create: (context) => QueueBloc(userDataBase, databaseService, LoadingState())..add(FindUserEvent()), child: const MyApp()));
 }
 

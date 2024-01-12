@@ -28,11 +28,6 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<QueueBloc, QueueState>(buildWhen: (previous, current) {
       if (previous.runtimeType != current.runtimeType) {
-        // if (current is! UploadFromLinkState) { TODO : navigation moved to seperate file
-        //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        //     Navigator.of(context).pushReplacementNamed(Routes.loginScreen);
-        //   });
-        // }
         return true;
       }
       if (previous is UploadFromLinkState && current is UploadFromLinkState) {

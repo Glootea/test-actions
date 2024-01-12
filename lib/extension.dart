@@ -37,3 +37,26 @@ extension TimeFromString on String {
     return "'$this";
   }
 }
+
+extension DateToString on DateTime {
+  String get toDateString {
+    return '$day.$month.$year';
+  }
+}
+
+extension DateStringToDate on String {
+  DateTime get toDate {
+    final numbers = split('.').map((e) => int.parse(e)).toList();
+    return DateTime(numbers[0], numbers[1], numbers[2]);
+  }
+}
+
+class MultipleFilesOnDiskException implements Exception {
+  final String message;
+  MultipleFilesOnDiskException(this.message);
+}
+
+class NoFileFoundOnDiskException implements Exception {
+  final String message;
+  NoFileFoundOnDiskException(this.message);
+}

@@ -20,7 +20,6 @@ class UserDataBase {
   }
 
   Future<void> fillUser(String userName) async {
-    //TODO: fix broken auth from memory
     await _storage.set(StoredValues.userName, userName);
     _userName = userName;
     _isAdmin = await _storage.isAdmin(userName);
