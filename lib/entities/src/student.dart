@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 final class StudentEntity {
   final String name;
   final bool isAdmin;
-  StudentEntity copyWith({String? name, bool? isAdmin}) {
-    return StudentEntity(name ?? this.name, isAdmin: isAdmin ?? this.isAdmin);
+  final int onlineTableRowNumber;
+  StudentEntity copyWith({String? name, int? onlineTableRowNumber, bool? isAdmin}) {
+    return StudentEntity(name ?? this.name, onlineTableRowNumber ?? this.onlineTableRowNumber, isAdmin: isAdmin ?? this.isAdmin);
   }
 
-  const StudentEntity(this.name, {this.isAdmin = false});
+  const StudentEntity(this.name, this.onlineTableRowNumber, {this.isAdmin = false});
 }

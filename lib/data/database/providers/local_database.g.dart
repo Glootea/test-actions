@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../local_database.dart';
+part of 'local_database.dart';
 
 // ignore_for_file: type=lint
 class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
@@ -15,6 +15,10 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _onlineTableRowNumberMeta = const VerificationMeta('onlineTableRowNumber');
+  @override
+  late final GeneratedColumn<int> onlineTableRowNumber =
+      GeneratedColumn<int>('online_table_row_number', aliasedName, false, type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>('name', aliasedName, false, type: DriftSqlType.string, requiredDuringInsert: true);
@@ -23,7 +27,7 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
   late final GeneratedColumn<bool> isAdmin = GeneratedColumn<bool>('is_admin', aliasedName, true,
       type: DriftSqlType.bool, requiredDuringInsert: false, defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("is_admin" IN (0, 1))'));
   @override
-  List<GeneratedColumn> get $columns => [id, name, isAdmin];
+  List<GeneratedColumn> get $columns => [id, onlineTableRowNumber, name, isAdmin];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -35,6 +39,11 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('online_table_row_number')) {
+      context.handle(_onlineTableRowNumberMeta, onlineTableRowNumber.isAcceptableOrUnknown(data['online_table_row_number']!, _onlineTableRowNumberMeta));
+    } else if (isInserting) {
+      context.missing(_onlineTableRowNumberMeta);
     }
     if (data.containsKey('name')) {
       context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
@@ -54,6 +63,7 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Student(
       id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      onlineTableRowNumber: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}online_table_row_number'])!,
       name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       isAdmin: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}is_admin']),
     );
@@ -67,13 +77,15 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
 
 class Student extends DataClass implements Insertable<Student> {
   final int id;
+  final int onlineTableRowNumber;
   final String name;
   final bool? isAdmin;
-  const Student({required this.id, required this.name, this.isAdmin});
+  const Student({required this.id, required this.onlineTableRowNumber, required this.name, this.isAdmin});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['online_table_row_number'] = Variable<int>(onlineTableRowNumber);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || isAdmin != null) {
       map['is_admin'] = Variable<bool>(isAdmin);
@@ -84,6 +96,7 @@ class Student extends DataClass implements Insertable<Student> {
   StudentsCompanion toCompanion(bool nullToAbsent) {
     return StudentsCompanion(
       id: Value(id),
+      onlineTableRowNumber: Value(onlineTableRowNumber),
       name: Value(name),
       isAdmin: isAdmin == null && nullToAbsent ? const Value.absent() : Value(isAdmin),
     );
@@ -93,6 +106,7 @@ class Student extends DataClass implements Insertable<Student> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Student(
       id: serializer.fromJson<int>(json['id']),
+      onlineTableRowNumber: serializer.fromJson<int>(json['onlineTableRowNumber']),
       name: serializer.fromJson<String>(json['name']),
       isAdmin: serializer.fromJson<bool?>(json['isAdmin']),
     );
@@ -102,13 +116,15 @@ class Student extends DataClass implements Insertable<Student> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'onlineTableRowNumber': serializer.toJson<int>(onlineTableRowNumber),
       'name': serializer.toJson<String>(name),
       'isAdmin': serializer.toJson<bool?>(isAdmin),
     };
   }
 
-  Student copyWith({int? id, String? name, Value<bool?> isAdmin = const Value.absent()}) => Student(
+  Student copyWith({int? id, int? onlineTableRowNumber, String? name, Value<bool?> isAdmin = const Value.absent()}) => Student(
         id: id ?? this.id,
+        onlineTableRowNumber: onlineTableRowNumber ?? this.onlineTableRowNumber,
         name: name ?? this.name,
         isAdmin: isAdmin.present ? isAdmin.value : this.isAdmin,
       );
@@ -116,6 +132,7 @@ class Student extends DataClass implements Insertable<Student> {
   String toString() {
     return (StringBuffer('Student(')
           ..write('id: $id, ')
+          ..write('onlineTableRowNumber: $onlineTableRowNumber, ')
           ..write('name: $name, ')
           ..write('isAdmin: $isAdmin')
           ..write(')'))
@@ -123,41 +140,53 @@ class Student extends DataClass implements Insertable<Student> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, isAdmin);
+  int get hashCode => Object.hash(id, onlineTableRowNumber, name, isAdmin);
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || (other is Student && other.id == this.id && other.name == this.name && other.isAdmin == this.isAdmin);
+      identical(this, other) ||
+      (other is Student &&
+          other.id == this.id &&
+          other.onlineTableRowNumber == this.onlineTableRowNumber &&
+          other.name == this.name &&
+          other.isAdmin == this.isAdmin);
 }
 
 class StudentsCompanion extends UpdateCompanion<Student> {
   final Value<int> id;
+  final Value<int> onlineTableRowNumber;
   final Value<String> name;
   final Value<bool?> isAdmin;
   const StudentsCompanion({
     this.id = const Value.absent(),
+    this.onlineTableRowNumber = const Value.absent(),
     this.name = const Value.absent(),
     this.isAdmin = const Value.absent(),
   });
   StudentsCompanion.insert({
     this.id = const Value.absent(),
+    required int onlineTableRowNumber,
     required String name,
     this.isAdmin = const Value.absent(),
-  }) : name = Value(name);
+  })  : onlineTableRowNumber = Value(onlineTableRowNumber),
+        name = Value(name);
   static Insertable<Student> custom({
     Expression<int>? id,
+    Expression<int>? onlineTableRowNumber,
     Expression<String>? name,
     Expression<bool>? isAdmin,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (onlineTableRowNumber != null) 'online_table_row_number': onlineTableRowNumber,
       if (name != null) 'name': name,
       if (isAdmin != null) 'is_admin': isAdmin,
     });
   }
 
-  StudentsCompanion copyWith({Value<int>? id, Value<String>? name, Value<bool?>? isAdmin}) {
+  StudentsCompanion copyWith({Value<int>? id, Value<int>? onlineTableRowNumber, Value<String>? name, Value<bool?>? isAdmin}) {
     return StudentsCompanion(
       id: id ?? this.id,
+      onlineTableRowNumber: onlineTableRowNumber ?? this.onlineTableRowNumber,
       name: name ?? this.name,
       isAdmin: isAdmin ?? this.isAdmin,
     );
@@ -168,6 +197,9 @@ class StudentsCompanion extends UpdateCompanion<Student> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (onlineTableRowNumber.present) {
+      map['online_table_row_number'] = Variable<int>(onlineTableRowNumber.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -182,6 +214,7 @@ class StudentsCompanion extends UpdateCompanion<Student> {
   String toString() {
     return (StringBuffer('StudentsCompanion(')
           ..write('id: $id, ')
+          ..write('onlineTableRowNumber: $onlineTableRowNumber, ')
           ..write('name: $name, ')
           ..write('isAdmin: $isAdmin')
           ..write(')'))

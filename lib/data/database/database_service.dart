@@ -37,12 +37,22 @@ class DataBaseService {
   }
 
   Future<void> createRec(String lessonName, String studentName, DateTime time) async {
+    final [rowNumber as int, String tableID as String] =
+        (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)])).toList();
     final task1 = _localDatabase.createRec(lessonName, studentName, time);
-    final task2 = _onlineDataBase?.createRec(lessonName, studentName, time) ?? Future.value(false);
+    final task2 = _onlineDataBase?.createRec(tableID, rowNumber, time) ?? Future.value(false);
     final result = await Future.wait([task1, task2]);
     if (result[1] == true) {
-      _localDatabase.updateUploadStatus(lessonName, studentName, true);
+      await _localDatabase.updateUploadStatus(lessonName, studentName, true);
     }
+  }
+
+  Future<void> deleteRec(String lessonName, String studentName) async {
+    final [rowNumber as int, String tableID as String] =
+        (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)])).toList();
+    final task1 = _localDatabase.deleteRec(lessonName, studentName);
+    final task2 = _onlineDataBase?.deleteRec(tableID, rowNumber) ?? Future.value(false);
+    final _ = await Future.wait([task1, task2]);
   }
 
   Future<List<LessonEntity>> todayLessons(DateTime today, String studentName) {
@@ -89,7 +99,10 @@ class DataBaseService {
     _onlineDataBase = await OnlineDataBase.instance(tableID: infoFileID);
     List<Future<String>> lessonCreation = [];
     for (final lesson in lessons) {
-      lessonCreation.add(Future.value(_createSpreadSheetFileOnDrive(folder.id!, lesson.name, driveApi)));
+      lessonCreation.add(Future.value(_createSpreadSheetFileOnDrive(folder.id!, lesson.name, driveApi).then((value) {
+        _onlineDataBase!.createFrameOfQueueTable(value);
+        return value;
+      })));
     }
     final lessonIds = await Future.wait(lessonCreation);
     await Future.wait([insertLessons(lessons, lessonIds), insertStudents(students), _onlineDataBase!.fillGroupInfo(headManName, groupName)]);
@@ -120,7 +133,9 @@ class DataBaseService {
     if (_onlineDataBase == null) {
       throw Exception("Online database not initialized");
     }
-    Future.wait([_localDatabase.insertStudents(students), _onlineDataBase!.fillStudents(students)]);
+    await _onlineDataBase!.fillStudents(students);
+    students = await _onlineDataBase!.getStudents();
+    await _localDatabase.insertStudents(students);
   }
 
   /// Provide headman's [GoogleSignInAccount] to fetch data from their Google Drive, otherwise data will be fetched from local database
@@ -172,4 +187,22 @@ class DataBaseService {
   }
 
   getData() {}
+
+  Future<bool> postNotUploadedRecs(String studentName) async {
+    final list = await _localDatabase.getNotUploadedRecs(studentName);
+    if (list.isEmpty) {
+      return false;
+    }
+    List<Future> tasks = [];
+    for (final rec in list) {
+      final [rowNumber as int, String tableID as String] =
+          (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(rec.lessonName)])).toList();
+      tasks.add(_onlineDataBase?.createRec(tableID, rowNumber, rec.time).then((value) async {
+            if (value) await _localDatabase.updateUploadStatus(rec.lessonName, studentName, true);
+          }) ??
+          Future.value(false));
+    }
+    await Future.wait(tasks);
+    return true;
+  }
 }

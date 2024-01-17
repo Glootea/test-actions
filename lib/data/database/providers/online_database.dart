@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
 import 'package:gsheets/gsheets.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
@@ -22,11 +25,16 @@ class OnlineDataBase {
       return _instance!;
     }
     _instance = OnlineDataBase._(tableID!);
-    final spreadsheet = await _instance!._gsheets.spreadsheet(tableID);
-    if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName])) {
+    try {
+      final spreadsheet = await _instance!._gsheets.spreadsheet(tableID);
+      if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName])) {
+        return _instance!;
+      }
+      await _createInfoFileBase(spreadsheet);
+    } on SocketException {
+      log("Failed to configure online database due to network error");
       return _instance!;
     }
-    await _createInfoFileBase(spreadsheet);
     return _instance!;
   }
 
@@ -36,7 +44,7 @@ class OnlineDataBase {
     final insertLessonTimes = spreadsheet.addWorksheet(_lessonTimesSheetName);
     final insertInfo = spreadsheet.addWorksheet(_infoSheetName);
     final result = await Future.wait([insertInfo, insertNames, insertLessons, insertLessonTimes]);
-    final _ = await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0) ?? (await spreadsheet.addWorksheet("Лист1")));
+    final _ = await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0)!);
     final fillInfo1 = result[0].values.insertRow(1, [_keys, _values]);
     final fillInfo2 = result[0].values.insertColumn(
         1,
@@ -47,9 +55,22 @@ class OnlineDataBase {
         ],
         fromRow: 2);
     final fillNames = result[1].values.insertRow(1, [_nameSurname]);
-    final fillLessons = result[2].values.insertRow(1, [_id, _name, _tableID, _useDoneWorkCount, _autodelete, _lastDelete]);
+    final fillLessons = result[2].values.insertRow(1, [_id, _name, _tableID, _useDoneWorkCount, _autodelete]);
     final fillLessonTimes = result[3].values.insertRow(1, [_id, _dates, _weekdays, _startTime, _endTime]);
     await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
+  }
+
+  Future<bool> createFrameOfQueueTable(String fileID) async {
+    final spreadsheet = await _instance!._gsheets.spreadsheet(fileID);
+    final workSheets = await Future.wait([spreadsheet.addWorksheet(_queueSheetName), spreadsheet.addWorksheet(_infoSheetName)])
+        .whenComplete(() async => await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0)!));
+    final [queue, info] = workSheets;
+    Future.wait([
+      queue.values.insertRow(1, [_queueSheetName, _workCount]),
+      info.values.insertRow(1, [_keys, _values]),
+      info.values.insertColumn(1, [_lastDelete], fromRow: 2)
+    ]);
+    return true;
   }
 
   // final TABLEID = ''; //TODO: get ss id
@@ -76,7 +97,7 @@ class OnlineDataBase {
     return result;
   }
 
-  Future<bool> createRec(String lessonName, String studentName, DateTime time) async {
+  Future<bool> createRec(String lessonTableID, int onlineTableRowNumber, DateTime time) async {
     // try { TODO: rewrite
     //   _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
     //   _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
@@ -84,15 +105,25 @@ class OnlineDataBase {
     //   _subjectRow ??= (await _queueSheet!.cells.row(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
     //   int row = _nameColumn!.indexOf(userName) + 2;
     //   int column = _subjectRow!.indexOf(lessonName) + 2;
-    //   return await (await _queueSheet!.cells.cell(row: row, column: column)).post(time);
+    // return await (await _queueSheet!.cells.cell(row: row, column: column)).post(time);
     // } catch (e) {
     //   log(e.toString());
     //   return false;
     // }
-    return false;
+    try {
+      final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
+      if (queueSheet == null) {
+        throw Exception("Failed to load database");
+      }
+      return await queueSheet.values
+          .insertValue(time.toRecTime, column: 1, row: onlineTableRowNumber)
+          .timeout(const Duration(seconds: 5), onTimeout: () => false);
+    } on SocketException {
+      return false;
+    }
   }
 
-  Future<bool> deleteRec(String lessonName, String userName) async {
+  Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber) async {
     // try { TODO: rewrite
     //   _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
     //   _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
@@ -105,7 +136,16 @@ class OnlineDataBase {
     //   log(e.toString());
     //   return false;
     // }
-    return false;
+    try {
+      final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
+      if (queueSheet == null) {
+        throw Exception("Failed to load database");
+      }
+      return await queueSheet.values.insertValue('', column: 1, row: onlineTableRowNumber).timeout(const Duration(seconds: 5), onTimeout: () => false);
+      // return false;
+    } on SocketException {
+      return false;
+    }
   }
 
   Future<bool> uploadFromQuery(String query) async {
@@ -179,7 +219,7 @@ class OnlineDataBase {
         i++;
       }
       if (list[j].isAdmin) {
-        adminId.add(i + j);
+        adminId.add(i + j + 1);
       }
       if (i + j >= column.length) {
         column.add(list[j].name);
@@ -199,7 +239,10 @@ class OnlineDataBase {
     _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
     final names = (await _namesSheet!.cells.column(1, fromRow: 2)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
     final admins = (await _infoSheet!.values.valueByKeys(rowKey: _admins, columnKey: _values))?.split(',').map((e) => int.parse(e));
-    return names.map((e) => StudentEntity(e, isAdmin: admins!.contains(names.indexOf(e) + 1))).toList();
+    return names.map((e) {
+      final rowNumber = names.indexOf(e) + 2;
+      return StudentEntity(e, rowNumber, isAdmin: admins!.contains(rowNumber));
+    }).toList();
   }
 
   Future<String> getHeadName() async {
@@ -271,7 +314,7 @@ class OnlineDataBase {
           lessonIndex++;
         }
       }
-      tasks.add(_lessonsSheet?.values.insertRow(lessonIndex, [lessonIndex, lesson.name, ids[i], 'нет', 'нет', 'нет']) ?? Future.value(null));
+      tasks.add(_lessonsSheet?.values.insertRow(lessonIndex, [lessonIndex, lesson.name, ids[i], 'нет', 'нет']) ?? Future.value(null));
       final length = lesson.useWeekly ? (lesson.weeklyLessons?.length ?? 0) : (lesson.datedLessons?.length ?? 0);
       for (int j = 0; j < length; j++) {
         if ((lessonTimesIndex >= (lessonTimesTable?[0].length ?? 0))) {

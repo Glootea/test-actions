@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/database/providers/local_database.dart';
 import 'package:queue/data/database/providers/online_database.dart';
@@ -31,8 +32,13 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<Uint8List> _getBackgroundImage() async {
-    _bgImageBacked =
-        base64.decode(await _databaseService.get(StoredValues.backgroundImage) ?? ''); //TODO: implement method to change image in db and notify here
+    String? image = await _databaseService.get(StoredValues.backgroundImage);
+    if (image == null) {
+      final encoded = await FirebaseStorage.instance.ref("/themes/panda/panda.png").getData().timeout(const Duration(seconds: 5));
+      await _databaseService.set(StoredValues.backgroundImage, base64.encode(encoded!.toList()));
+      _bgImageBacked ??= encoded;
+    }
+    _bgImageBacked ??= base64.decode(image!); //TODO: implement method to change image in db and notify here
     return _bgImageBacked!;
   }
 
@@ -61,7 +67,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
         } catch (e) {
           log("Failed to import db due to load failure");
         }
-        final result = await Future.wait([_todayLessons(_userDataBase.getUserName!), _isAdmin, _getBackgroundImage()]);
+        final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _isAdmin, _getBackgroundImage()]);
         emit(
           MainState(
             result[0] as List<LessonEntity>,
@@ -69,6 +75,16 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
             backgroundImageDecoded: result[2] as Uint8List,
           ),
         );
+        if (await _databaseService.postNotUploadedRecs(_userDataBase.getUserName)) {
+          final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _isAdmin, _getBackgroundImage()]);
+          emit(
+            MainState(
+              result[0] as List<LessonEntity>,
+              result[1] as bool,
+              backgroundImageDecoded: result[2] as Uint8List,
+            ),
+          );
+        }
       },
       transformer: sequential(),
     );
@@ -132,22 +148,22 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _createReg(String lessonName, Emitter emit) async {
     // TODO: move to database service
-    //   DateTime time = DateTime.now();
-    //   await _databaseService.createRec(lessonName, _userDataBase.getUserName, time);
+    DateTime time = DateTime.now();
+    await _databaseService.createRec(lessonName, _userDataBase.getUserName, time);
+    emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
+    // bool isOnline = await (await _onlineDB).createRec(lessonName, _userDataBase.getUserName, time);
+    // if (isOnline == true) {
+    //   _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, true);
     //   emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    //   bool isOnline = await (await _onlineDB).createRec(lessonName, _userDataBase.getUserName, time);
-    //   if (isOnline == true) {
-    //     _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, true);
-    //     emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    //   } else {
-    //     _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, false);
-    //     //TODO : cache for later upload
-    //   }
+    // } else {
+    //   _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, false);
+    //   //TODO : cache for later upload
     // }
   }
+
   Future<void> _deleteReg(String lessonName, Emitter emit) async {
-    //   await _databaseService.deleteRec(lessonName, _userDataBase.getUserName);
-    //   emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
+    await _databaseService.deleteRec(lessonName, _userDataBase.getUserName);
+    emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
     //   bool isOnline = await (await _onlineDB).deleteRec(lessonName, _userDataBase.getUserName);
     //   if (isOnline == true) {
     //     _databaseService.deleteRec(lessonName, _userDataBase.getUserName);
@@ -199,12 +215,14 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _registerGroup(RegisterGroupEvent event, Emitter<QueueState> emit) async {
+    emit(LoadingState());
     final userName = '${event.firstName} ${event.lastName}';
-    await Future.wait([
+    final result = await Future.wait([
       _userDataBase.fillUser(userName),
-      _databaseService.registerGroup(event.lessons, [StudentEntity(userName, isAdmin: true)] + event.students, userName, event.groupName)
+      _databaseService.registerGroup(event.lessons, [StudentEntity(userName, 2, isAdmin: true)] + event.students, userName, event.groupName),
+      _getBackgroundImage()
     ]);
-    emit(MainState(await _todayLessons(userName), true));
+    emit(MainState(await _todayLessons(userName), true, backgroundImageDecoded: result[2] as Uint8List));
   }
 
   Future<void> _loginUsingGoogle(Emitter<QueueState> emit) async {
@@ -212,11 +230,12 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     if (userSignInAccount == null) {
       emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
     } else {
+      emit(LoadingState());
       await _databaseService.fetchDataFromDrive(account: userSignInAccount);
       _userDataBase =
           await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
-      final result = await Future.wait([_todayLessons(_userDataBase.getUserName!), _isAdmin]);
-      emit(MainState(result[0] as List<LessonEntity>, result[1] as bool));
+      final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _isAdmin, _getBackgroundImage()]);
+      emit(MainState(result[0] as List<LessonEntity>, result[1] as bool, backgroundImageDecoded: result[2] as Uint8List));
     }
   }
 

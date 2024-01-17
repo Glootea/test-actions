@@ -5,7 +5,7 @@ final class RecEntity {
   final String userName;
   final String lessonName;
   final DateTime time;
-  final bool? isUploaded;
+  final bool isUploaded;
   @override
   bool operator ==(Object other) {
     if (other is RecEntity) {
@@ -16,7 +16,7 @@ final class RecEntity {
     return false;
   }
 
-  const RecEntity(this.userName, this.time, this.lessonName, [this.isUploaded]);
+  const RecEntity(this.userName, this.time, this.lessonName, [this.isUploaded = false]);
 
   @override
   int get hashCode => userName.hashCode * time.hashCode;

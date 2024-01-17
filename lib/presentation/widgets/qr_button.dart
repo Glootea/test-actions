@@ -46,6 +46,6 @@ class QrButton extends StatelessWidget {
                     ],
                   ));
         },
-        child: const Icon(Icons.qr_code_rounded, color: Colors.black));
+        child: Icon(Icons.qr_code_rounded, color: Theme.of(context).colorScheme.onPrimaryContainer));
   }
 }

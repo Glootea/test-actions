@@ -32,6 +32,11 @@ extension TimeFromString on String {
     return TimeOfDay(hour: a[0], minute: a[1]);
   }
 
+  DateTime get toRecDateTime {
+    List<int> list = split('-').map((e) => int.parse(e)).toList();
+    return DateTime(list[0], list[1], list[2], list[3], list[4], list[5], list[6]);
+  }
+
   ///Used to store time in online spreadsheet to prevent from being proportion of day
   String get toOnlineTime {
     return "'$this";
@@ -41,6 +46,10 @@ extension TimeFromString on String {
 extension DateToString on DateTime {
   String get toDateString {
     return '$day.$month.$year';
+  }
+
+  String get toRecTime {
+    return '$year-$month-$day-$hour-$minute-$second-$millisecond';
   }
 }
 

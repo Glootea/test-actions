@@ -5,7 +5,7 @@ import 'package:encrypt/encrypt.dart';
 class Encryption {
   static const _encriptionKey = String.fromEnvironment(
     'ENCRIPTION_KEY',
-    defaultValue: 'bwpIDnE0wAZB3J0qW/nfdd/ENBtfVlGjepmm/NLxEwWZQjOJTFSQ7Ap3GqUQfXlE',
+    defaultValue: '7cbcUHZ7WzP5BOzwhJmjIPpQRNBjhOwy',
   );
   static final _encrypter = Encrypter(AES(Key.fromBase64(_encriptionKey)));
   static final _iv = IV.fromBase64(_encriptionKey.substring(0, 4));

@@ -15,7 +15,8 @@ class Lessons extends Table {
 }
 
 class Students extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get id => integer().autoIncrement()(); // TODO: merge id and onlineTableRowNumber
+  IntColumn get onlineTableRowNumber => integer()();
   TextColumn get name => text()();
   BoolColumn get isAdmin => boolean().nullable()();
 }

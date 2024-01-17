@@ -4,7 +4,13 @@ class UserDataBase {
   final LocalDatabase _storage;
   String? _userName;
   bool? _isAdmin;
-  String? get getUserName => _userName;
+  String get getUserName {
+    if (_userName == null) {
+      throw Exception("User name has not been set");
+    }
+    return _userName!;
+  }
+
   bool get isAdmin => _isAdmin ?? false;
 
   UserDataBase._(this._storage);
@@ -28,7 +34,7 @@ class UserDataBase {
   bool get userExist => _userName?.isNotEmpty ?? false;
 
   void logOut() {
-    _storage.clean(StoredValues.userName);
+    _storage.clearAll();
     _userName = null;
     _isAdmin = null;
   }

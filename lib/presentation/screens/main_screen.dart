@@ -6,6 +6,7 @@ import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/screens/admin_view.dart';
+import 'package:queue/presentation/widgets/blured_box.dart';
 // import 'package:queue/navigation.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
@@ -50,9 +51,16 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         body: BlocBuilder<QueueBloc, QueueState>(
           builder: (context, state) {
-            MainState mainState = state as MainState;
+            if (state is! MainState) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            // MainState mainState = state as MainState;
             if (state.backgroundImageDecoded != null) {
-              backgroundImage = Image.memory(state.backgroundImageDecoded!); //TODO: find why no bytes for image
+              backgroundImage = Image.memory(state.backgroundImageDecoded!, repeat: ImageRepeat.repeat); //TODO: find why no bytes for image
+            } else {
+              if (backgroundImage == null && state.backgroundImageDecoded == null) {
+                backgroundImage = Image.asset("assets/panda.png", repeat: ImageRepeat.repeat);
+              }
             }
             return Stack(
               children: [
@@ -76,7 +84,7 @@ class _MainScreenState extends State<MainScreen> {
                   child: PageView(
                     controller: pageController,
                     physics: const NeverScrollableScrollPhysics(),
-                    children: [TodayView(mainState: mainState), const QRScannerView(), const AdminView()],
+                    children: [TodayView(mainState: state), const QRScannerView(), const AdminView()],
                   ),
                 ),
               ],
@@ -124,9 +132,13 @@ class TodayView extends StatelessWidget {
           children: [
             const MyPadding(),
             const MyPadding(),
-            Text(
-              "Пары с очередью сегодня: ",
-              style: Theme.of(context).textTheme.headlineLarge,
+            BluredBox(
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer, width: 2),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7)),
+                  child: Text("Пары с очередью сегодня", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge)),
             ),
             const MyPadding(),
             (mainState.todayLessons.isEmpty)
