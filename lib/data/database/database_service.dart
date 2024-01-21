@@ -43,16 +43,20 @@ class DataBaseService {
     final task2 = _onlineDataBase?.createRec(tableID, rowNumber, time) ?? Future.value(false);
     final result = await Future.wait([task1, task2]);
     if (result[1] == true) {
-      await _localDatabase.updateUploadStatus(lessonName, studentName, true);
+      await _localDatabase.updateUploadStatus(lessonName, studentName, 1);
     }
   }
 
   Future<void> deleteRec(String lessonName, String studentName) async {
     final [rowNumber as int, String tableID as String] =
         (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)])).toList();
-    final task1 = _localDatabase.deleteRec(lessonName, studentName);
-    final task2 = _onlineDataBase?.deleteRec(tableID, rowNumber) ?? Future.value(false);
-    final _ = await Future.wait([task1, task2]);
+    await _onlineDataBase?.deleteRec(tableID, rowNumber).then((value) async {
+      if (value) {
+        await _localDatabase.deleteRec(lessonName, studentName);
+      } else {
+        await _localDatabase.updateUploadStatus(lessonName, studentName, -1);
+      }
+    }).timeout(const Duration(seconds: 5));
   }
 
   Future<List<LessonEntity>> todayLessons(DateTime today, String studentName) {
@@ -138,7 +142,7 @@ class DataBaseService {
     await _localDatabase.insertStudents(students);
   }
 
-  /// Provide headman's [GoogleSignInAccount] to fetch data from their Google Drive, otherwise data will be fetched from local database
+  /// Provide headman's [GoogleSignInAccount] to fetch data from their Google Drive, otherwise data for drive search will be fetched from local database
   Future<void> fetchDataFromDrive({GoogleSignInAccount? account}) async {
     String? infoTableID = (account != null) ? await _findInfoTableOnDrive() : await get(StoredValues.infoTableID);
     if (infoTableID == null) {
@@ -190,21 +194,62 @@ class DataBaseService {
     return true;
   }
 
-  getData() {}
+  Future<void> fetchRecs() async {
+    final result = await Future.wait([
+      _localDatabase.getStudents().then((value) => value.map((e) => [e.onlineTableRowNumber, e.name]).toList()),
+      _localDatabase.todayLessons(DateTime.now(), '')
+    ]);
+    final studentNames = {for (var e in result[0] as List<List>) e[0] as int: e[1] as String};
+    final lessonNames = (result[1] as List<LessonEntity>).map((e) => e.name);
+    for (final lessonName in lessonNames) {
+      final recs = await _localDatabase.getLessonTableID(lessonName).then((value) async => await _onlineDataBase?.getRecs(studentNames, lessonName, value));
+      if (recs != null) {
+        await _localDatabase.deleteAllRecs(lessonName);
+        await _localDatabase.import(recs);
+      }
+    }
+  }
 
+  // TODO: implement not deleted recs
   Future<bool> postNotUploadedRecs(String studentName) async {
-    final list = await _localDatabase.getNotUploadedRecs(studentName);
+    final [list as List<RecEntity>, rowNumber as int] =
+        (await Future.wait([_localDatabase.getNotUploadedRecs(studentName), _localDatabase.getOnlineTableRowNumber(studentName)])).toList();
     if (list.isEmpty) {
       return false;
     }
     List<Future> tasks = [];
+    Map<String, String> map = {};
     for (final rec in list) {
-      final [rowNumber as int, String tableID as String] =
-          (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(rec.lessonName)])).toList();
-      tasks.add(_onlineDataBase?.createRec(tableID, rowNumber, rec.time).then((value) async {
-            if (value) await _localDatabase.updateUploadStatus(rec.lessonName, studentName, true);
-          }) ??
-          Future.value(false));
+      if (map[rec.lessonName] == null) {
+        String tableID = await _localDatabase.getLessonTableID(rec.lessonName);
+        map[rec.lessonName] = tableID;
+      }
+      var recCreation = _onlineDataBase?.createRec(map[rec.lessonName]!, rowNumber, rec.time).then((value) async {
+        if (value) await _localDatabase.updateUploadStatus(rec.lessonName, studentName, 1);
+      });
+      tasks.add(recCreation ?? Future.value(false));
+    }
+    await Future.wait(tasks);
+    return true;
+  }
+
+  Future<bool> deleteNotUploadedRecs(String studentName) async {
+    final [list as List<RecEntity>, rowNumber as int] =
+        (await Future.wait([_localDatabase.getNotDeletedRecs(studentName), _localDatabase.getOnlineTableRowNumber(studentName)])).toList();
+    if (list.isEmpty) {
+      return false;
+    }
+    List<Future> tasks = [];
+    Map<String, String> map = {};
+    for (final rec in list) {
+      if (map[rec.lessonName] == null) {
+        String tableID = await _localDatabase.getLessonTableID(rec.lessonName);
+        map[rec.lessonName] = tableID;
+      }
+      var recDeletion = _onlineDataBase?.deleteRec(map[rec.lessonName]!, rowNumber).then((value) async {
+        if (value) await _localDatabase.deleteRec(rec.lessonName, studentName);
+      });
+      tasks.add(recDeletion ?? Future.value(false));
     }
     await Future.wait(tasks);
     return true;

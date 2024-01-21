@@ -50,41 +50,43 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   QueueBloc(this._userDataBase, this._databaseService, super.initialState) {
     on<QueueEvent>(
       (event, emit) async {
-        //  --- mainScreen ---
+        switch (event.runtimeType) {
+          //  --- mainScreen ---
+          case CreateRegEvent:
+            await _createReg((event as CreateRegEvent).lessonName, emit);
+          case DeleteRegEvent:
+            await _deleteReg((event as DeleteRegEvent).lessonName, emit);
 
-        if (event is CreateRegEvent)
-          await _createReg(event.lessonName, emit);
-        else if (event is DeleteRegEvent)
-          await _deleteReg(event.lessonName, emit);
+          //  --- group creation ---
+          case CreateGroupIntentionEvent:
+            await _createGroupIntention(emit);
+          case RegisterGroupEvent:
+            await _registerGroup((event as RegisterGroupEvent), emit);
+          case LoginUsingGoogleEvent:
+            await _loginUsingGoogle(emit);
 
-        //  --- group creation ---
-        else if (event is CreateGroupIntentionEvent)
-          await _createGroupIntention(emit);
-        else if (event is RegisterGroupEvent)
-          await _registerGroup(event, emit);
-        else if (event is LoginUsingGoogleEvent)
-          _loginUsingGoogle(emit);
+          //  --- user Authentication ---
+          case FindUserEvent:
+            await _findUser();
+          case NoUserEvent:
+            emit(UserUnAuthenticatedState(errorMessage: (event as NoUserEvent).errorMessage));
+          case UserAuthenticatedEvent:
+            await _userAuthenticated(emit);
+          case UserLogOutEvent:
+            await _userLogOut();
 
-        //  --- user Authentication ---
-        else if (event is FindUserEvent)
-          await _findUser();
-        else if (event is NoUserEvent)
-          emit(UserUnAuthenticatedState(errorMessage: event.errorMessage));
-        else if (event is UserAuthenticatedEvent)
-          await _userAuthenticated(emit);
-        else if (event is UserLogOutEvent)
-          await _userLogOut();
+          //  --- upload Screen ---
 
-        //  --- upload Screen ---
+          case UploadFromLinkEvent:
+            await _uploadExternalRecEvent(event as UploadFromLinkEvent, emit);
 
-        else if (event is UploadFromLinkEvent)
-          await _uploadExternalRecEvent(event, emit);
+          //  --- invite ---
 
-        //  --- invite ---
-
-        else if (event is InviteEvent)
-          await _onInviteEvent(event, emit);
-        else if (event is RegisterInvitedUserEvent) await _onRegisterInvitedUserEvent(event, emit);
+          case InviteEvent:
+            await _onInviteEvent(event as InviteEvent, emit);
+          case RegisterInvitedUserEvent:
+            await _onRegisterInvitedUserEvent(event as RegisterInvitedUserEvent, emit);
+        }
       },
       transformer: sequential(),
     );
@@ -137,12 +139,6 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _userAuthenticated(Emitter<QueueState> emit) async {
     {
-      try {
-        // List<RecEntity> list = await _databaseService.getData(); //TODO: fetch recs from online
-        // _databaseService.import(list);
-      } catch (e) {
-        log("Failed to import db due to load failure");
-      }
       final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
       emit(
         MainState(
@@ -151,7 +147,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
           backgroundImageDecoded: result[1] as Uint8List,
         ),
       );
-      if (await _databaseService.postNotUploadedRecs(_userDataBase.getUserName)) {
+      final tasks = [_databaseService.postNotUploadedRecs(_userDataBase.getUserName), _databaseService.deleteNotUploadedRecs(_userDataBase.getUserName)];
+      if (await Future.wait(tasks).then((value) => value.any((e) => e == true))) {
         final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
         emit(
           MainState(
@@ -161,6 +158,15 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
           ),
         );
       }
+      await _databaseService.fetchRecs(); //TODO: fetch recs from online
+      final result2 = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
+      emit(
+        MainState(
+          result2[0] as List<LessonEntity>,
+          _isAdmin,
+          backgroundImageDecoded: result2[1] as Uint8List,
+        ),
+      );
     }
   }
 

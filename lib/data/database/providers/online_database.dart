@@ -74,42 +74,22 @@ class OnlineDataBase {
   }
 
   // final TABLEID = ''; //TODO: get ss id
-  Future<List<RecEntity>> getData() async {
-    final result = <RecEntity>[];
-    // try { TODO: rewrite
-    //   _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
-    //   _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
-    //   final allColumns = await _queueSheet!.cells.allColumns();
-    //   _nameColumn ??= (allColumns[0]).sublist(1).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   _subjectRow ??= (allColumns.sublist(1).map((e) => e.first)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   // final columnCount = sheet.columnCount;
-    //   for (int i = 0; i < _subjectRow!.length; i++) {
-    //     result.addAll((allColumns[i + 1].sublist(1))
-    //         .where((element) => element.value.isNotEmpty)
-    //         .map((e) => RecEntity(_nameColumn![e.row - 2], DateTime.parse(e.value), _subjectRow![i]))
-    //         .toList());
-    //   }
-    // } catch (e) {
-    //   log("Failed to load database");
-    //   rethrow;
-    // }
-
+  Future<List<RecEntity>> getRecs(Map<int, String> students, String lessonName, String tableID) async {
+    List<RecEntity> result = <RecEntity>[];
+    final queueSheet = await _gsheets.spreadsheet(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
+    final onlineTimes = await queueSheet?.values.column(1, fromRow: 2);
+    if (onlineTimes == null) return result;
+    for (int i = 0; i < onlineTimes.length; i++) {
+      final onlineTime = onlineTimes[i];
+      if (onlineTime.isNotEmpty) {
+        final time = onlineTime.toRecDateTime;
+        result.add(RecEntity(students[i + 2]!, time, lessonName, true));
+      }
+    }
     return result;
   }
 
   Future<bool> createRec(String lessonTableID, int onlineTableRowNumber, DateTime time) async {
-    // try { TODO: rewrite
-    //   _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
-    //   _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
-    //   _nameColumn ??= (await _queueSheet!.cells.column(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   _subjectRow ??= (await _queueSheet!.cells.row(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   int row = _nameColumn!.indexOf(userName) + 2;
-    //   int column = _subjectRow!.indexOf(lessonName) + 2;
-    // return await (await _queueSheet!.cells.cell(row: row, column: column)).post(time);
-    // } catch (e) {
-    //   log(e.toString());
-    //   return false;
-    // }
     try {
       final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
       if (queueSheet == null) {
@@ -124,18 +104,6 @@ class OnlineDataBase {
   }
 
   Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber) async {
-    // try { TODO: rewrite
-    //   _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
-    //   _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
-    //   _nameColumn ??= (await _queueSheet!.cells.column(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   _subjectRow ??= (await _queueSheet!.cells.row(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   int row = _nameColumn!.indexOf(userName) + 2;
-    //   int column = _subjectRow!.indexOf(lessonName) + 2;
-    //   return await (await _queueSheet!.cells.cell(row: row, column: column)).post(null);
-    // } catch (e) {
-    //   log(e.toString());
-    //   return false;
-    // }
     try {
       final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
       if (queueSheet == null) {

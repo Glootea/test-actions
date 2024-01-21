@@ -18,7 +18,7 @@ class LocalDatabase extends _$LocalDatabase {
         leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
         leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
       ]))
-                ..where(lessons.name.equals(lessonName))
+                ..where(lessons.name.equals(lessonName) & recs.uploaded.isNotValue(-1))
                 ..orderBy([OrderingTerm.asc(recs.time)]))
               .get())
           .then((rows) =>
@@ -29,6 +29,14 @@ class LocalDatabase extends _$LocalDatabase {
         leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
       ])))
             ..where(students.name.equals(userName) & recs.uploaded.equals(0)))
+          .get()
+          .then((rows) => rows.map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!)).toList());
+
+  Future<List<RecEntity>> getNotDeletedRecs(String userName) => (((select(recs).join([
+        leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+      ])))
+            ..where(students.name.equals(userName) & recs.uploaded.equals(-1)))
           .get()
           .then((rows) => rows.map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!)).toList());
 
@@ -82,18 +90,19 @@ class LocalDatabase extends _$LocalDatabase {
         .toList();
   }
 
-  Future<bool> createRec(String lessonName, String studentName, DateTime time) async {
+  Future<bool> createRec(String lessonName, String studentName, DateTime time, {int? uploaded}) async {
     int studentID = await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingle().then((student) => student.id);
     int lessonID = await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
-    await into(recs).insert(RecsCompanion(lessonID: Value(lessonID), studentID: Value(studentID), time: Value(time), uploaded: const Value(0)),
+    await into(recs).insert(RecsCompanion(lessonID: Value(lessonID), studentID: Value(studentID), time: Value(time), uploaded: Value(uploaded ?? 0)),
         mode: InsertMode.insertOrReplace);
     return true;
   }
 
-  Future<void> updateUploadStatus(String lessonName, String studentName, bool status) async {
+  /// Status: 1 - uploaded; 0 - not uploaded, but should be; -1 - should be deleted
+  Future<void> updateUploadStatus(String lessonName, String studentName, int status) async {
     int studentID = await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingle().then((student) => student.id);
     int lessonID = await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
-    await (update(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID))).write(RecsCompanion(uploaded: Value(status ? 1 : 0)));
+    await (update(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID))).write(RecsCompanion(uploaded: Value(status)));
   }
 
   Future<void> deleteRec(String lessonName, String studentName) async {
@@ -108,10 +117,7 @@ class LocalDatabase extends _$LocalDatabase {
   }
 
   Future<void> import(List<RecEntity> list) async {
-    delete(recs);
-    for (final i in list) {
-      createRec(i.lessonName, i.userName, i.time);
-    }
+    await Future.wait(list.map((i) async => createRec(i.lessonName, i.userName, i.time, uploaded: 1)));
   }
 
   //-- user related
@@ -182,6 +188,10 @@ class LocalDatabase extends _$LocalDatabase {
     }).toList());
   }
 
+  Future<List<String>> getLessonNames() async {
+    return (select(lessons)).get().then((value) => value.map((e) => e.name).toList());
+  }
+
   Future<String> getLessonTableID(String lessonName) async {
     return (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((value) => value.onlineID);
   }
@@ -189,6 +199,10 @@ class LocalDatabase extends _$LocalDatabase {
   Future<void> insertStudents(List<StudentEntity> list) async {
     await students.insertAll(list.map((e) => StudentsCompanion(name: Value(e.name), isAdmin: Value(e.isAdmin), id: Value(e.onlineTableRowNumber))).toList(),
         mode: InsertMode.insertOrReplace); //TODO: resolve conflict on multiple same inserts
+  }
+
+  Future<List<StudentEntity>> getStudents() async {
+    return (select(students)).get().then((value) => value.map((e) => StudentEntity(e.name, e.id, isAdmin: e.isAdmin ?? false)).toList());
   }
 
   Future<int> getOnlineTableRowNumber(String studentName) async {
