@@ -1,3 +1,6 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
@@ -11,19 +14,21 @@ import 'package:queue/data/user_database.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/data/encryprion.dart';
 import 'package:queue/logic/events.dart';
+import 'package:queue/logic/optimistic_ui.dart';
 import 'package:queue/logic/states.dart';
 
 class QueueBloc extends Bloc<QueueEvent, QueueState> {
   UserDataBase _userDataBase;
   final DataBaseService _databaseService;
   OnlineDataBase get _onlineDB => _databaseService.onlineDataBase;
-  Uint8List? _bgImageBacked;
   String? get userName => _userDataBase.getUserName;
-  bool? _isAdminBacked;
+  Uint8List? _bgImageBacked;
 
-  Future<bool> get _isAdmin async {
-    _isAdminBacked ??= _userDataBase.isAdmin;
-    return _isAdminBacked!;
+  bool get _isAdmin {
+    if (state is MainState) {
+      return (state as MainState).isAdmin;
+    }
+    return _userDataBase.isAdmin;
   }
 
   Future<List<LessonEntity>> _todayLessons(String studentName) async {
@@ -35,97 +40,83 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     String? image = await _databaseService.get(StoredValues.backgroundImage);
     if (image == null) {
       final encoded = await FirebaseStorage.instance.ref("/themes/panda/panda.png").getData().timeout(const Duration(seconds: 5));
-      await _databaseService.set(StoredValues.backgroundImage, base64.encode(encoded!.toList()));
-      _bgImageBacked ??= encoded;
+      image = base64.encode(encoded!.toList());
+      await _databaseService.set(StoredValues.backgroundImage, image);
     }
-    _bgImageBacked ??= base64.decode(image!); //TODO: implement method to change image in db and notify here
+    _bgImageBacked ??= base64.decode(image); //TODO: implement method to change image in db and notify here
     return _bgImageBacked!;
   }
 
   QueueBloc(this._userDataBase, this._databaseService, super.initialState) {
-    // --- loading
-
-    // --- user Authentication ---
-
-    on<FindUserEvent>(
-      (event, emit) async => await _findUser(),
-      transformer: sequential(),
-    );
-    on<NoUserEvent>(
-      (event, emit) => emit(UserUnAuthenticatedState(errorMessage: event.errorMessage)),
-      transformer: sequential(),
-    );
-    // on<UserAuthenticateEvent>(
-    //   (event, emit) async => await _authenticateUser(event.userID),
-    //   transformer: sequential(),
-    // );
-    on<UserAuthenticatedEvent>(
+    on<QueueEvent>(
       (event, emit) async {
-        try {
-          // List<RecEntity> list = await _databaseService.getData(); //TODO: fetch recs from online
-          // _databaseService.import(list);
-        } catch (e) {
-          log("Failed to import db due to load failure");
-        }
-        final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _isAdmin, _getBackgroundImage()]);
-        emit(
-          MainState(
-            result[0] as List<LessonEntity>,
-            result[1] as bool,
-            backgroundImageDecoded: result[2] as Uint8List,
-          ),
-        );
-        if (await _databaseService.postNotUploadedRecs(_userDataBase.getUserName)) {
-          final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _isAdmin, _getBackgroundImage()]);
-          emit(
-            MainState(
-              result[0] as List<LessonEntity>,
-              result[1] as bool,
-              backgroundImageDecoded: result[2] as Uint8List,
-            ),
-          );
-        }
+        //  --- mainScreen ---
+
+        if (event is CreateRegEvent)
+          await _createReg(event.lessonName, emit);
+        else if (event is DeleteRegEvent)
+          await _deleteReg(event.lessonName, emit);
+
+        //  --- group creation ---
+        else if (event is CreateGroupIntentionEvent)
+          await _createGroupIntention(emit);
+        else if (event is RegisterGroupEvent)
+          await _registerGroup(event, emit);
+        else if (event is LoginUsingGoogleEvent)
+          _loginUsingGoogle(emit);
+
+        //  --- user Authentication ---
+        else if (event is FindUserEvent)
+          await _findUser();
+        else if (event is NoUserEvent)
+          emit(UserUnAuthenticatedState(errorMessage: event.errorMessage));
+        else if (event is UserAuthenticatedEvent)
+          await _userAuthenticated(emit);
+        else if (event is UserLogOutEvent)
+          await _userLogOut();
+
+        //  --- upload Screen ---
+
+        else if (event is UploadFromLinkEvent)
+          await _uploadExternalRecEvent(event, emit);
+
+        //  --- invite ---
+
+        else if (event is InviteEvent)
+          await _onInviteEvent(event, emit);
+        else if (event is RegisterInvitedUserEvent) await _onRegisterInvitedUserEvent(event, emit);
       },
       transformer: sequential(),
     );
-    on<UserLogOutEvent>(
-      (event, emit) async => await _userLogOut(),
-      transformer: sequential(),
-    );
+  }
 
-//---mainScreen ---
+//---main screen ---
 
-    on<CreateRegEvent>(
-      (event, emit) async => await _createReg(event.lessonName, emit),
-      transformer: sequential(),
-    );
-    on<DeleteRegEvent>(
-      (event, emit) async => await _deleteReg(event.lessonName, emit),
-      transformer: sequential(),
-    );
+  Future<void> _createReg(String lessonName, Emitter emit) async {
+    DateTime time = DateTime.now();
+    final fakedLessons = OptimisticUI.createRec((state as MainState).todayLessons, lessonName, time);
+    emit(MainState(fakedLessons, _isAdmin));
+    await _databaseService.createRec(lessonName, _userDataBase.getUserName, time);
+    emit(MainState(await _todayLessons(_userDataBase.getUserName), _isAdmin));
+  }
 
-    // --- uploadScreen
+  Future<void> _deleteReg(String lessonName, Emitter emit) async {
+    final fakedLessons = OptimisticUI.deleteRec((state as MainState).todayLessons, lessonName);
+    emit(MainState(fakedLessons, _isAdmin));
+    await _databaseService.deleteRec(lessonName, _userDataBase.getUserName); // TODO: catch network error if occur
+    emit(MainState(await _todayLessons(_userDataBase.getUserName), _isAdmin));
+    //   //TODO : cache for later upload
+  }
 
-    on<UploadFromLinkEvent>((event, emit) => _onUploadEvent(event, emit));
-
-    // --- invite
-
-    on<InviteEvent>((event, emit) => _onInviteEvent(event, emit));
-    on<RegisterUserEvent>((event, emit) async => await _onRegisterUserEvent(event, emit));
-
-    // login screen
-
-    on<CreateGroupIntentionEvent>((event, emit) async {
+  Future<void> _createGroupIntention(Emitter<QueueState> emit) async {
+    {
       final user = await _databaseService.signInGoogle();
       if (user != null) {
         emit(UserUnAuthenticatedState(createGroupState: true));
       } else {
         emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
       }
-    });
-
-    on<RegisterGroupEvent>((event, emit) async => await _registerGroup(event, emit));
-    on<LoginUsingGoogleEvent>((event, emit) => _loginUsingGoogle(emit));
+    }
   }
 
 // --- Functions
@@ -144,38 +135,52 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     _userDataBase.logOut();
   }
 
-//---main screen ---
-
-  Future<void> _createReg(String lessonName, Emitter emit) async {
-    // TODO: move to database service
-    DateTime time = DateTime.now();
-    await _databaseService.createRec(lessonName, _userDataBase.getUserName, time);
-    emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    // bool isOnline = await (await _onlineDB).createRec(lessonName, _userDataBase.getUserName, time);
-    // if (isOnline == true) {
-    //   _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, true);
-    //   emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    // } else {
-    //   _databaseService.updateUploadStatus(lessonName, _userDataBase.getUserName, false);
-    //   //TODO : cache for later upload
-    // }
+  Future<void> _userAuthenticated(Emitter<QueueState> emit) async {
+    {
+      try {
+        // List<RecEntity> list = await _databaseService.getData(); //TODO: fetch recs from online
+        // _databaseService.import(list);
+      } catch (e) {
+        log("Failed to import db due to load failure");
+      }
+      final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
+      emit(
+        MainState(
+          result[0] as List<LessonEntity>,
+          _isAdmin,
+          backgroundImageDecoded: result[1] as Uint8List,
+        ),
+      );
+      if (await _databaseService.postNotUploadedRecs(_userDataBase.getUserName)) {
+        final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
+        emit(
+          MainState(
+            result[0] as List<LessonEntity>,
+            _isAdmin,
+            backgroundImageDecoded: result[1] as Uint8List,
+          ),
+        );
+      }
+    }
   }
 
-  Future<void> _deleteReg(String lessonName, Emitter emit) async {
-    await _databaseService.deleteRec(lessonName, _userDataBase.getUserName);
-    emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    //   bool isOnline = await (await _onlineDB).deleteRec(lessonName, _userDataBase.getUserName);
-    //   if (isOnline == true) {
-    //     _databaseService.deleteRec(lessonName, _userDataBase.getUserName);
-    //     emit(MainState(await _todayLessons(_userDataBase.getUserName), await _isAdmin));
-    //   }
-    //else {
-    //   //TODO : cache for later upload
+  Future<void> _loginUsingGoogle(Emitter<QueueState> emit) async {
+    final userSignInAccount = await _databaseService.signInGoogle();
+    if (userSignInAccount == null) {
+      emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
+    } else {
+      emit(LoadingState());
+      await _databaseService.fetchDataFromDrive(account: userSignInAccount);
+      _userDataBase =
+          await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
+      final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
+      emit(MainState(result[0] as List<LessonEntity>, _isAdmin, backgroundImageDecoded: result[1] as Uint8List));
+    }
   }
 
   // --- upload screen
 
-  Future<void> _onUploadEvent(UploadFromLinkEvent event, Emitter emit) async {
+  Future<void> _uploadExternalRecEvent(UploadFromLinkEvent event, Emitter emit) async {
     try {
       String link = Encryption.decrypt(event.link);
       emit(UploadFromLinkState(isLoading: true));
@@ -198,11 +203,11 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     }
   }
 
-  void _onInviteEvent(InviteEvent event, Emitter<QueueState> emit) {
+  Future<void> _onInviteEvent(InviteEvent event, Emitter<QueueState> emit) async {
     //TODO: implement invite
   }
 
-  Future<void> _onRegisterUserEvent(RegisterUserEvent event, Emitter<QueueState> emit) async {
+  Future<void> _onRegisterInvitedUserEvent(RegisterInvitedUserEvent event, Emitter<QueueState> emit) async {
     //TODO: move to database service
 
     // _userDataBase.fillUser(event.inviteState.userName);
@@ -214,6 +219,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     // }
   }
 
+  // --- group creation ---
+
   Future<void> _registerGroup(RegisterGroupEvent event, Emitter<QueueState> emit) async {
     emit(LoadingState());
     final userName = '${event.firstName} ${event.lastName}';
@@ -224,20 +231,4 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     ]);
     emit(MainState(await _todayLessons(userName), true, backgroundImageDecoded: result[2] as Uint8List));
   }
-
-  Future<void> _loginUsingGoogle(Emitter<QueueState> emit) async {
-    final userSignInAccount = await _databaseService.signInGoogle();
-    if (userSignInAccount == null) {
-      emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
-    } else {
-      emit(LoadingState());
-      await _databaseService.fetchDataFromDrive(account: userSignInAccount);
-      _userDataBase =
-          await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
-      final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _isAdmin, _getBackgroundImage()]);
-      emit(MainState(result[0] as List<LessonEntity>, result[1] as bool, backgroundImageDecoded: result[2] as Uint8List));
-    }
-  }
-
-  // Future<void> getData() async {}
 }

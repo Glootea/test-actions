@@ -1,9 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:queue/entities/export.dart';
 
 ///To be displayed
 @immutable
-final class LessonEntity {
+final class LessonEntity extends Equatable implements Comparable {
   final String name;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
@@ -11,6 +12,31 @@ final class LessonEntity {
   final RecEntity? userRec;
   final int? userQueuePosition;
   const LessonEntity(this.name, this.startTime, this.endTime, this.recs, [this.userRec, this.userQueuePosition]);
+  LessonEntity copyWith({String? name, TimeOfDay? startTime, TimeOfDay? endTime, List<RecEntity>? recs, RecEntity? userRec, int? userQueuePosition}) {
+    return LessonEntity(name ?? this.name, startTime ?? this.startTime, endTime ?? this.endTime, recs ?? this.recs, userRec ?? this.userRec,
+        userQueuePosition ?? this.userQueuePosition);
+  }
+
+  LessonEntity copyWithoutUserRec() {
+    return LessonEntity(name, startTime, endTime, recs);
+  }
+
+  @override
+  int compareTo(other) {
+    if (other is LessonEntity) {
+      if (startTime == other.startTime) {
+        return 0;
+      } else if (startTime.hour * 60 + startTime.minute < other.startTime.hour * 60 + other.startTime.minute) {
+        return -1;
+      } else {
+        return -1;
+      }
+    }
+    return 1;
+  }
+
+  @override
+  List<Object?> get props => [name, startTime, endTime, recs, userRec, userQueuePosition];
 }
 
 /// Used in settings menu.

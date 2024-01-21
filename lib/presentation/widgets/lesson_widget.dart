@@ -126,7 +126,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                     Row(
                       children: [
                         const MySmallPadding(),
-                        Text(widget.lesson.userQueuePosition == 0 ? "Очередь\nнедоступна" : "Вы ${widget.lesson.userQueuePosition} в очереди",
+                        Text(widget.lesson.userQueuePosition == 0 ? "Очередь\nнедоступна" : "Вы ${widget.lesson.userQueuePosition ?? '?'} в очереди",
                             textAlign: TextAlign.start, style: Theme.of(context).textTheme.headlineSmall),
                         const Spacer(),
                         Icon(

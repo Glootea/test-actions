@@ -1,23 +1,14 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 @immutable
-final class RecEntity {
+final class RecEntity extends Equatable {
   final String userName;
   final String lessonName;
   final DateTime time;
   final bool isUploaded;
   @override
-  bool operator ==(Object other) {
-    if (other is RecEntity) {
-      if (identical(this, other)) return true;
-      if (time == other.time && userName == other.userName) return true;
-      return false;
-    }
-    return false;
-  }
+  List<Object> get props => [userName, lessonName, time, isUploaded];
 
   const RecEntity(this.userName, this.time, this.lessonName, [this.isUploaded = false]);
-
-  @override
-  int get hashCode => userName.hashCode * time.hashCode;
 }

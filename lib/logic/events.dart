@@ -51,10 +51,10 @@ class InviteEvent extends QueueEvent {
   InviteEvent(this.link);
 }
 
-class RegisterUserEvent extends QueueEvent {
+class RegisterInvitedUserEvent extends QueueEvent {
   final InviteState inviteState;
 
-  RegisterUserEvent(this.inviteState);
+  RegisterInvitedUserEvent(this.inviteState);
 }
 
 // --- group creation

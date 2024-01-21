@@ -148,7 +148,11 @@ class DataBaseService {
     final result = await Future.wait([_onlineDataBase!.getStudents(), _onlineDataBase!.getHeadName()]);
     final students = result[0] as List<StudentEntity>;
     final headManName = result[1] as String;
-    final _ = await Future.wait([_localDatabase.insertStudents(students), _localDatabase.set(StoredValues.userName, headManName)]);
+    final _ = await Future.wait([
+      _localDatabase.insertStudents(students),
+      _localDatabase.set(StoredValues.userName, headManName),
+      _localDatabase.set(StoredValues.infoTableID, infoTableID)
+    ]);
     final (lessons, ids) = await _onlineDataBase!.getLessons();
     final result2 = await Future.wait([lessons, ids]);
     await _localDatabase.insertLessons(result2[0] as List<LessonSettingEntity>, result2[1] as List<String>);
@@ -179,9 +183,9 @@ class DataBaseService {
 
   bool _checkFileCount(int count) {
     if (count == 0) {
-      throw MultipleFilesOnDiskException("Папка с данными не найдена. Создайте новую группу");
+      throw MultipleFilesOnDiskException("Multiple files found on disk. Delete unnecessary files and folders named 'Student Queue'.");
     } else if (count > 1) {
-      throw NoFileFoundOnDiskException("Найдено более одного файла. Удалите неактуальные папки и файлы с названием 'Student Queue'");
+      throw NoFileFoundOnDiskException("No file found on Google Disk.");
     }
     return true;
   }

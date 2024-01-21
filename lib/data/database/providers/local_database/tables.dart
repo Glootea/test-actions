@@ -5,7 +5,9 @@ class Recs extends Table {
   IntColumn get studentID => integer().references(Students, #id)();
   IntColumn get lessonID => integer().references(Lessons, #id)();
   DateTimeColumn get time => dateTime()();
-  BoolColumn get uploaded => boolean().nullable()();
+
+  /// 1 - uploaded; 0 - not uploaded, but should be; -1 - should be deleted
+  IntColumn get uploaded => integer()();
 }
 
 class Lessons extends Table {
@@ -15,8 +17,9 @@ class Lessons extends Table {
 }
 
 class Students extends Table {
-  IntColumn get id => integer().autoIncrement()(); // TODO: merge id and onlineTableRowNumber
-  IntColumn get onlineTableRowNumber => integer()();
+  @override
+  Set<Column> get primaryKey => {id};
+  IntColumn get id => integer()(); // TODO: merge id and onlineTableRowNumber
   TextColumn get name => text()();
   BoolColumn get isAdmin => boolean().nullable()();
 }

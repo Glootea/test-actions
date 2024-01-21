@@ -14,10 +14,11 @@ class LoadingState extends QueueState {}
 class MainState extends QueueState {
   final List<LessonEntity> todayLessons;
   final bool isAdmin;
+  final String? message;
 
   ///Should be provided to change to new
   final Uint8List? backgroundImageDecoded;
-  MainState(this.todayLessons, this.isAdmin, {this.backgroundImageDecoded});
+  MainState(this.todayLessons, this.isAdmin, {this.backgroundImageDecoded, this.message});
   @override
   bool operator ==(Object other) {
     if (other is! MainState) return false;

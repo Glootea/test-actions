@@ -56,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
             }
             // MainState mainState = state as MainState;
             if (state.backgroundImageDecoded != null) {
-              backgroundImage = Image.memory(state.backgroundImageDecoded!, repeat: ImageRepeat.repeat); //TODO: find why no bytes for image
+              backgroundImage = Image.memory(state.backgroundImageDecoded!, repeat: ImageRepeat.repeat);
             } else {
               if (backgroundImage == null && state.backgroundImageDecoded == null) {
                 backgroundImage = Image.asset("assets/panda.png", repeat: ImageRepeat.repeat);
