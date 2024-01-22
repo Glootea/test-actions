@@ -7,7 +7,6 @@ import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/screens/admin_view.dart';
 import 'package:queue/presentation/widgets/blured_box.dart';
-// import 'package:queue/navigation.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
 import 'package:queue/presentation/widgets/padding.dart';
@@ -203,44 +202,6 @@ class _QRScannerViewState extends State<QRScannerView> {
               log('Detected');
               controller.stop();
               context.read<QueueBloc>().add(UploadFromLinkEvent(barcodes.barcodes.first.rawValue ?? ''));
-            }
-            // onScan: (String value) { TODO: update to bloc
-            //   debugPrint(value);
-            // },
-            //       onDetect: (BarcodeCapture capture) async {
-            //         final messenger = ScaffoldMessenger.of(context);
-            //         try {
-            //           final data = capture.barcodes.last.rawValue;
-            //           if (data == null) return;
-            //           final decrypted =
-            //               Encryption.decrypt(data.substring(data.indexOf('info=') + 5));
-            //           final result = await OnlineDataBase.uploadFromQuery(decrypted);
-            //           if (!_snackBarState._snackbarShown) {
-            //             if (result) {
-            //               messenger
-            //                   .showSnackBar(const SnackBar(
-            //                       content: Text("Спасибо за помощь!"),
-            //                       showCloseIcon: true))
-            //                   .closed
-            //                   .then((value) => _snackBarState._snackbarShown = false);
-            //             } else {
-            //               messenger
-            //                   .showSnackBar(const SnackBar(
-            //                       content: Text("Ошибка при отправке запроса"),
-            //                       showCloseIcon: true))
-            //                   .closed
-            //                   .then((value) => _snackBarState._snackbarShown = false);
-            //             }
-            //             _snackBarState._snackbarShown = true;
-            //           }
-            //           return;
-            //         } catch (e) {
-            //           log(e.toString());
-            //         }
-            //       },
-            //     ),
-            //   );
-            // }
-            ));
+            }));
   }
 }

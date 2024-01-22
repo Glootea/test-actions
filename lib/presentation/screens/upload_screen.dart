@@ -1,10 +1,11 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/widgets/padding.dart';
 
 class UploadScreen extends StatefulWidget {
   final String? link;
@@ -27,9 +28,6 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<QueueBloc, QueueState>(buildWhen: (previous, current) {
-      if (previous.runtimeType != current.runtimeType) {
-        return true;
-      }
       if (previous is UploadFromLinkState && current is UploadFromLinkState) {
         return previous.message != current.message || previous.isLoading != current.isLoading;
       }
@@ -44,11 +42,12 @@ class _UploadScreenState extends State<UploadScreen> {
           child: Scaffold(
             body: SafeArea(
                 child: (state.isLoading)
-                    ? const Column(
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Загрузка записи"),
-                          MyPadding(),
-                          Center(
+                          Text("Загрузка записи", style: Theme.of(context).textTheme.headlineLarge),
+                          const Gap(64),
+                          const Align(
                               child: SizedBox(
                             height: 100,
                             width: 100,
@@ -57,24 +56,31 @@ class _UploadScreenState extends State<UploadScreen> {
                         ],
                       )
                     : Center(
-                        child: SingleChildScrollView(
-                          child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                        // TODO: show additional info like place in queue and previous person
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                             Text(
                               "Спасибо за помощь!",
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
-                            const MyPadding(),
+                            const Gap(64),
                             Text(
                               state.message ?? '',
                               style: Theme.of(context).textTheme.bodyLarge,
                               textAlign: TextAlign.center,
                             ),
-                          ]),
+                          ],
                         ),
                       )),
             persistentFooterAlignment: AlignmentDirectional.bottomEnd,
             persistentFooterButtons: [
-              OutlinedButton(onPressed: () => context.read<QueueBloc>().add(FindUserEvent()), child: Text("OK", style: Theme.of(context).textTheme.bodyMedium)),
+              OutlinedButton(
+                  onPressed: () {
+                    context.go('/');
+                    context.read<QueueBloc>().add(FindUserEvent());
+                  },
+                  child: Text("OK", style: Theme.of(context).textTheme.bodyMedium)),
             ],
           ),
         );

@@ -198,7 +198,7 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<void> insertStudents(List<StudentEntity> list) async {
     await students.insertAll(list.map((e) => StudentsCompanion(name: Value(e.name), isAdmin: Value(e.isAdmin), id: Value(e.onlineTableRowNumber))).toList(),
-        mode: InsertMode.insertOrReplace); //TODO: resolve conflict on multiple same inserts
+        mode: InsertMode.insertOrReplace);
   }
 
   Future<List<StudentEntity>> getStudents() async {

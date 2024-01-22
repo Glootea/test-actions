@@ -10,9 +10,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/database/providers/local_database.dart';
 import 'package:queue/data/database/providers/online_database.dart';
+import 'package:queue/data/qr_code_data.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/entities/export.dart';
-import 'package:queue/data/encryprion.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/optimistic_ui.dart';
 import 'package:queue/logic/states.dart';
@@ -56,7 +56,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
             await _createReg((event as CreateRegEvent).lessonName, emit);
           case DeleteRegEvent:
             await _deleteReg((event as DeleteRegEvent).lessonName, emit);
-
+          case ShowQRCodeEvent:
+            await _showQrCode(event as ShowQRCodeEvent, emit);
           //  --- group creation ---
           case CreateGroupIntentionEvent:
             await _createGroupIntention(emit);
@@ -121,7 +122,13 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     }
   }
 
-// --- Functions
+  Future<void> _showQrCode(ShowQRCodeEvent event, Emitter emit) async {
+    final (tableID, rowNumber) =
+        await (_databaseService.localDatabase.getLessonTableID(event.lessonName), _databaseService.localDatabase.getOnlineTableRowNumber(userName!)).wait;
+    final data = QrCodeData.toQrData(tableID, rowNumber, event.time);
+    final mainState = state as MainState;
+    emit(ShowQRCodeState(data, mainState.todayLessons, mainState.isAdmin));
+  }
 
   // --- user Authentication ---
   Future<void> _findUser() async {
@@ -188,21 +195,23 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _uploadExternalRecEvent(UploadFromLinkEvent event, Emitter emit) async {
     try {
-      String link = Encryption.decrypt(event.link);
+      // String link = Encryption.decrypt(event.link.substring(event.link.lastIndexOf('/') + 1));
+      final (String tableID, int rowNumber, DateTime time) = QrCodeData.fromQrData(event.link);
       emit(UploadFromLinkState(isLoading: true));
-      if (await (_onlineDB).uploadFromQuery(link)) {
-        emit(UploadFromLinkState(isLoading: false, message: "Запись успешно добавлена"));
-      } else {
-        final result = await (_onlineDB).recExist(link);
-        if (result != null) {
-          emit(UploadFromLinkState(
-              isLoading: false,
-              message:
-                  "Запись уже добавлена. ${result['name']} находится на ${result['position']} месте в очереди ${result['position'] == '1' ? '.' : 'после ${result['last']}'}"));
-        } else {
-          emit(UploadFromLinkState(isLoading: false, message: "Ошибка при добавлении записи"));
-        }
-      }
+      await _onlineDB.createRec(tableID, rowNumber, time);
+      emit(UploadFromLinkState(isLoading: false, message: "Запись успешно добавлена"));
+      // if () {
+      // } else {
+      //   final result = await _onlineDB.recExist(link);
+      //   if (result != null) {
+      //     emit(UploadFromLinkState(
+      //         isLoading: false,
+      //         message:
+      //             "Запись уже добавлена. ${result['name']} находится на ${result['position']} месте в очереди ${result['position'] == '1' ? '.' : 'после ${result['last']}'}"));
+      //   } else {
+      //     emit(UploadFromLinkState(isLoading: false, message: "Ошибка при добавлении записи"));
+      //   }
+      // }
     } catch (e) {
       log(e.toString());
       emit(UploadFromLinkState(isLoading: false, message: "Ошибка при добавлении записи"));

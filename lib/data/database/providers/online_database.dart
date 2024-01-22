@@ -116,26 +116,24 @@ class OnlineDataBase {
     }
   }
 
-  Future<bool> uploadFromQuery(String query) async {
-    // try { TODO: rewrite
-    //   List<String> params = query.split("&&&").map((e) => e.trim()).toList();
-    //   String lessonName = params[1];
-    //   String userName = params[2];
-    //   DateTime time = DateTime.parse(params[3]);
-    //   _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
-    //   _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
-    //   _nameColumn ??= (await _queueSheet!.cells.column(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   _subjectRow ??= (await _queueSheet!.cells.row(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    //   int row = _nameColumn!.indexOf(userName) + 2;
-    //   int column = _subjectRow!.indexOf(lessonName) + 2;
-    //   final result = await (await _queueSheet!.cells.cell(row: row, column: column)).post(time);
-    //   return result;
-    // } catch (e) {
-    //   log(e.toString());
-    //   return false;
-    // }
-    return false;
-  }
+  // Future<bool> uploadFromQuery(String tableID, int rowNumber, DateTime time) async {
+  //   // List<String> params = query.split("&&&").map((e) => e.trim()).toList();
+  //   // String lessonName = params[1];
+  //   // final result = await Future.wait([
+  //   //   getStudents().then((list) => list.firstWhere((student) => student.name == params[2]).onlineTableRowNumber),
+  //   //   getLessons().then((result) => result.$2.then((ids) async => ids[await result.$1.then(
+  //   //         (lessons) => lessons.indexWhere(
+  //   //           (element) => element.name == lessonName,
+  //   //         ),
+  //   //       )]))
+  //   // ]);
+  //   // int onlineTableRowNumber = result[0] as int;
+  //   // String lessonID = result[1] as String;
+  //   // DateTime time = params[3].toRecDateTime;
+  //   await createRec(tableID, rowNumber, time);
+
+  //   return true;
+  // }
 
   Future<Map<String, String>?> recExist(String query) async {
     // List<String> params = query.split("&&&").map((e) => e.trim()).toList(); // TODO: rewrite

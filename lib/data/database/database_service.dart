@@ -124,8 +124,6 @@ class DataBaseService {
     return onlineFile.id!;
   }
 
-  void import(List<RecEntity> list) {} //TODO: implement
-
   Future<void> insertLessons(List<LessonSettingEntity> lessons, List<String> lessonIds) async {
     if (_onlineDataBase == null) {
       throw Exception("Online database not initialized");

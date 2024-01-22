@@ -21,6 +21,7 @@ class MainState extends QueueState {
   MainState(this.todayLessons, this.isAdmin, {this.backgroundImageDecoded, this.message});
   @override
   bool operator ==(Object other) {
+    if (other.runtimeType != MainState) return false;
     if (other is! MainState) return false;
     final r = isAdmin == other.isAdmin && listEquals(todayLessons, other.todayLessons);
     return r;
@@ -28,6 +29,24 @@ class MainState extends QueueState {
 
   @override
   int get hashCode => todayLessons.hashCode * isAdmin.hashCode;
+}
+
+class ShowQRCodeState extends MainState {
+  final String data;
+  ShowQRCodeState(this.data, super.todayLessons, super.isAdmin);
+  @override
+  bool operator ==(Object other) {
+    if (other is! ShowQRCodeState) return false;
+    final r = data == other.data &&
+        listEquals(todayLessons, other.todayLessons) &&
+        isAdmin == other.isAdmin &&
+        message == other.message &&
+        backgroundImageDecoded == other.backgroundImageDecoded;
+    return r;
+  }
+
+  @override
+  int get hashCode => super.hashCode * data.hashCode;
 }
 
 // --- upload
