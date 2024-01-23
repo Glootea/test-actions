@@ -83,10 +83,12 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
           //  --- invite ---
 
-          case InviteEvent:
-            await _onInviteEvent(event as InviteEvent, emit);
+          case ReceivedInviteEvent:
+            await _onInviteEvent(event as ReceivedInviteEvent, emit);
           case RegisterInvitedUserEvent:
             await _onRegisterInvitedUserEvent(event as RegisterInvitedUserEvent, emit);
+          default:
+            throw UnimplementedError("Event ${event.runtimeType} is not implemented in queue bloc");
         }
       },
       transformer: sequential(),
@@ -178,17 +180,37 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _loginUsingGoogle(Emitter<QueueState> emit) async {
+    //TODO: refactor
     final userSignInAccount = await _databaseService.signInGoogle();
     if (userSignInAccount == null) {
       emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
     } else {
       emit(LoadingState());
-      await _databaseService.fetchDataFromDrive(account: userSignInAccount);
-      _userDataBase =
-          await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
+      await (
+        _databaseService.fetchDataFromDrive(account: userSignInAccount),
+        _databaseService.set(StoredValues.userName, await _databaseService.onlineDataBase.getHeadName())
+      ).wait;
+      final a = await (UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase), _databaseService.fetchRecs()).wait;
+      _userDataBase = a.$1;
       final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
       emit(MainState(result[0] as List<LessonEntity>, _isAdmin, backgroundImageDecoded: result[1] as Uint8List));
     }
+  }
+
+  Future<void> _onRegisterInvitedUserEvent(RegisterInvitedUserEvent event, Emitter<QueueState> emit) async {
+    emit(LoadingState());
+    log(event.infoTableID);
+    log("Loading");
+    await (
+      _databaseService.localDatabase.set(StoredValues.userName, event.studentName),
+      _databaseService.localDatabase.set(StoredValues.infoTableID, event.infoTableID)
+    ).wait;
+    await _databaseService.fetchDataFromDrive();
+    await _databaseService.fetchRecs();
+    _userDataBase =
+        await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
+    final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
+    emit(MainState(result[0] as List<LessonEntity>, _isAdmin, backgroundImageDecoded: result[1] as Uint8List));
   }
 
   // --- upload screen
@@ -197,41 +219,22 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     try {
       // String link = Encryption.decrypt(event.link.substring(event.link.lastIndexOf('/') + 1));
       final (String tableID, int rowNumber, DateTime time) = QrCodeData.fromQrData(event.link);
-      emit(UploadFromLinkState(isLoading: true));
-      await _onlineDB.createRec(tableID, rowNumber, time);
-      emit(UploadFromLinkState(isLoading: false, message: "Запись успешно добавлена"));
-      // if () {
-      // } else {
-      //   final result = await _onlineDB.recExist(link);
-      //   if (result != null) {
-      //     emit(UploadFromLinkState(
-      //         isLoading: false,
-      //         message:
-      //             "Запись уже добавлена. ${result['name']} находится на ${result['position']} месте в очереди ${result['position'] == '1' ? '.' : 'после ${result['last']}'}"));
-      //   } else {
-      //     emit(UploadFromLinkState(isLoading: false, message: "Ошибка при добавлении записи"));
-      //   }
-      // }
+      emit(UploadFromLinkState(isLoading: true, loadedPosition: false));
+      await OnlineDataBase.createRec(tableID, rowNumber, time);
+      emit(UploadFromLinkState(isLoading: false, loadedPosition: false, message: "Запись успешно добавлена"));
+      final (position, last) = await OnlineDataBase.getQueuePosition(tableID, rowNumber);
+      emit(UploadFromLinkState(
+          isLoading: false,
+          loadedPosition: true,
+          message: "Запись успешно добавлена\n Вы занимаете $position место в очереди${last != null ? ' после $last' : ''}"));
     } catch (e) {
       log(e.toString());
-      emit(UploadFromLinkState(isLoading: false, message: "Ошибка при добавлении записи"));
+      emit(UploadFromLinkState(isLoading: false, loadedPosition: false, message: "Ошибка при добавлении записи"));
     }
   }
 
-  Future<void> _onInviteEvent(InviteEvent event, Emitter<QueueState> emit) async {
-    //TODO: implement invite
-  }
-
-  Future<void> _onRegisterInvitedUserEvent(RegisterInvitedUserEvent event, Emitter<QueueState> emit) async {
-    //TODO: move to database service
-
-    // _userDataBase.fillUser(event.inviteState.userName);
-    // _userDataBase = await UserDataBase.getConfiguredUserDataBase(_databaseService);
-    // if (_userDataBase.userExist) {
-    //   add(NoUserEvent("Пользователь c таким ключем не найден"));
-    // } else {
-    //   add(UserAuthenticatedEvent());
-    // }
+  Future<void> _onInviteEvent(ReceivedInviteEvent event, Emitter<QueueState> emit) async {
+    emit(ReceivedInviteState(event.tableID));
   }
 
   // --- group creation ---

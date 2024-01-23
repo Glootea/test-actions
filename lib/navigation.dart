@@ -6,7 +6,7 @@ import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/screens/create_group_screen.dart';
-import 'package:queue/presentation/screens/invite_screen.dart';
+import 'package:queue/presentation/screens/received_invite_screen.dart';
 import 'package:queue/presentation/screens/welcome_screen.dart';
 import 'package:queue/presentation/screens/main_screen.dart';
 import 'package:queue/presentation/screens/upload_screen.dart';
@@ -20,19 +20,26 @@ class _Routes {
   static const String showQrDialog = '$mainScreen/$qrDialog';
   static const String loginScreen = '/login';
   static const String uploadScreen = '/upload/:info';
-  static const String inviteScreen = '/invite';
+  static const String inviteScreen = '/invite/:info';
   static const String loadingScreen = '/';
   static const String createGroupScreen = '$loginScreen/$createGroupSubPath';
   static const String createGroupSubPath = 'create';
 }
 
 GoRouter getRouter(Bloc bloc) => GoRouter(
+      //TODO: fix double navigation during upload using qr code
       redirect: (BuildContext context, GoRouterState state) {
         final bloc = context.read<QueueBloc>();
         final blocState = bloc.state;
-        if (state.fullPath == _Routes.uploadScreen && state.pathParameters.isNotEmpty && blocState is! UploadFromLinkState) {
-          bloc.add(UploadFromLinkEvent(state.pathParameters['info']!));
+        if (state.pathParameters['info'] != ':info') {
+          if (state.fullPath == _Routes.uploadScreen && state.pathParameters.isNotEmpty && blocState is! UploadFromLinkState) {
+            bloc.add(UploadFromLinkEvent(state.pathParameters['info']!));
+          }
+          if (state.fullPath == _Routes.inviteScreen && state.pathParameters.isNotEmpty && blocState is! ReceivedInviteState) {
+            bloc.add(ReceivedInviteEvent(state.pathParameters['info']!));
+          }
         }
+        if (state.fullPath == _Routes.uploadScreen && blocState is UploadFromLinkState) return null;
         switch (blocState.runtimeType) {
           case ShowQRCodeState:
             return _Routes.showQrDialog;
@@ -44,7 +51,7 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
             }
           case UploadFromLinkState:
             return _Routes.uploadScreen;
-          case InviteState:
+          case ReceivedInviteState:
             return _Routes.inviteScreen;
           case LoadingState:
             return _Routes.loadingScreen;
@@ -66,8 +73,8 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
             pageBuilder: (context, state) => DialogPage(builder: (_) => const QrCodeDialog()),
           )
         ]),
-        GoRoute(path: _Routes.uploadScreen, builder: (context, state) => UploadScreen(state.uri.queryParameters['info'])),
-        GoRoute(path: _Routes.inviteScreen, builder: (context, state) => InviteScreen(state.uri.queryParameters['info'] ?? '')),
+        GoRoute(path: _Routes.uploadScreen, builder: (context, state) => const UploadScreen()),
+        GoRoute(path: _Routes.inviteScreen, builder: (context, state) => const ReceivedInviteScreen()),
       ],
     );
 

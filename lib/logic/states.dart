@@ -53,15 +53,13 @@ class ShowQRCodeState extends MainState {
 class UploadFromLinkState extends QueueState {
   final String? message;
   final bool isLoading;
-  UploadFromLinkState({required this.isLoading, this.message});
+  final bool loadedPosition;
+  UploadFromLinkState({required this.isLoading, required this.loadedPosition, this.message});
 }
 
 // --- invite
 
-class InviteState extends QueueState {
-  final String headName;
-  final String groupName;
-  final String userName;
-
-  InviteState(this.headName, this.groupName, this.userName);
+class ReceivedInviteState extends QueueState {
+  final String tableID;
+  ReceivedInviteState(this.tableID);
 }

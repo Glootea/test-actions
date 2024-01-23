@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
@@ -137,7 +138,9 @@ class TodayView extends StatelessWidget {
                       border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer, width: 2),
                       borderRadius: const BorderRadius.all(Radius.circular(20)),
                       color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7)),
-                  child: Text("Пары с очередью сегодня", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge)),
+                  child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text("Пары с очередью сегодня", textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge))),
             ),
             const MyPadding(),
             (mainState.todayLessons.isEmpty)
@@ -159,7 +162,16 @@ class TodayView extends StatelessWidget {
                 "Выйти из аккаунта",
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-            )
+            ),
+            // OutlinedButton(
+            //   // TODO: удалить
+            //   style: Theme.of(context).outlinedButtonTheme.style,
+            //   onPressed: () => context.goNamed(''),
+            //   child: Text(
+            //     "Перейти к выбору себя",
+            //     style: Theme.of(context).textTheme.bodyMedium,
+            //   ),
+            // )
           ],
         ),
       ),

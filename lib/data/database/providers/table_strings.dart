@@ -14,6 +14,7 @@ const String _id = 'id';
 const String _nameSurname = 'Name/Surname';
 const String _name = 'Name';
 const String _tableID = 'tableID';
+const String _infoTableIDString = 'infoTableID';
 const String _useDoneWorkCount = "Use done work count";
 const String _workCount = "Work Count";
 const String _autodelete = "Auto delete";

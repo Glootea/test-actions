@@ -21,7 +21,6 @@ class UserDataBase {
       db._userName = userName;
       db._isAdmin = await storage.isAdmin(userName);
     }
-
     return db;
   }
 

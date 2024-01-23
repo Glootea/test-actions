@@ -8,7 +8,7 @@ import 'package:queue/secret/table_credentials.dart';
 part 'table_strings.dart';
 
 class OnlineDataBase {
-  final _gsheets = GSheets(CREDENTIALS);
+  static final _gsheets = GSheets(CREDENTIALS);
   Spreadsheet? _spreadsheet;
   Worksheet? _infoSheet;
   Worksheet? _namesSheet;
@@ -26,7 +26,7 @@ class OnlineDataBase {
     }
     _instance = OnlineDataBase._(tableID!);
     try {
-      final spreadsheet = await _instance!._gsheets.spreadsheet(tableID);
+      final spreadsheet = await _gsheets.spreadsheet(tableID);
       if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName])) {
         return _instance!;
       }
@@ -60,20 +60,20 @@ class OnlineDataBase {
     await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
   }
 
-  Future<bool> createFrameOfQueueTable(String fileID) async {
-    final spreadsheet = await _instance!._gsheets.spreadsheet(fileID);
+  Future<bool> createFrameOfQueueTable(String fileID, String infoTableID) async {
+    final spreadsheet = await _gsheets.spreadsheet(fileID);
     final workSheets = await Future.wait([spreadsheet.addWorksheet(_queueSheetName), spreadsheet.addWorksheet(_infoSheetName)])
         .whenComplete(() async => await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0)!));
     final [queue, info] = workSheets;
     Future.wait([
       queue.values.insertRow(1, [_queueSheetName, _workCount]),
       info.values.insertRow(1, [_keys, _values]),
-      info.values.insertColumn(1, [_lastDelete], fromRow: 2)
+      info.values.insertColumn(1, [_infoTableID, _lastDelete], fromRow: 2),
+      info.values.insertValue(infoTableID, column: 2, row: 2)
     ]);
     return true;
   }
 
-  // final TABLEID = ''; //TODO: get ss id
   Future<List<RecEntity>> getRecs(Map<int, String> students, String lessonName, String tableID) async {
     List<RecEntity> result = <RecEntity>[];
     final queueSheet = await _gsheets.spreadsheet(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
@@ -89,21 +89,44 @@ class OnlineDataBase {
     return result;
   }
 
-  Future<bool> createRec(String lessonTableID, int onlineTableRowNumber, DateTime time) async {
+  static Future<(int, String?)> getQueuePosition(String queueTableID, int rowNumber) async {
+    final [queueSheet, infoQueueSheet] =
+        await _gsheets.spreadsheet(queueTableID).then((value) => [value.worksheetByTitle(_queueSheetName), value.worksheetByTitle(_infoSheetName)]);
+    final [onlineTimes as List<DateTime>?, studentNames as List<String>?] = await Future.wait([
+      queueSheet?.values.column(1, fromRow: 2).then((value) => value.map((e) => e.toRecDateTime).toList()) as Future<List<DateTime>>,
+      infoQueueSheet?.values
+              .valueByKeys(rowKey: _infoTableIDString, columnKey: _values)
+              .then((infoTableID) async => (await _gsheets.spreadsheet(infoTableID!)).worksheetByTitle(_namesSheetName)?.values.column(1, fromRow: 2))
+          as Future<List<String>?>
+    ]);
+    if (onlineTimes == null || studentNames == null) throw Exception("Failed to load database");
+    String? userName;
+    final sortedRecs = List.generate(onlineTimes.length, (index) {
+      if (index + 2 == rowNumber) userName = studentNames[index];
+      return RecEntity(studentNames[index], onlineTimes[index], 'junkLessonName');
+    })
+      ..sort();
+    if (userName == null) throw Exception("Failed to find user");
+    int queuePosition = sortedRecs.indexWhere((element) => element.userName == userName);
+    if (queuePosition != 0) {
+      return (queuePosition + 1, sortedRecs[queuePosition - 1].userName);
+    }
+    return (queuePosition + 1, null);
+  }
+
+  static Future<bool> createRec(String lessonTableID, int onlineTableRowNumber, DateTime time) async {
     try {
       final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
       if (queueSheet == null) {
         throw Exception("Failed to load database");
       }
-      return await queueSheet.values
-          .insertValue(time.toRecTime, column: 1, row: onlineTableRowNumber)
-          .timeout(const Duration(seconds: 5), onTimeout: () => false);
+      return await queueSheet.values.insertValue(time.toRecTime, column: 1, row: onlineTableRowNumber);
     } on SocketException {
       return false;
     }
   }
 
-  Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber) async {
+  static Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber) async {
     try {
       final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
       if (queueSheet == null) {

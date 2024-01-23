@@ -147,7 +147,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                                 color: Theme.of(context).colorScheme.error,
                               ),
                         const MySmallPadding(),
-                        SizedBox(height: 40, child: QrButton(widget.lesson.name)),
+                        SizedBox(height: 40, child: QrButton(widget.lesson.name, widget.lesson.userRec!.time)),
                         const MySmallPadding(),
                       ],
                     ),

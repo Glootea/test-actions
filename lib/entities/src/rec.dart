@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 @immutable
-final class RecEntity extends Equatable {
+final class RecEntity extends Equatable implements Comparable {
   final String userName;
   final String lessonName;
   final DateTime time;
@@ -11,4 +11,10 @@ final class RecEntity extends Equatable {
   List<Object> get props => [userName, lessonName, time, isUploaded];
 
   const RecEntity(this.userName, this.time, this.lessonName, [this.isUploaded = false]);
+
+  @override
+  int compareTo(other) {
+    // TODO: rewrite to implement weighted sort with work count
+    return time.compareTo(other.time);
+  }
 }

@@ -7,23 +7,8 @@ import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 
-class UploadScreen extends StatefulWidget {
-  final String? link;
-  const UploadScreen(this.link, {super.key});
-
-  @override
-  State<UploadScreen> createState() => _UploadScreenState();
-}
-
-class _UploadScreenState extends State<UploadScreen> {
-  @override
-  void initState() {
-    if (widget.link != null && widget.link!.isNotEmpty) {
-      context.read<QueueBloc>().add(UploadFromLinkEvent(widget.link!));
-    }
-
-    super.initState();
-  }
+class UploadScreen extends StatelessWidget {
+  const UploadScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +55,8 @@ class _UploadScreenState extends State<UploadScreen> {
                               style: Theme.of(context).textTheme.bodyLarge,
                               textAlign: TextAlign.center,
                             ),
+                            if (state.loadedPosition == false) const Gap(16),
+                            if (state.loadedPosition == false) const CircularProgressIndicator(),
                           ],
                         ),
                       )),

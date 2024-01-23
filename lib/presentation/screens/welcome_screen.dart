@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
@@ -70,12 +71,10 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // GoogleSignIn googleSignIn = GoogleSignIn(
-    //   scopes: [
-    //     'email',
-    //     'https://www.googleapis.com/auth/drive.file',
-    //   ],
-    // );
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   // TODO: activate on go to choose student on invite
+    //   context.go('https://queue-01-22.web.app/invite/1G_ny0JMccBkXSXeOr-nQPNVKOqTfiRb9chElk1HPPts');
+    // });
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.only(left: 32),

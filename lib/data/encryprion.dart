@@ -7,7 +7,7 @@ class Encryption {
     'ENCRIPTION_KEY',
     defaultValue: '7cbcUHZ7WzP5BOzwhJmjIPpQRNBjhOwy',
   );
-  static final _encrypter = Encrypter(AES(Key.fromBase64(_encriptionKey)));
+  static final _encrypter = Encrypter(AES(Key.fromBase64(_encriptionKey), padding: null));
   static final _iv = IV.fromBase64(_encriptionKey.substring(0, 4));
   static String encryct(String data) {
     final output = _encrypter

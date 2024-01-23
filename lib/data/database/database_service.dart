@@ -40,7 +40,7 @@ class DataBaseService {
     final [rowNumber as int, String tableID as String] =
         (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)])).toList();
     final task1 = _localDatabase.createRec(lessonName, studentName, time);
-    final task2 = _onlineDataBase?.createRec(tableID, rowNumber, time) ?? Future.value(false);
+    final task2 = OnlineDataBase.createRec(tableID, rowNumber, time);
     final result = await Future.wait([task1, task2]);
     if (result[1] == true) {
       await _localDatabase.updateUploadStatus(lessonName, studentName, 1);
@@ -50,7 +50,7 @@ class DataBaseService {
   Future<void> deleteRec(String lessonName, String studentName) async {
     final [rowNumber as int, String tableID as String] =
         (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)])).toList();
-    await _onlineDataBase?.deleteRec(tableID, rowNumber).then((value) async {
+    await OnlineDataBase.deleteRec(tableID, rowNumber).then((value) async {
       if (value) {
         await _localDatabase.deleteRec(lessonName, studentName);
       } else {
@@ -104,7 +104,7 @@ class DataBaseService {
     List<Future<String>> lessonCreation = [];
     for (final lesson in lessons) {
       lessonCreation.add(Future.value(_createSpreadSheetFileOnDrive(folder.id!, lesson.name, driveApi).then((value) {
-        _onlineDataBase!.createFrameOfQueueTable(value);
+        _onlineDataBase!.createFrameOfQueueTable(value, infoFileID);
         return value;
       })));
     }
@@ -147,12 +147,11 @@ class DataBaseService {
       throw Exception("Info table not found");
     }
     _onlineDataBase = await OnlineDataBase.instance(tableID: infoTableID);
-    final result = await Future.wait([_onlineDataBase!.getStudents(), _onlineDataBase!.getHeadName()]);
-    final students = result[0] as List<StudentEntity>;
-    final headManName = result[1] as String;
+    final students = await _onlineDataBase!.getStudents();
+    // final headManName = result[1] as String;
     final _ = await Future.wait([
       _localDatabase.insertStudents(students),
-      _localDatabase.set(StoredValues.userName, headManName),
+      // _localDatabase.set(StoredValues.userName, headManName),
       _localDatabase.set(StoredValues.infoTableID, infoTableID)
     ]);
     final (lessons, ids) = await _onlineDataBase!.getLessons();
@@ -222,10 +221,10 @@ class DataBaseService {
         String tableID = await _localDatabase.getLessonTableID(rec.lessonName);
         map[rec.lessonName] = tableID;
       }
-      var recCreation = _onlineDataBase?.createRec(map[rec.lessonName]!, rowNumber, rec.time).then((value) async {
+      var recCreation = OnlineDataBase.createRec(map[rec.lessonName]!, rowNumber, rec.time).then((value) async {
         if (value) await _localDatabase.updateUploadStatus(rec.lessonName, studentName, 1);
       });
-      tasks.add(recCreation ?? Future.value(false));
+      tasks.add(recCreation);
     }
     await Future.wait(tasks);
     return true;
@@ -244,10 +243,10 @@ class DataBaseService {
         String tableID = await _localDatabase.getLessonTableID(rec.lessonName);
         map[rec.lessonName] = tableID;
       }
-      var recDeletion = _onlineDataBase?.deleteRec(map[rec.lessonName]!, rowNumber).then((value) async {
+      var recDeletion = OnlineDataBase.deleteRec(map[rec.lessonName]!, rowNumber).then((value) async {
         if (value) await _localDatabase.deleteRec(rec.lessonName, studentName);
       });
-      tasks.add(recDeletion ?? Future.value(false));
+      tasks.add(recDeletion);
     }
     await Future.wait(tasks);
     return true;

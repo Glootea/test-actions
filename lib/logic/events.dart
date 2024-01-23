@@ -1,5 +1,4 @@
 import 'package:queue/entities/export.dart';
-import 'package:queue/logic/states.dart';
 
 sealed class QueueEvent {}
 
@@ -45,16 +44,16 @@ class UploadFromLinkEvent extends QueueEvent {
 
 // --- invite
 
-class InviteEvent extends QueueEvent {
-  final String link;
-
-  InviteEvent(this.link);
+class ReceivedInviteEvent extends QueueEvent {
+  final String tableID;
+  ReceivedInviteEvent(this.tableID);
 }
 
 class RegisterInvitedUserEvent extends QueueEvent {
-  final InviteState inviteState;
+  final String infoTableID;
+  final String studentName;
 
-  RegisterInvitedUserEvent(this.inviteState);
+  RegisterInvitedUserEvent(this.infoTableID, this.studentName);
 }
 
 // --- group creation
