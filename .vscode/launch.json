@@ -12,8 +12,8 @@
             "args": [
                 "--dart-define-from-file",
                 "lib/secret/api-keys.json",
-                "-d", "chrome","--web-port", "8000"
-              ]
+                "-d", "chrome", "--web-port", "8000"
+            ]
         },
         {
             "name": "queue(debug mobile)",
@@ -23,7 +23,7 @@
             "args": [
                 "--dart-define-from-file",
                 "lib/secret/api-keys.json",
-              ]
+            ]
         },
         {
             "name": "queue (profile mode)",
@@ -33,8 +33,8 @@
             "args": [
                 "--dart-define-from-file",
                 "lib/secret/api-keys.json",
-                "-d", "chrome","--web-port", "8000"
-              ]
+                "-d", "chrome", "--web-port", "8000"
+            ]
         },
         {
             "name": "queue (release mode)",
@@ -44,8 +44,20 @@
             "args": [
                 "--dart-define-from-file",
                 "lib/secret/api-keys.json",
-                "-d", "chrome","--web-port", "8000"
-              ]
-        }
+                "-d", "chrome", "--web-port", "8000"
+            ]
+        },
+        {
+            "name": "queue web Skia",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file",
+                "lib/secret/api-keys.json",
+                "-d", "chrome", "--web-port", "8000",
+                "FLUTTER_WEB_USE_SKIA=true"
+            ]
+        },
     ]
 }

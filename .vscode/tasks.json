@@ -13,7 +13,7 @@
 				"lib/secret/api-keys.json"
 			],
 			"group": "build",
-			"problemMatcher": [],
+			"problemMatcher": [ ],
 			"label": "flutter: flutter build web",
 			"detail": "Run flutter build web with canvaskit",
 		}
