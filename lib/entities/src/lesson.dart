@@ -12,9 +12,15 @@ final class LessonEntity extends Equatable implements Comparable {
   final RecEntity? userRec;
   final int? userQueuePosition;
   const LessonEntity(this.name, this.startTime, this.endTime, this.recs, [this.userRec, this.userQueuePosition]);
-  LessonEntity copyWith({String? name, TimeOfDay? startTime, TimeOfDay? endTime, List<RecEntity>? recs, RecEntity? userRec, int? userQueuePosition}) {
-    return LessonEntity(name ?? this.name, startTime ?? this.startTime, endTime ?? this.endTime, recs ?? this.recs, userRec ?? this.userRec,
-        userQueuePosition ?? this.userQueuePosition);
+  LessonEntity copyWith(
+      {String? name,
+      TimeOfDay? startTime,
+      TimeOfDay? endTime,
+      List<RecEntity>? recs,
+      RecEntity? userRec,
+      int? userQueuePosition}) {
+    return LessonEntity(name ?? this.name, startTime ?? this.startTime, endTime ?? this.endTime, recs ?? this.recs,
+        userRec ?? this.userRec, userQueuePosition ?? this.userQueuePosition);
   }
 
   LessonEntity copyWithoutUserRec() {
@@ -46,14 +52,21 @@ final class LessonSettingEntity {
   final String name;
   final List<WeeklyLessonSettingEntity>? weeklyLessons;
   final List<DatedLessonSettingEntity>? datedLessons;
+  @Deprecated("Use [weeklyLessons] and [datedLessons] combined instead")
   final bool useWeekly;
   LessonSettingEntity(this.name, {this.weeklyLessons, this.datedLessons, this.useWeekly = true}) {
     assert(weeklyLessons != null || datedLessons != null, "Either weeklyLessons or datedLessons must be provided");
   }
 
-  LessonSettingEntity copyWith({String? name, List<WeeklyLessonSettingEntity>? weeklyLessons, List<DatedLessonSettingEntity>? datedLessons, bool? useWeekly}) {
+  LessonSettingEntity copyWith(
+      {String? name,
+      List<WeeklyLessonSettingEntity>? weeklyLessons,
+      List<DatedLessonSettingEntity>? datedLessons,
+      bool? useWeekly}) {
     return LessonSettingEntity(name ?? this.name,
-        weeklyLessons: weeklyLessons ?? this.weeklyLessons, datedLessons: datedLessons ?? this.datedLessons, useWeekly: useWeekly ?? this.useWeekly);
+        weeklyLessons: weeklyLessons ?? this.weeklyLessons,
+        datedLessons: datedLessons ?? this.datedLessons,
+        useWeekly: useWeekly ?? this.useWeekly);
   }
 }
 
@@ -71,7 +84,8 @@ abstract class TimeChooser extends StatefulWidget {
   final int innerCount;
   final void Function(TimeOfDay, TimeOfDay) onTimeChanged;
   final void Function(double) onDeleteButtonPressed;
-  const TimeChooser({required this.innerCount, required this.onTimeChanged, required this.onDeleteButtonPressed, super.key});
+  const TimeChooser(
+      {required this.innerCount, required this.onTimeChanged, required this.onDeleteButtonPressed, super.key});
 }
 
 final class WeeklyLessonSettingEntity extends LessonTime {

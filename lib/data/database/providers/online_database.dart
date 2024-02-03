@@ -27,7 +27,10 @@ class OnlineDataBase {
     _instance = OnlineDataBase._(tableID!);
     try {
       final spreadsheet = await _gsheets.spreadsheet(tableID);
-      if (spreadsheet.sheets.map((e) => e.title).toSet().containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName])) {
+      if (spreadsheet.sheets
+          .map((e) => e.title)
+          .toSet()
+          .containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName])) {
         return _instance!;
       }
       await _createInfoFileBase(spreadsheet);
@@ -60,16 +63,17 @@ class OnlineDataBase {
     await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
   }
 
-  Future<bool> createFrameOfQueueTable(String fileID, String infoTableID) async {
+  Future<bool> createFrameOfQueueTable(String fileID) async {
     final spreadsheet = await _gsheets.spreadsheet(fileID);
-    final workSheets = await Future.wait([spreadsheet.addWorksheet(_queueSheetName), spreadsheet.addWorksheet(_infoSheetName)])
-        .whenComplete(() async => await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0)!));
+    final workSheets =
+        await Future.wait([spreadsheet.addWorksheet(_queueSheetName), spreadsheet.addWorksheet(_infoSheetName)])
+            .whenComplete(() async => await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0)!));
     final [queue, info] = workSheets;
     Future.wait([
       queue.values.insertRow(1, [_queueSheetName, _workCount]),
       info.values.insertRow(1, [_keys, _values]),
-      info.values.insertColumn(1, [_infoTableID, _lastDelete], fromRow: 2),
-      info.values.insertValue(infoTableID, column: 2, row: 2)
+      info.values.insertColumn(1, [_infoTableIDString, _lastDelete], fromRow: 2),
+      info.values.insertValue(_infoTableID, column: 2, row: 2)
     ]);
     return true;
   }
@@ -90,14 +94,17 @@ class OnlineDataBase {
   }
 
   static Future<(int, String?)> getQueuePosition(String queueTableID, int rowNumber) async {
-    final [queueSheet, infoQueueSheet] =
-        await _gsheets.spreadsheet(queueTableID).then((value) => [value.worksheetByTitle(_queueSheetName), value.worksheetByTitle(_infoSheetName)]);
+    final [queueSheet, infoQueueSheet] = await _gsheets
+        .spreadsheet(queueTableID)
+        .then((value) => [value.worksheetByTitle(_queueSheetName), value.worksheetByTitle(_infoSheetName)]);
     final [onlineTimes as List<DateTime>?, studentNames as List<String>?] = await Future.wait([
-      queueSheet?.values.column(1, fromRow: 2).then((value) => value.map((e) => e.toRecDateTime).toList()) as Future<List<DateTime>>,
-      infoQueueSheet?.values
-              .valueByKeys(rowKey: _infoTableIDString, columnKey: _values)
-              .then((infoTableID) async => (await _gsheets.spreadsheet(infoTableID!)).worksheetByTitle(_namesSheetName)?.values.column(1, fromRow: 2))
-          as Future<List<String>?>
+      queueSheet?.values.column(1, fromRow: 2).then((value) => value.map((e) => e.toRecDateTime).toList())
+          as Future<List<DateTime>>,
+      infoQueueSheet?.values.valueByKeys(rowKey: _infoTableIDString, columnKey: _values).then((infoTableID) async =>
+          (await _gsheets.spreadsheet(infoTableID!))
+              .worksheetByTitle(_namesSheetName)
+              ?.values
+              .column(1, fromRow: 2)) as Future<List<String>?>
     ]);
     if (onlineTimes == null || studentNames == null) throw Exception("Failed to load database");
     String? userName;
@@ -116,7 +123,8 @@ class OnlineDataBase {
 
   static Future<bool> createRec(String lessonTableID, int onlineTableRowNumber, DateTime time) async {
     try {
-      final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
+      final queueSheet =
+          await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
       if (queueSheet == null) {
         throw Exception("Failed to load database");
       }
@@ -128,11 +136,14 @@ class OnlineDataBase {
 
   static Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber) async {
     try {
-      final queueSheet = await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
+      final queueSheet =
+          await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
       if (queueSheet == null) {
         throw Exception("Failed to load database");
       }
-      return await queueSheet.values.insertValue('', column: 1, row: onlineTableRowNumber).timeout(const Duration(seconds: 5), onTimeout: () => false);
+      return await queueSheet.values
+          .insertValue('', column: 1, row: onlineTableRowNumber)
+          .timeout(const Duration(seconds: 5), onTimeout: () => false);
       // return false;
     } on SocketException {
       return false;
@@ -217,7 +228,8 @@ class OnlineDataBase {
       }
     }
     tasks.add(_namesSheet?.values.insertColumn(1, column) ?? Future(() => null));
-    tasks.add(_infoSheet?.values.insertValueByKeys(adminId.join(', '), columnKey: _values, rowKey: _admins) ?? Future(() => null));
+    tasks.add(_infoSheet?.values.insertValueByKeys("'${adminId.join(', ')}", columnKey: _values, rowKey: _admins) ??
+        Future(() => null));
     await Future.wait(tasks);
     return true;
   }
@@ -226,8 +238,13 @@ class OnlineDataBase {
     _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
     _namesSheet = _spreadsheet!.worksheetByTitle(_namesSheetName);
     _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
-    final names = (await _namesSheet!.cells.column(1, fromRow: 2)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    final admins = (await _infoSheet!.values.valueByKeys(rowKey: _admins, columnKey: _values))?.split(',').map((e) => int.parse(e));
+    final names = (await _namesSheet!.cells.column(1, fromRow: 2))
+        .map((e) => e.value)
+        .where((element) => element.isNotEmpty)
+        .toList();
+    final admins = (await _infoSheet!.values.valueByKeys(rowKey: _admins, columnKey: _values))
+        ?.split(',')
+        .map((e) => int.parse(e));
     return names.map((e) {
       final rowNumber = names.indexOf(e) + 2;
       return StudentEntity(e, rowNumber, isAdmin: admins!.contains(rowNumber));
@@ -240,6 +257,7 @@ class OnlineDataBase {
     return (await _infoSheet!.cells.cellByKeys(rowKey: _headMan, columnKey: _values))!.value;
   }
 
+  ///Returns List of [LessonSettingEntity] and lesson online table id
   Future<(Future<List<LessonSettingEntity>>, Future<List<String>>)> getLessons() async {
     _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
     _lessonsSheet = _spreadsheet!.worksheetByTitle(_lessonsSheetName);
@@ -248,18 +266,20 @@ class OnlineDataBase {
     final lessonTimes = await _lessonTimesSheet!.values.allRows(fromRow: 2);
     final lessons = _lessonsSheet!.values
         .allRows(fromRow: 2)
-        .then((value) => value.map((element) async {
-              lessonIDs.add(element[2]);
-              final times = lessonTimes.where((e) => e[0] == element[0]).toList().map((time) {
+        .then((value) => value.map((lessonRow) async {
+              lessonIDs.add(lessonRow[2]);
+              final times = lessonTimes.where((lessonID) => lessonID[0] == lessonRow[0]).toList().map((time) {
                 if (time[1] == '-') {
-                  return WeeklyLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, time[2].split(',').map((e) => int.parse(e)).toList());
+                  return WeeklyLessonSettingEntity(
+                      time[3].toTimeOfDay, time[4].toTimeOfDay, time[2].split(',').map((e) => int.parse(e)).toList());
                 } else {
                   final dates = time[1].split(',').map((e) => e.toDate).toList();
                   return DatedLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, dates);
                 }
               });
-              final lesson = LessonSettingEntity(element[1],
-                  datedLessons: times.whereType<DatedLessonSettingEntity>().toList(), weeklyLessons: times.whereType<WeeklyLessonSettingEntity>().toList());
+              final lesson = LessonSettingEntity(lessonRow[1],
+                  datedLessons: times.whereType<DatedLessonSettingEntity>().toList(),
+                  weeklyLessons: times.whereType<WeeklyLessonSettingEntity>().toList());
               return lesson;
             }))
         .then((value) => Future.wait(value.toList()));
@@ -299,17 +319,20 @@ class OnlineDataBase {
       if ((lessonIndex >= (lessonTable?[0].length ?? 0))) {
         lessonIndex++;
       } else {
-        while ((lessonIndex < (lessonTable?[0].length ?? 0)) && (lessonTable?[0][lessonIndex].value.isNotEmpty ?? false)) {
+        while (
+            (lessonIndex < (lessonTable?[0].length ?? 0)) && (lessonTable?[0][lessonIndex].value.isNotEmpty ?? false)) {
           lessonIndex++;
         }
       }
-      tasks.add(_lessonsSheet?.values.insertRow(lessonIndex, [lessonIndex, lesson.name, ids[i], 'нет', 'нет']) ?? Future.value(null));
+      tasks.add(_lessonsSheet?.values.insertRow(lessonIndex, [lessonIndex, lesson.name, ids[i], 'нет', 'нет']) ??
+          Future.value(null));
       final length = lesson.useWeekly ? (lesson.weeklyLessons?.length ?? 0) : (lesson.datedLessons?.length ?? 0);
       for (int j = 0; j < length; j++) {
         if ((lessonTimesIndex >= (lessonTimesTable?[0].length ?? 0))) {
           lessonTimesIndex++;
         } else {
-          while ((lessonTimesIndex < (lessonTimesTable?[0].length ?? 0)) && (lessonTimesTable?[0][lessonTimesIndex].value.isNotEmpty ?? false)) {
+          while ((lessonTimesIndex < (lessonTimesTable?[0].length ?? 0)) &&
+              (lessonTimesTable?[0][lessonTimesIndex].value.isNotEmpty ?? false)) {
             lessonTimesIndex++;
           }
         }
@@ -327,7 +350,7 @@ class OnlineDataBase {
           final datedLesson = lesson.datedLessons![j];
           tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
                 lessonIndex,
-                datedLesson.date.map((e) => e.toDateString).join(','),
+                datedLesson.date.map((e) => e.toOnlineDateString).join(','),
                 '-',
                 datedLesson.startTime.toShortString.toOnlineTime,
                 datedLesson.endTime.toShortString.toOnlineTime

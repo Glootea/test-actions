@@ -28,6 +28,8 @@ class DeleteRegEvent extends QueueEvent {
   DeleteRegEvent(this.lessonName);
 }
 
+class ToggleUpdateEvent extends QueueEvent {}
+
 // --- upload from link
 class ShowQRCodeEvent extends QueueEvent {
   final String lessonName;
@@ -71,3 +73,9 @@ class RegisterGroupEvent extends QueueEvent {
 }
 
 class LoginUsingGoogleEvent extends QueueEvent {}
+
+// --- admin view
+class NavigateToAdminSettingEvent extends QueueEvent {
+  final int index;
+  NavigateToAdminSettingEvent(this.index);
+}

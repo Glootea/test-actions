@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
@@ -150,13 +149,20 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
         body: Center(
-      child: SizedBox(
-        width: 100,
-        height: 100,
-        child: CircularProgressIndicator(),
-      ),
+      child: FutureBuilder(
+          future: Future.delayed(const Duration(milliseconds: 500), () => 1),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return const SizedBox(
+                width: 100,
+                height: 100,
+                child: CircularProgressIndicator(),
+              );
+            }
+            return const Center();
+          }),
     ));
   }
 }

@@ -44,8 +44,8 @@ extension TimeFromString on String {
 }
 
 extension DateToString on DateTime {
-  String get toDateString {
-    return '$day.$month.$year';
+  String get toOnlineDateString {
+    return "'$day.$month.$year";
   }
 
   String get toRecTime {
@@ -56,7 +56,7 @@ extension DateToString on DateTime {
 extension DateStringToDate on String {
   DateTime get toDate {
     final numbers = split('.').map((e) => int.parse(e)).toList();
-    return DateTime(numbers[0], numbers[1], numbers[2]);
+    return DateTime(numbers[2], numbers[1], numbers[0]);
   }
 }
 

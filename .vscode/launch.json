@@ -15,16 +15,7 @@
                 "-d", "chrome", "--web-port", "8000"
             ]
         },
-        {
-            "name": "queue(debug mobile)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "debug",
-            "args": [
-                "--dart-define-from-file",
-                "lib/secret/api-keys.json",
-            ]
-        },
+
         {
             "name": "queue (profile mode)",
             "request": "launch",
@@ -57,6 +48,26 @@
                 "lib/secret/api-keys.json",
                 "-d", "chrome", "--web-port", "8000",
                 "FLUTTER_WEB_USE_SKIA=true"
+            ]
+        },
+        {
+            "name": "queue(debug mobile)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "--dart-define-from-file",
+                "lib/secret/api-keys.json",
+            ]
+        },
+        {
+            "name": "queue(profile mobile)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file",
+                "lib/secret/api-keys.json",
             ]
         },
     ]

@@ -13,9 +13,11 @@ body {
 }
 
 #loading {
-    height: 10%;
-    width: 10%;
+    align-items: center;
     display: flex;
+    height: 10%;
+    justify-content: center;
+    width: 10%;
 }
 
 #loading dotlottie-player {
@@ -28,9 +30,10 @@ body {
     opacity: .8;
 }
 
-#loading.init_done dotlottie-player {
-    animation: .33s ease-in-out 0s 1 forwards zooooom;
-    opacity: .05;
+#loading.init_done {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 350ms, opacity 350ms ease-in-out;
 }
 
 @keyframes breathe {
@@ -50,5 +53,15 @@ body {
 
     to {
         transform: scale(10)
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
     }
 }

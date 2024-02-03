@@ -15,15 +15,19 @@ class MainState extends QueueState {
   final List<LessonEntity> todayLessons;
   final bool isAdmin;
   final String? message;
+  final bool updateEnabled;
 
   ///Should be provided to change to new
   final Uint8List? backgroundImageDecoded;
-  MainState(this.todayLessons, this.isAdmin, {this.backgroundImageDecoded, this.message});
+  MainState(this.todayLessons, this.isAdmin, this.updateEnabled, {this.backgroundImageDecoded, this.message});
   @override
   bool operator ==(Object other) {
     if (other.runtimeType != MainState) return false;
     if (other is! MainState) return false;
-    final r = isAdmin == other.isAdmin && listEquals(todayLessons, other.todayLessons);
+    final r = isAdmin == other.isAdmin &&
+        listEquals(todayLessons, other.todayLessons) &&
+        backgroundImageDecoded == other.backgroundImageDecoded &&
+        updateEnabled == other.updateEnabled;
     return r;
   }
 
@@ -33,7 +37,7 @@ class MainState extends QueueState {
 
 class ShowQRCodeState extends MainState {
   final String data;
-  ShowQRCodeState(this.data, super.todayLessons, super.isAdmin);
+  ShowQRCodeState(this.data, super.todayLessons, super.isAdmin, super.updateEnabled);
   @override
   bool operator ==(Object other) {
     if (other is! ShowQRCodeState) return false;
@@ -62,4 +66,11 @@ class UploadFromLinkState extends QueueState {
 class ReceivedInviteState extends QueueState {
   final String tableID;
   ReceivedInviteState(this.tableID);
+}
+
+// --- admin
+
+class AdminSettingState extends QueueState {
+  final int index;
+  AdminSettingState(this.index);
 }

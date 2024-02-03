@@ -38,9 +38,11 @@ class MyApp extends StatelessWidget {
       create: (context) => bloc..add(FindUserEvent()),
       child: Consumer(
         builder: (context, a, b) => MaterialApp.router(
-            builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child ?? Container()),
+            builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child ?? Container()),
             routerConfig: router,
             theme: ThemeData(
+                fontFamily: 'Roboto',
                 colorScheme: const ColorScheme(
                     brightness: Brightness.dark,
                     primary: Colors.white,
@@ -55,16 +57,18 @@ class MyApp extends StatelessWidget {
                     onSurface: Colors.white,
                     primaryContainer: Colors.black,
                     onPrimaryContainer: Colors.white),
-                textTheme: Typography.dense2021.copyWith(
-                    // bodySmall: Theme.of(context).textTheme.body,
-                    headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
-                    displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
-                    displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
-                    titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
-                    bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
-                    bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
-                    headlineMedium: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
-                    headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
+                textTheme: Typography.dense2021
+                    .copyWith(
+                        // bodySmall: Theme.of(context).textTheme.body,
+                        headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
+                        displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
+                        displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
+                        titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+                        bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                        bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
+                        headlineMedium: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+                        headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white))
+                    .apply(fontFamily: 'Roboto'),
 
                 // outlinedButtonTheme: OutlinedButtonThemeData(
                 //   style: OutlinedButton.styleFrom(

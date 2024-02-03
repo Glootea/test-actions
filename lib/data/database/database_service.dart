@@ -9,7 +9,7 @@ import 'package:queue/extension.dart';
 class DataBaseService {
   OnlineDataBase? _onlineDataBase;
   final LocalDatabase _localDatabase;
-  GoogleSignIn? _googleSignIn;
+  static GoogleSignIn? _googleSignIn;
 
   DataBaseService._(this._localDatabase, this._onlineDataBase);
 
@@ -37,8 +37,9 @@ class DataBaseService {
   }
 
   Future<void> createRec(String lessonName, String studentName, DateTime time) async {
-    final [rowNumber as int, String tableID as String] =
-        (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)])).toList();
+    final [rowNumber as int, String tableID as String] = (await Future.wait(
+            [_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)]))
+        .toList();
     final task1 = _localDatabase.createRec(lessonName, studentName, time);
     final task2 = OnlineDataBase.createRec(tableID, rowNumber, time);
     final result = await Future.wait([task1, task2]);
@@ -48,8 +49,9 @@ class DataBaseService {
   }
 
   Future<void> deleteRec(String lessonName, String studentName) async {
-    final [rowNumber as int, String tableID as String] =
-        (await Future.wait([_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)])).toList();
+    final [rowNumber as int, String tableID as String] = (await Future.wait(
+            [_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)]))
+        .toList();
     await OnlineDataBase.deleteRec(tableID, rowNumber).then((value) async {
       if (value) {
         await _localDatabase.deleteRec(lessonName, studentName);
@@ -75,9 +77,9 @@ class DataBaseService {
     return _localDatabase.clean(key);
   }
 
-  Future<GoogleSignInAccount?> signInGoogle() async {
+  static Future<GoogleSignInAccount?> signInGoogle() async {
     _googleSignIn = GoogleSignIn(
-      clientId: "842227545035-m0m949sgn56qkfqsgscb5lgrdpoog82l.apps.googleusercontent.com",
+      clientId: "233952076286-h6a1rd1lujh8lcr20uhk2dhp2bqhusuh.apps.googleusercontent.com",
       scopes: [
         'https://www.googleapis.com/auth/drive.file',
       ],
@@ -87,7 +89,8 @@ class DataBaseService {
     return user;
   }
 
-  Future<void> registerGroup(List<LessonSettingEntity> lessons, List<StudentEntity> students, String headManName, String groupName) async {
+  Future<void> registerGroup(
+      List<LessonSettingEntity> lessons, List<StudentEntity> students, String headManName, String groupName) async {
     if (_googleSignIn?.currentUser == null) {
       await signInGoogle();
     }
@@ -96,29 +99,38 @@ class DataBaseService {
     }
     final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
-    final folder = await driveApi.files.create(File(mimeType: 'application/vnd.google-apps.folder', name: "Student Queue"));
-    final infoFileID = await _createSpreadSheetFileOnDrive(folder.id!, "info", driveApi);
+    final folderID = await _createFileOnDrive("Student Queue", 'application/vnd.google-apps.folder', driveApi);
+    final infoFileID =
+        await _createFileOnDrive("info", "application/vnd.google-apps.spreadsheet", driveApi, folderId: folderID);
     // TODO: autorize user fully
     await set(StoredValues.infoTableID, infoFileID);
     _onlineDataBase = await OnlineDataBase.instance(tableID: infoFileID);
     List<Future<String>> lessonCreation = [];
     for (final lesson in lessons) {
-      lessonCreation.add(Future.value(_createSpreadSheetFileOnDrive(folder.id!, lesson.name, driveApi).then((value) {
-        _onlineDataBase!.createFrameOfQueueTable(value, infoFileID);
+      lessonCreation.add(Future.value(
+          _createFileOnDrive(lesson.name, "application/vnd.google-apps.spreadsheet", driveApi, folderId: folderID)
+              .then((value) {
+        _onlineDataBase!.createFrameOfQueueTable(value);
         return value;
       })));
     }
     final lessonIds = await Future.wait(lessonCreation);
-    await Future.wait([insertLessons(lessons, lessonIds), insertStudents(students), _onlineDataBase!.fillGroupInfo(headManName, groupName)]);
+    await Future.wait([
+      insertLessons(lessons, lessonIds),
+      insertStudents(students),
+      _onlineDataBase!.fillGroupInfo(headManName, groupName)
+    ]);
   }
 
-  Future<String> _createSpreadSheetFileOnDrive(String folderId, String name, DriveApi driveApi) async {
+  /// Returns file id
+  Future<String> _createFileOnDrive(String name, String fileType, DriveApi driveApi, {String? folderId}) async {
     final infoFile = File(
-      parents: [folderId],
-      mimeType: "application/vnd.google-apps.spreadsheet",
+      parents: folderId == null ? null : [folderId],
+      mimeType: fileType,
       name: name,
     );
-    final permisson = Permission(role: "writer", type: "user", emailAddress: "queue-410@queue-401413.iam.gserviceaccount.com");
+    final permisson =
+        Permission(role: "writer", type: "user", emailAddress: "queue-410@queue-401413.iam.gserviceaccount.com");
     final onlineFile = await driveApi.files.create(infoFile);
     await driveApi.permissions.create(permisson, onlineFile.id!);
     return onlineFile.id!;
@@ -168,12 +180,13 @@ class DataBaseService {
     }
     final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
-    final fileList = await driveApi.files.list(q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false and name = 'Student Queue'");
+    final fileList = await driveApi.files
+        .list(q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false and name = 'Student Queue'");
     final count = fileList.files!.length;
     if (_checkFileCount(count)) {
       final folderID = fileList.files!.first.id!;
-      final ssFileList =
-          await driveApi.files.list(q: "mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false and parents = '$folderID' and name = 'info'");
+      final ssFileList = await driveApi.files.list(
+          q: "mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false and parents = '$folderID' and name = 'info'");
       final ssCount = ssFileList.files!.length;
       if (_checkFileCount(ssCount)) {
         return ssFileList.files!.first.id!;
@@ -184,9 +197,10 @@ class DataBaseService {
 
   bool _checkFileCount(int count) {
     if (count == 0) {
-      throw MultipleFilesOnDiskException("Multiple files found on disk. Delete unnecessary files and folders named 'Student Queue'.");
-    } else if (count > 1) {
       throw NoFileFoundOnDiskException("No file found on Google Disk.");
+    } else if (count > 1) {
+      throw MultipleFilesOnDiskException(
+          "Multiple files found on disk. Delete unnecessary files and folders named 'Student Queue'.");
     }
     return true;
   }
@@ -199,7 +213,9 @@ class DataBaseService {
     final studentNames = {for (var e in result[0] as List<List>) e[0] as int: e[1] as String};
     final lessonNames = (result[1] as List<LessonEntity>).map((e) => e.name);
     for (final lessonName in lessonNames) {
-      final recs = await _localDatabase.getLessonTableID(lessonName).then((value) async => await _onlineDataBase?.getRecs(studentNames, lessonName, value));
+      final recs = await _localDatabase
+          .getLessonTableID(lessonName)
+          .then((value) async => await _onlineDataBase?.getRecs(studentNames, lessonName, value));
       if (recs != null) {
         await _localDatabase.deleteAllRecs(lessonName);
         await _localDatabase.import(recs);
@@ -209,8 +225,9 @@ class DataBaseService {
 
   // TODO: implement not deleted recs
   Future<bool> postNotUploadedRecs(String studentName) async {
-    final [list as List<RecEntity>, rowNumber as int] =
-        (await Future.wait([_localDatabase.getNotUploadedRecs(studentName), _localDatabase.getOnlineTableRowNumber(studentName)])).toList();
+    final [list as List<RecEntity>, rowNumber as int] = (await Future.wait(
+            [_localDatabase.getNotUploadedRecs(studentName), _localDatabase.getOnlineTableRowNumber(studentName)]))
+        .toList();
     if (list.isEmpty) {
       return false;
     }
@@ -231,8 +248,9 @@ class DataBaseService {
   }
 
   Future<bool> deleteNotUploadedRecs(String studentName) async {
-    final [list as List<RecEntity>, rowNumber as int] =
-        (await Future.wait([_localDatabase.getNotDeletedRecs(studentName), _localDatabase.getOnlineTableRowNumber(studentName)])).toList();
+    final [list as List<RecEntity>, rowNumber as int] = (await Future.wait(
+            [_localDatabase.getNotDeletedRecs(studentName), _localDatabase.getOnlineTableRowNumber(studentName)]))
+        .toList();
     if (list.isEmpty) {
       return false;
     }

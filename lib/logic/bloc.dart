@@ -31,6 +31,12 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     return _userDataBase.isAdmin;
   }
 
+  Future<bool> get getUpdateEnabled async {
+    return _databaseService.localDatabase
+        .get(StoredValues.shouldUpdate)
+        .then((value) => value == 'true' || value == null);
+  }
+
   Future<List<LessonEntity>> _todayLessons(String studentName) async {
     DateTime today = DateTime.now();
     return await _databaseService.todayLessons(today, studentName);
@@ -39,7 +45,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   Future<Uint8List> _getBackgroundImage() async {
     String? image = await _databaseService.get(StoredValues.backgroundImage);
     if (image == null) {
-      final encoded = await FirebaseStorage.instance.ref("/themes/panda/panda.png").getData().timeout(const Duration(seconds: 5));
+      final encoded =
+          await FirebaseStorage.instance.ref("/themes/panda/panda.png").getData().timeout(const Duration(seconds: 5));
       image = base64.encode(encoded!.toList());
       await _databaseService.set(StoredValues.backgroundImage, image);
     }
@@ -58,6 +65,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
             await _deleteReg((event as DeleteRegEvent).lessonName, emit);
           case ShowQRCodeEvent:
             await _showQrCode(event as ShowQRCodeEvent, emit);
+          case ToggleUpdateEvent:
+            await _onToggleUpdate(emit);
           //  --- group creation ---
           case CreateGroupIntentionEvent:
             await _createGroupIntention(emit);
@@ -87,6 +96,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
             await _onInviteEvent(event as ReceivedInviteEvent, emit);
           case RegisterInvitedUserEvent:
             await _onRegisterInvitedUserEvent(event as RegisterInvitedUserEvent, emit);
+
+          // --- admin screen ---
+          case NavigateToAdminSettingEvent:
+            emit(AdminSettingState((event as NavigateToAdminSettingEvent).index));
           default:
             throw UnimplementedError("Event ${event.runtimeType} is not implemented in queue bloc");
         }
@@ -100,36 +113,34 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   Future<void> _createReg(String lessonName, Emitter emit) async {
     DateTime time = DateTime.now();
     final fakedLessons = OptimisticUI.createRec((state as MainState).todayLessons, lessonName, time);
-    emit(MainState(fakedLessons, _isAdmin));
+    await _emitMainState(emit, todayLessons: fakedLessons);
     await _databaseService.createRec(lessonName, _userDataBase.getUserName, time);
-    emit(MainState(await _todayLessons(_userDataBase.getUserName), _isAdmin));
+    await _emitMainState(emit);
   }
 
   Future<void> _deleteReg(String lessonName, Emitter emit) async {
     final fakedLessons = OptimisticUI.deleteRec((state as MainState).todayLessons, lessonName);
-    emit(MainState(fakedLessons, _isAdmin));
+    await _emitMainState(emit, todayLessons: fakedLessons);
     await _databaseService.deleteRec(lessonName, _userDataBase.getUserName); // TODO: catch network error if occur
-    emit(MainState(await _todayLessons(_userDataBase.getUserName), _isAdmin));
+    await _emitMainState(emit);
     //   //TODO : cache for later upload
   }
 
-  Future<void> _createGroupIntention(Emitter<QueueState> emit) async {
-    {
-      final user = await _databaseService.signInGoogle();
-      if (user != null) {
-        emit(UserUnAuthenticatedState(createGroupState: true));
-      } else {
-        emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
-      }
-    }
+  Future<void> _onToggleUpdate(Emitter emit) async {
+    final prevShouldUpdate =
+        ((await _databaseService.localDatabase.get(StoredValues.shouldUpdate)) ?? 'true') == 'true';
+    await _databaseService.localDatabase.set(StoredValues.shouldUpdate, prevShouldUpdate ? 'false' : 'true');
+    await _emitMainState(emit, updateEnabled: !prevShouldUpdate);
   }
 
   Future<void> _showQrCode(ShowQRCodeEvent event, Emitter emit) async {
-    final (tableID, rowNumber) =
-        await (_databaseService.localDatabase.getLessonTableID(event.lessonName), _databaseService.localDatabase.getOnlineTableRowNumber(userName!)).wait;
+    final (tableID, rowNumber) = await (
+      _databaseService.localDatabase.getLessonTableID(event.lessonName),
+      _databaseService.localDatabase.getOnlineTableRowNumber(userName!)
+    ).wait;
     final data = QrCodeData.toQrData(tableID, rowNumber, event.time);
     final mainState = state as MainState;
-    emit(ShowQRCodeState(data, mainState.todayLessons, mainState.isAdmin));
+    emit(ShowQRCodeState(data, mainState.todayLessons, mainState.isAdmin, mainState.updateEnabled));
   }
 
   // --- user Authentication ---
@@ -148,52 +159,34 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _userAuthenticated(Emitter<QueueState> emit) async {
     {
-      final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
-      emit(
-        MainState(
-          result[0] as List<LessonEntity>,
-          _isAdmin,
-          backgroundImageDecoded: result[1] as Uint8List,
-        ),
-      );
-      final tasks = [_databaseService.postNotUploadedRecs(_userDataBase.getUserName), _databaseService.deleteNotUploadedRecs(_userDataBase.getUserName)];
+      await _emitMainState(emit);
+      final tasks = [
+        _databaseService.postNotUploadedRecs(_userDataBase.getUserName),
+        _databaseService.deleteNotUploadedRecs(_userDataBase.getUserName)
+      ];
       if (await Future.wait(tasks).then((value) => value.any((e) => e == true))) {
-        final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
-        emit(
-          MainState(
-            result[0] as List<LessonEntity>,
-            _isAdmin,
-            backgroundImageDecoded: result[1] as Uint8List,
-          ),
-        );
+        await _emitMainState(emit);
       }
-      await _databaseService.fetchRecs(); //TODO: fetch recs from online
-      final result2 = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
-      emit(
-        MainState(
-          result2[0] as List<LessonEntity>,
-          _isAdmin,
-          backgroundImageDecoded: result2[1] as Uint8List,
-        ),
-      );
+      await _databaseService.fetchRecs();
+      await _emitMainState(emit);
     }
   }
 
   Future<void> _loginUsingGoogle(Emitter<QueueState> emit) async {
     //TODO: refactor
-    final userSignInAccount = await _databaseService.signInGoogle();
+    final userSignInAccount = await DataBaseService.signInGoogle();
     if (userSignInAccount == null) {
       emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
     } else {
       emit(LoadingState());
-      await (
-        _databaseService.fetchDataFromDrive(account: userSignInAccount),
-        _databaseService.set(StoredValues.userName, await _databaseService.onlineDataBase.getHeadName())
+      await _databaseService.fetchDataFromDrive(account: userSignInAccount);
+      await _databaseService.set(StoredValues.userName, await _databaseService.onlineDataBase.getHeadName());
+      final result = await (
+        UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase),
+        _databaseService.fetchRecs()
       ).wait;
-      final a = await (UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase), _databaseService.fetchRecs()).wait;
-      _userDataBase = a.$1;
-      final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
-      emit(MainState(result[0] as List<LessonEntity>, _isAdmin, backgroundImageDecoded: result[1] as Uint8List));
+      _userDataBase = result.$1;
+      await _emitMainState(emit);
     }
   }
 
@@ -207,10 +200,9 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     ).wait;
     await _databaseService.fetchDataFromDrive();
     await _databaseService.fetchRecs();
-    _userDataBase =
-        await UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
-    final result = await Future.wait([_todayLessons(_userDataBase.getUserName), _getBackgroundImage()]);
-    emit(MainState(result[0] as List<LessonEntity>, _isAdmin, backgroundImageDecoded: result[1] as Uint8List));
+    _userDataBase = await UserDataBase.getConfiguredUserDataBase(
+        _databaseService.localDatabase); // can't use Future.wait as fetchDataFromDrive insert needed data in sb
+    await _emitMainState(emit);
   }
 
   // --- upload screen
@@ -226,7 +218,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       emit(UploadFromLinkState(
           isLoading: false,
           loadedPosition: true,
-          message: "Запись успешно добавлена\n Вы занимаете $position место в очереди${last != null ? ' после $last' : ''}"));
+          message:
+              "Запись успешно добавлена\n Вы занимаете $position место в очереди${last != null ? ' после $last' : ''}"));
     } catch (e) {
       log(e.toString());
       emit(UploadFromLinkState(isLoading: false, loadedPosition: false, message: "Ошибка при добавлении записи"));
@@ -242,11 +235,37 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   Future<void> _registerGroup(RegisterGroupEvent event, Emitter<QueueState> emit) async {
     emit(LoadingState());
     final userName = '${event.firstName} ${event.lastName}';
-    final result = await Future.wait([
+    await Future.wait([
       _userDataBase.fillUser(userName),
-      _databaseService.registerGroup(event.lessons, [StudentEntity(userName, 2, isAdmin: true)] + event.students, userName, event.groupName),
-      _getBackgroundImage()
+      _databaseService.registerGroup(
+          event.lessons, [StudentEntity(userName, 2, isAdmin: true)] + event.students, userName, event.groupName),
     ]);
-    emit(MainState(await _todayLessons(userName), true, backgroundImageDecoded: result[2] as Uint8List));
+    await _emitMainState(emit, isAdmin: true);
+  }
+
+  Future<void> _createGroupIntention(Emitter<QueueState> emit) async {
+    {
+      final user = await DataBaseService.signInGoogle();
+      if (user != null) {
+        emit(UserUnAuthenticatedState(createGroupState: true));
+      } else {
+        emit(UserUnAuthenticatedState(errorMessage: "Пользователь не авторизован"));
+      }
+    }
+  }
+
+  Future<void> _emitMainState(Emitter emit,
+      {List<LessonEntity>? todayLessons, bool? isAdmin, Uint8List? backgroundImageDecoded, bool? updateEnabled}) async {
+    final result = await Future.wait([
+      todayLessons == null ? _todayLessons(_userDataBase.getUserName) : Future.value(null),
+      isAdmin == null ? Future.value(_isAdmin) : Future.value(null),
+      backgroundImageDecoded == null ? _getBackgroundImage() : Future.value(null),
+      updateEnabled == null ? getUpdateEnabled : Future.value(null)
+    ]);
+    todayLessons ??= result[0] as List<LessonEntity>;
+    isAdmin ??= result[1] as bool;
+    backgroundImageDecoded ??= result[2] as Uint8List;
+    updateEnabled ??= result[3] as bool;
+    emit(MainState(todayLessons, isAdmin, updateEnabled, backgroundImageDecoded: backgroundImageDecoded));
   }
 }

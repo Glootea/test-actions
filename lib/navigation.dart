@@ -5,19 +5,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
+import 'package:queue/presentation/screens/adminSettings/lesson_screen.dart';
+import 'package:queue/presentation/screens/adminSettings/queue_screen.dart';
+import 'package:queue/presentation/screens/adminSettings/students_screen.dart';
+import 'package:queue/presentation/screens/adminSettings/telegram_bot_screen.dart';
 import 'package:queue/presentation/screens/create_group_screen.dart';
 import 'package:queue/presentation/screens/received_invite_screen.dart';
 import 'package:queue/presentation/screens/welcome_screen.dart';
-import 'package:queue/presentation/screens/main_screen.dart';
+import 'package:queue/presentation/screens/mainScreen/main_screen.dart';
 import 'package:queue/presentation/screens/upload_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:queue/presentation/widgets/dialog_page.dart';
 import 'package:queue/presentation/widgets/qr_code_dialog.dart';
 
 class _Routes {
-  static const String mainScreen = '/home';
-  static const String qrDialog = 'qr';
-  static const String showQrDialog = '$mainScreen/$qrDialog';
+  static const String mainScreen = '/home'; // TODO: change and save index of subScreens
+  static const String qrDialogSubpath = 'qr';
+  static const String adminSubpath = 'admin/:index';
+  static const String showQrDialog = '$mainScreen/$qrDialogSubpath';
+  static const String adminScreen = '$mainScreen/$adminSubpath';
   static const String loginScreen = '/login';
   static const String uploadScreen = '/upload/:info';
   static const String inviteScreen = '/invite/:info';
@@ -32,10 +38,14 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
         final bloc = context.read<QueueBloc>();
         final blocState = bloc.state;
         if (state.pathParameters['info'] != ':info') {
-          if (state.fullPath == _Routes.uploadScreen && state.pathParameters.isNotEmpty && blocState is! UploadFromLinkState) {
+          if (state.fullPath == _Routes.uploadScreen &&
+              state.pathParameters.isNotEmpty &&
+              blocState is! UploadFromLinkState) {
             bloc.add(UploadFromLinkEvent(state.pathParameters['info']!));
           }
-          if (state.fullPath == _Routes.inviteScreen && state.pathParameters.isNotEmpty && blocState is! ReceivedInviteState) {
+          if (state.fullPath == _Routes.inviteScreen &&
+              state.pathParameters.isNotEmpty &&
+              blocState is! ReceivedInviteState) {
             bloc.add(ReceivedInviteEvent(state.pathParameters['info']!));
           }
         }
@@ -46,33 +56,49 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
           case MainState:
             return _Routes.mainScreen;
           case UserUnAuthenticatedState:
-            {
-              return ((blocState as UserUnAuthenticatedState).createGroupState) ? _Routes.createGroupScreen : _Routes.loginScreen;
-            }
+            return ((blocState as UserUnAuthenticatedState).createGroupState)
+                ? _Routes.createGroupScreen
+                : _Routes.loginScreen;
           case UploadFromLinkState:
             return _Routes.uploadScreen;
           case ReceivedInviteState:
             return _Routes.inviteScreen;
           case LoadingState:
             return _Routes.loadingScreen;
+          case AdminSettingState:
+            return _Routes.adminScreen.replaceFirst(':index', (blocState as AdminSettingState).index.toString());
         }
         return null;
       },
       initialLocation: _Routes.mainScreen,
-      refreshListenable: _GoRouterRefreshStream(bloc.stream.asyncMap<QueueState>((event) => event as QueueState)),
+      refreshListenable: _GoRouterRefreshStream(bloc.stream.map<QueueState>((event) => event as QueueState)),
       routes: [
         GoRoute(
             path: _Routes.loginScreen,
             routes: [GoRoute(path: _Routes.createGroupSubPath, builder: (context, state) => const CreateGroupScreen())],
-            pageBuilder: (context, state) =>
-                _DefaultPageAnimation(child: const WelcomeScreen())), //TODO: fix page transition on macos. Used to swipe from right
-        GoRoute(path: _Routes.loadingScreen, pageBuilder: (context, state) => _DefaultPageAnimation(child: const LoadingView())),
-        GoRoute(path: _Routes.mainScreen, builder: (context, state) => const MainScreen(), routes: [
-          GoRoute(
-            path: _Routes.qrDialog,
-            pageBuilder: (context, state) => DialogPage(builder: (_) => const QrCodeDialog()),
-          )
-        ]),
+            pageBuilder: (context, state) => _DefaultPageAnimation(
+                child: const WelcomeScreen())), //TODO: fix page transition on macos. Used to swipe from right
+        GoRoute(
+            path: _Routes.loadingScreen,
+            pageBuilder: (context, state) => _DefaultPageAnimation(child: const LoadingView())),
+        GoRoute(
+            path: _Routes.mainScreen,
+            pageBuilder: (context, state) => _DefaultPageAnimation(child: const MainScreen()),
+            routes: [
+              GoRoute(
+                path: _Routes.qrDialogSubpath,
+                pageBuilder: (context, state) => DialogPage(builder: (_) => const QrCodeDialog()),
+              ),
+              GoRoute(
+                  path: _Routes.adminSubpath,
+                  builder: (context, state) => switch (state.pathParameters['index'] ?? '') {
+                        '0' => const StudentScreen(),
+                        '1' => const LessonScreen(),
+                        '2' => const QueueScreen(),
+                        '3' => const TelegramBotScreen(),
+                        _ => throw GoException('Wrong index')
+                      }),
+            ]),
         GoRoute(path: _Routes.uploadScreen, builder: (context, state) => const UploadScreen()),
         GoRoute(path: _Routes.inviteScreen, builder: (context, state) => const ReceivedInviteScreen()),
       ],
@@ -83,10 +109,6 @@ class _GoRouterRefreshStream extends ChangeNotifier {
   _GoRouterRefreshStream(Stream<QueueState> stream) {
     _subscription = stream.asBroadcastStream().listen(
       (QueueState current) {
-        // if (last.runtimeType != current.runtimeType) {
-        //   last = current;
-        //   notifyListeners();
-        // }
         notifyListeners();
       },
     );
@@ -104,8 +126,9 @@ class _GoRouterRefreshStream extends ChangeNotifier {
 class _DefaultPageAnimation extends CustomTransitionPage {
   _DefaultPageAnimation({required Widget child})
       : super(
-          key: const ValueKey('loading'),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(opacity: animation, child: child),
+          transitionDuration: const Duration(milliseconds: 5000),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
           child: child,
         );
 }
