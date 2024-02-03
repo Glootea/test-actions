@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/bloc.dart';
+import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
@@ -27,43 +28,50 @@ class TodayScreen extends StatelessWidget {
                 const MyPadding(),
                 RepaintBoundary(
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const ConnectionStatusWidget(),
-                      const Spacer(),
                       OutlinedButton(
                           onPressed: () => Scaffold.of(context).openEndDrawer(),
                           child: const Icon(Icons.more_vert_outlined))
                     ],
                   ),
                 ),
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const MyPadding(),
-                      Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer, width: 2),
-                              borderRadius: const BorderRadius.all(Radius.circular(20)),
-                              color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7)),
-                          child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Text("Пары с очередью сегодня",
-                                  textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge))),
-                      const MyPadding(),
-                      (mainState.todayLessons.isEmpty)
-                          ? Text(
-                              "Пар с очередью нет",
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            )
-                          : ListView.separated(
-                              shrinkWrap: true,
-                              itemCount: mainState.todayLessons.length,
-                              itemBuilder: (context, index) =>
-                                  LessonWidget((mainState as MainState).todayLessons[index]),
-                              separatorBuilder: (context, index) => const MyPadding(),
-                            ),
-                    ],
+                RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<QueueBloc>().add(UserAuthenticatedEvent());
+                    return Future.delayed(const Duration(seconds: 1));
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const MyPadding(),
+                        Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer, width: 2),
+                                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7)),
+                            child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text("Пары с очередью сегодня",
+                                    textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge))),
+                        const MyPadding(),
+                        (mainState.todayLessons.isEmpty)
+                            ? Text(
+                                "Пар с очередью нет",
+                                style: Theme.of(context).textTheme.headlineSmall,
+                              )
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                itemCount: mainState.todayLessons.length,
+                                itemBuilder: (context, index) =>
+                                    LessonWidget((mainState as MainState).todayLessons[index]),
+                                separatorBuilder: (context, index) => const MyPadding(),
+                              ),
+                      ],
+                    ),
                   ),
                 ),
               ],

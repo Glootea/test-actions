@@ -80,16 +80,21 @@ class OnlineDataBase {
 
   Future<List<RecEntity>> getRecs(Map<int, String> students, String lessonName, String tableID) async {
     List<RecEntity> result = <RecEntity>[];
-    final queueSheet = await _gsheets.spreadsheet(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
-    final onlineTimes = await queueSheet?.values.column(1, fromRow: 2);
-    if (onlineTimes == null) return result;
-    for (int i = 0; i < onlineTimes.length; i++) {
-      final onlineTime = onlineTimes[i];
-      if (onlineTime.isNotEmpty) {
-        final time = onlineTime.toRecDateTime;
-        result.add(RecEntity(students[i + 2]!, time, lessonName, true));
+    try {
+      final queueSheet = await _gsheets.spreadsheet(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
+      final onlineTimes = await queueSheet?.values.column(1, fromRow: 2);
+      if (onlineTimes == null) return result;
+      for (int i = 0; i < onlineTimes.length; i++) {
+        final onlineTime = onlineTimes[i];
+        if (onlineTime.isNotEmpty) {
+          final time = onlineTime.toRecDateTime;
+          result.add(RecEntity(students[i + 2]!, time, lessonName, true));
+        }
       }
+    } catch (e) {
+      log("Failed to get recs: " + e.toString());
     }
+
     return result;
   }
 
