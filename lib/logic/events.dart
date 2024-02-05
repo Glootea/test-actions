@@ -63,13 +63,12 @@ class RegisterInvitedUserEvent extends QueueEvent {
 class CreateGroupIntentionEvent extends QueueEvent {}
 
 class RegisterGroupEvent extends QueueEvent {
-  final String firstName;
-  final String lastName;
+  final String name;
   final String groupName;
   final List<LessonSettingEntity> lessons;
   final List<StudentEntity> students;
 
-  RegisterGroupEvent(this.firstName, this.lastName, this.groupName, this.lessons, this.students);
+  RegisterGroupEvent(this.name, this.groupName, this.lessons, this.students);
 }
 
 class LoginUsingGoogleEvent extends QueueEvent {}

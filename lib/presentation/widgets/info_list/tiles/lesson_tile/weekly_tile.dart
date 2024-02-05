@@ -16,7 +16,7 @@ const Map<int, String> weekdays = {
 
 class WeeklyLessonTile extends TimeChooser {
   final Animation<double> animation;
-  final List<WeeklyLessonSettingEntity> weeklyLessons;
+  final List<LessonTime> weeklyLessons;
   final int outerCount;
 
   const WeeklyLessonTile(this.animation, this.weeklyLessons, this.outerCount,
@@ -59,11 +59,15 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                           textAlign: TextAlign.center,
                                         )))
                                     .toList(),
-                                selected: widget.weeklyLessons[widget.innerCount].weekdays.toSet(),
+                                selected: (widget.weeklyLessons[widget.innerCount] as WeeklyLessonSettingEntity)
+                                    .weekdays
+                                    .toSet(),
                                 onSelectionChanged: (value) {
                                   setState(() {
                                     // widget.onWeekDayChanged(value);
-                                    widget.weeklyLessons[widget.innerCount] = widget.weeklyLessons[widget.innerCount].copyWith(weekdays: value.toList());
+                                    widget.weeklyLessons[widget.innerCount] =
+                                        (widget.weeklyLessons[widget.innerCount] as WeeklyLessonSettingEntity)
+                                            .copyWith(weekdays: value.toList());
                                   });
                                   newSetState(() {});
                                 },
@@ -89,16 +93,19 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                                   context: context,
                                                   initialTime: TimeOfDay(
                                                       hour: widget.weeklyLessons[widget.innerCount].startTime.hour,
-                                                      minute: widget.weeklyLessons[widget.innerCount].startTime.minute));
+                                                      minute:
+                                                          widget.weeklyLessons[widget.innerCount].startTime.minute));
 
                                               if (time != null) {
                                                 setState(() {
-                                                  widget.onTimeChanged(time, widget.weeklyLessons[widget.innerCount].endTime);
+                                                  widget.onTimeChanged(
+                                                      time, widget.weeklyLessons[widget.innerCount].endTime);
                                                 });
                                                 newSetState(() {});
                                               }
                                             },
-                                            child: Text(widget.weeklyLessons[widget.innerCount].startTime.toShortString)),
+                                            child:
+                                                Text(widget.weeklyLessons[widget.innerCount].startTime.toShortString)),
                                       )
                                     ],
                                   ),
@@ -122,7 +129,8 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
 
                                               if (time != null) {
                                                 setState(() {
-                                                  widget.onTimeChanged(widget.weeklyLessons[widget.innerCount].startTime, time);
+                                                  widget.onTimeChanged(
+                                                      widget.weeklyLessons[widget.innerCount].startTime, time);
                                                 });
                                                 newSetState(() {});
                                               }
@@ -150,7 +158,12 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                     const Text('  •   '),
                     Expanded(
                       child: Text(
-                        widget.weeklyLessons[widget.innerCount].weekdays.map((e) => weekdays[e]).toString().replaceAll('(', '').replaceAll(')', ''),
+                        (widget.weeklyLessons[widget.innerCount] as WeeklyLessonSettingEntity)
+                            .weekdays
+                            .map((e) => weekdays[e])
+                            .toString()
+                            .replaceAll('(', '')
+                            .replaceAll(')', ''),
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                       ),
@@ -158,7 +171,8 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                     Text(
                         ": ${widget.weeklyLessons[widget.innerCount].startTime.toShortString} - ${widget.weeklyLessons[widget.innerCount].endTime.toShortString}"),
                     TextButton(
-                        onPressed: () => widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),
+                        onPressed: () =>
+                            widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),
                         child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error))
                   ],
                 ),

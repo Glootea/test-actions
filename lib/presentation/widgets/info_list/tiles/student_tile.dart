@@ -33,7 +33,9 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
               title: Row(children: [
                 Expanded(
                     child: TextFormField(
-                  focusNode: (widget.count == widget.students.length - 1 && widget.students[widget.count].name.isEmpty) ? (FocusNode()..requestFocus()) : null,
+                  focusNode: (widget.count == widget.students.length - 1 && widget.students[widget.count].name.isEmpty)
+                      ? (FocusNode()..requestFocus())
+                      : null,
                   key: UniqueKey(),
                   initialValue: widget.students[widget.count].name,
                   onChanged: (value) {
@@ -42,8 +44,9 @@ class _StudentInfoTileState extends State<StudentInfoTile> {
                   decoration: const InputDecoration(hintText: "Фамилия и имя студента"),
                   autovalidateMode: AutovalidateMode.always,
                   validator: (value) => value?.isEmpty ?? true ? "Необходимо заполнить поле" : null,
+                  textCapitalization: TextCapitalization.words,
                 )),
-                const Gap(16),
+                const Gap(8),
                 IconButton(
                     onPressed: () {
                       widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height);

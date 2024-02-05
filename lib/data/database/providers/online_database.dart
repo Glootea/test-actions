@@ -133,7 +133,7 @@ class OnlineDataBase {
       if (queueSheet == null) {
         throw Exception("Failed to load database");
       }
-      return await queueSheet.values.insertValue(time.toRecTime, column: 1, row: onlineTableRowNumber);
+      return await queueSheet.values.insertValue(time.toRecTime.toOnline, column: 1, row: onlineTableRowNumber);
     } on SocketException {
       return false;
     }
@@ -233,7 +233,7 @@ class OnlineDataBase {
       }
     }
     tasks.add(_namesSheet?.values.insertColumn(1, column) ?? Future(() => null));
-    tasks.add(_infoSheet?.values.insertValueByKeys("'${adminId.join(', ')}", columnKey: _values, rowKey: _admins) ??
+    tasks.add(_infoSheet?.values.insertValueByKeys(adminId.join(', ').toOnline, columnKey: _values, rowKey: _admins) ??
         Future(() => null));
     await Future.wait(tasks);
     return true;
@@ -282,9 +282,7 @@ class OnlineDataBase {
                   return DatedLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, dates);
                 }
               });
-              final lesson = LessonSettingEntity(lessonRow[1],
-                  datedLessons: times.whereType<DatedLessonSettingEntity>().toList(),
-                  weeklyLessons: times.whereType<WeeklyLessonSettingEntity>().toList());
+              final lesson = LessonSettingEntity(lessonRow[1], times.toList());
               return lesson;
             }))
         .then((value) => Future.wait(value.toList()));
@@ -331,41 +329,77 @@ class OnlineDataBase {
       }
       tasks.add(_lessonsSheet?.values.insertRow(lessonIndex, [lessonIndex, lesson.name, ids[i], 'нет', 'нет']) ??
           Future.value(null));
-      final length = lesson.useWeekly ? (lesson.weeklyLessons?.length ?? 0) : (lesson.datedLessons?.length ?? 0);
-      for (int j = 0; j < length; j++) {
-        if ((lessonTimesIndex >= (lessonTimesTable?[0].length ?? 0))) {
-          lessonTimesIndex++;
-        } else {
-          while ((lessonTimesIndex < (lessonTimesTable?[0].length ?? 0)) &&
-              (lessonTimesTable?[0][lessonTimesIndex].value.isNotEmpty ?? false)) {
-            lessonTimesIndex++;
-          }
-        }
-        if (lesson.useWeekly) {
-          final weeklyLesson = lesson.weeklyLessons![j];
-          tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
-                lessonIndex,
-                '-',
-                weeklyLesson.weekdays.join(', '),
-                weeklyLesson.startTime.toShortString.toOnlineTime,
-                weeklyLesson.endTime.toShortString.toOnlineTime
-              ]) ?? //TODO: test to online time
-              Future.value(null));
-        } else {
-          final datedLesson = lesson.datedLessons![j];
-          tasks.add(_lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
-                lessonIndex,
-                datedLesson.date.map((e) => e.toOnlineDateString).join(','),
-                '-',
-                datedLesson.startTime.toShortString.toOnlineTime,
-                datedLesson.endTime.toShortString.toOnlineTime
-              ]) ??
-              Future.value(null));
-        }
-      }
+      lessonTimesIndex = _taskToFillWeeklyLessons(lesson, lessonIndex, lessonTimesTable, lessonTimesIndex, tasks);
+      lessonTimesIndex = _taskToFillDatedLessons(lesson, lessonIndex, lessonTimesTable, lessonTimesIndex, tasks);
     }
-
+// TODO: check if tasks fill correctly
     await Future.wait(tasks);
     return true;
+  }
+
+  int _taskToFillDatedLessons(LessonSettingEntity lesson, int lessonIndex, List<List<Cell>>? lessonTimesTable,
+      int lessonTimesIndex, List<Future<dynamic>> tasks) {
+    final datedLessons = lesson.lessonTimes.whereType<DatedLessonSettingEntity>().toList();
+    final datedLessonsLength = datedLessons.length;
+    for (int j = 0; j < datedLessonsLength; j++) {
+      if ((lessonTimesIndex >= (lessonTimesTable?[0].length ?? 0))) {
+        lessonTimesIndex++;
+      } else {
+        while ((lessonTimesIndex < (lessonTimesTable?[0].length ?? 0)) &&
+            (lessonTimesTable?[0][lessonTimesIndex].value.isNotEmpty ?? false)) {
+          lessonTimesIndex++;
+        }
+      }
+      final datedLesson = datedLessons[j];
+      tasks.add(_taskToInsertSingleDatedLessonTime(
+          lessonTimesIndex: lessonTimesIndex, lessonIndex: lessonIndex, datedLesson: datedLesson));
+    }
+    return lessonTimesIndex;
+  }
+
+  int _taskToFillWeeklyLessons(LessonSettingEntity lesson, int lessonIndex, List<List<Cell>>? lessonTimesTable,
+      int lessonTimesIndex, List<Future<dynamic>> tasks) {
+    final weeklyLessons = lesson.lessonTimes.whereType<WeeklyLessonSettingEntity>().toList();
+    final weeklyLessonsLength = weeklyLessons.length;
+    for (int j = 0; j < weeklyLessonsLength; j++) {
+      if ((lessonTimesIndex >= (lessonTimesTable?[0].length ?? 0))) {
+        lessonTimesIndex++;
+      } else {
+        while ((lessonTimesIndex < (lessonTimesTable?[0].length ?? 0)) &&
+            (lessonTimesTable?[0][lessonTimesIndex].value.isNotEmpty ?? false)) {
+          lessonTimesIndex++;
+        }
+      }
+      final weeklyLesson = weeklyLessons[j];
+      tasks.add(_taskToInsertSingleWeeklyLessonTime(
+          lessonTimesIndex: lessonTimesIndex, lessonIndex: lessonIndex, weeklyLesson: weeklyLesson));
+    }
+    return lessonTimesIndex;
+  }
+
+  Future<void> _taskToInsertSingleWeeklyLessonTime(
+      {required int lessonTimesIndex,
+      required int lessonIndex,
+      required WeeklyLessonSettingEntity weeklyLesson}) async {
+    return _lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
+          lessonIndex,
+          '-',
+          weeklyLesson.weekdays.join(', ').toOnline,
+          weeklyLesson.startTime.toShortString.toOnline,
+          weeklyLesson.endTime.toShortString.toOnline
+        ]) ??
+        Future.value(null);
+  }
+
+  Future<void> _taskToInsertSingleDatedLessonTime(
+      {required int lessonTimesIndex, required int lessonIndex, required DatedLessonSettingEntity datedLesson}) {
+    return _lessonTimesSheet?.values.insertRow(lessonTimesIndex, [
+          lessonIndex,
+          datedLesson.date.map((e) => e.toOnlineDateString).join(',').toOnline,
+          '-',
+          datedLesson.startTime.toShortString.toOnline,
+          datedLesson.endTime.toShortString.toOnline
+        ]) ??
+        Future.value(null);
   }
 }

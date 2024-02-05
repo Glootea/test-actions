@@ -37,15 +37,14 @@ extension TimeFromString on String {
     return DateTime(list[0], list[1], list[2], list[3], list[4], list[5], list[6]);
   }
 
+  String get toOnline => "'$this";
+
   ///Used to store time in online spreadsheet to prevent from being proportion of day
-  String get toOnlineTime {
-    return "'$this";
-  }
 }
 
 extension DateToString on DateTime {
   String get toOnlineDateString {
-    return "'$day.$month.$year";
+    return "$day.$month.$year";
   }
 
   String get toRecTime {

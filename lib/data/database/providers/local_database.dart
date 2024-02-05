@@ -187,8 +187,12 @@ class LocalDatabase extends _$LocalDatabase {
     await Future.wait(list.map((lesson) async {
       int id = await lessons
           .insertOne(LessonsCompanion(name: Value(lesson.name), onlineID: Value(onlineIds[list.indexOf(lesson)])));
+      List<WeeklyLessonSettingEntity> weeklyLessonList =
+          lesson.lessonTimes.whereType<WeeklyLessonSettingEntity>().toList();
+      List<DatedLessonSettingEntity> datedLessonsList =
+          lesson.lessonTimes.whereType<DatedLessonSettingEntity>().toList();
       await weeklyLessons.insertAll(
-          lesson.weeklyLessons!
+          weeklyLessonList
               .map((lesson) => lesson.weekdays.map((weekday) => WeeklyLessonsCompanion(
                   lessonID: Value(id),
                   weekDay: Value(weekday),
@@ -199,7 +203,7 @@ class LocalDatabase extends _$LocalDatabase {
           mode: InsertMode.insertOrReplace);
 
       await datedLessons.insertAll(
-          lesson.datedLessons!
+          datedLessonsList
               .map((lesson) => lesson.date.map((date) => DatedLessonsCompanion(
                   lessonID: Value(id),
                   date: Value(date),

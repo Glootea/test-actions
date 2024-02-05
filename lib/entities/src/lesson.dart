@@ -50,23 +50,17 @@ final class LessonEntity extends Equatable implements Comparable {
 @immutable
 final class LessonSettingEntity {
   final String name;
-  final List<WeeklyLessonSettingEntity>? weeklyLessons;
-  final List<DatedLessonSettingEntity>? datedLessons;
-  @Deprecated("Use [weeklyLessons] and [datedLessons] combined instead")
-  final bool useWeekly;
-  LessonSettingEntity(this.name, {this.weeklyLessons, this.datedLessons, this.useWeekly = true}) {
-    assert(weeklyLessons != null || datedLessons != null, "Either weeklyLessons or datedLessons must be provided");
+  final List<LessonTime> lessonTimes;
+
+  LessonSettingEntity(this.name, this.lessonTimes) {
+    // assert(lessons != null || datedLessons != null, "Either weeklyLessons or datedLessons must be provided");
   }
 
-  LessonSettingEntity copyWith(
-      {String? name,
-      List<WeeklyLessonSettingEntity>? weeklyLessons,
-      List<DatedLessonSettingEntity>? datedLessons,
-      bool? useWeekly}) {
-    return LessonSettingEntity(name ?? this.name,
-        weeklyLessons: weeklyLessons ?? this.weeklyLessons,
-        datedLessons: datedLessons ?? this.datedLessons,
-        useWeekly: useWeekly ?? this.useWeekly);
+  LessonSettingEntity copyWith({
+    String? name,
+    List<LessonTime>? lessonTimes,
+  }) {
+    return LessonSettingEntity(name ?? this.name, lessonTimes ?? this.lessonTimes);
   }
 }
 

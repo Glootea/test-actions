@@ -10,10 +10,12 @@ class InfoList<E> extends StatelessWidget {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   final List<E> list;
   final int? outerCount;
+  final bool weeklySelected;
 
   InfoList(
     this.list, {
     this.outerCount,
+    this.weeklySelected = true,
     super.key,
   });
 
@@ -26,25 +28,35 @@ class InfoList<E> extends StatelessWidget {
         initialItemCount: list.length + 1,
         itemBuilder: (context, count, animation) {
           if (count == list.length) {
+            if (E == LessonTime) {
+              return weeklySelected
+                  ? AddNewTile<WeeklyLessonSettingEntity>(animation, _listKey, list, weeklySelected: weeklySelected)
+                  : AddNewTile<DatedLessonSettingEntity>(animation, _listKey, list, weeklySelected: weeklySelected);
+            }
             return AddNewTile<E>(animation, _listKey, list);
           } else {
             switch (E) {
               case StudentEntity:
-                return StudentInfoTile(animation, list as List<StudentEntity>, count, (double height) => _onDeleteButtonPressed(count, height));
+                return StudentInfoTile(animation, list as List<StudentEntity>, count,
+                    (double height) => _onDeleteButtonPressed(count, height));
               case LessonSettingEntity:
-                return LessonInfoTile(animation, list as List<LessonSettingEntity>, count, (double height) => _onDeleteButtonPressed(count, height));
-              case WeeklyLessonSettingEntity:
+                return LessonInfoTile(animation, list as List<LessonSettingEntity>, count,
+                    (double height) => _onDeleteButtonPressed(count, height));
+              case LessonTime:
                 assert(outerCount != null);
-                return WeeklyLessonTile(animation, list as List<WeeklyLessonSettingEntity>, outerCount ?? 0,
-                    innerCount: count,
-                    onDeleteButtonPressed: (double height) => _onDeleteButtonPressed(count, height),
-                    onTimeChanged: (startTime, endTime) => _onTimeChanged<WeeklyLessonSettingEntity>(count, startTime, endTime));
-              case DatedLessonSettingEntity:
-                assert(outerCount != null);
-                return DatedLessonTile(animation, list as List<DatedLessonSettingEntity>, outerCount ?? 0,
-                    innerCount: count,
-                    onDeleteButtonPressed: (double height) => _onDeleteButtonPressed(count, height),
-                    onTimeChanged: (startTime, endTime) => _onTimeChanged<DatedLessonSettingEntity>(count, startTime, endTime));
+                if (list[count].runtimeType == WeeklyLessonSettingEntity) {
+                  return WeeklyLessonTile(animation, list as List<LessonTime>, outerCount ?? 0,
+                      innerCount: count,
+                      onDeleteButtonPressed: (double height) => _onDeleteButtonPressed(count, height),
+                      onTimeChanged: (startTime, endTime) =>
+                          _onTimeChanged<WeeklyLessonSettingEntity>(count, startTime, endTime));
+                } else {
+                  return DatedLessonTile(animation, list as List<LessonTime>, outerCount ?? 0,
+                      innerCount: count,
+                      onDeleteButtonPressed: (double height) => _onDeleteButtonPressed(count, height),
+                      onTimeChanged: (startTime, endTime) =>
+                          _onTimeChanged<DatedLessonSettingEntity>(count, startTime, endTime));
+                }
               default:
                 throw UnimplementedError("Unimplemented info for tile creation");
             }
@@ -54,7 +66,8 @@ class InfoList<E> extends StatelessWidget {
 
   void _onDeleteButtonPressed(int count, double height) {
     list.removeAt(count);
-    _listKey.currentState?.removeItem(count, (context, animation) => _DeletedTile(height, animation), duration: Duration(milliseconds: height.toInt() * 4));
+    _listKey.currentState?.removeItem(count, (context, animation) => _DeletedTile(height, animation),
+        duration: Duration(milliseconds: height.toInt() * 4));
   }
 
   void _onTimeChanged<T extends LessonTime>(int count, TimeOfDay startTime, TimeOfDay endTime) {

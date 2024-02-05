@@ -234,11 +234,10 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _registerGroup(RegisterGroupEvent event, Emitter<QueueState> emit) async {
     emit(LoadingState());
-    final userName = '${event.firstName} ${event.lastName}';
     await Future.wait([
-      _userDataBase.fillUser(userName),
+      _userDataBase.fillUser(event.name),
       _databaseService.registerGroup(
-          event.lessons, [StudentEntity(userName, 2, isAdmin: true)] + event.students, userName, event.groupName),
+          event.lessons, [StudentEntity(event.name, 2, isAdmin: true)] + event.students, event.name, event.groupName),
     ]);
     await _emitMainState(emit, isAdmin: true);
   }

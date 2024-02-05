@@ -15,12 +15,7 @@ class LessonInfoTile extends StatefulWidget {
 }
 
 class _LessonInfoTileState extends State<LessonInfoTile> {
-  // final List<WeeklyLessonSettingEntity> weeklyLessons = [
-  //   WeeklyLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [1])
-  // ];
-  // final List<DatedLessonSettingEntity> datedLessons = [
-  //   DatedLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [DateTime.now()])
-  // ];
+  bool weeklySelected = true;
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
@@ -37,7 +32,8 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
             Column(
           children: [
             Container(
-              decoration: BoxDecoration(border: Border.all(color: Colors.white), borderRadius: BorderRadius.circular(10)),
+              decoration:
+                  BoxDecoration(border: Border.all(color: Colors.white), borderRadius: BorderRadius.circular(10)),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -46,13 +42,18 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            initialValue: widget.lessons[widget.count].name.isEmpty ? null : widget.lessons[widget.count].name,
-                            onChanged: (value) => widget.lessons[widget.count] = widget.lessons[widget.count].copyWith(name: value),
+                            initialValue:
+                                widget.lessons[widget.count].name.isEmpty ? null : widget.lessons[widget.count].name,
+                            onChanged: (value) =>
+                                widget.lessons[widget.count] = widget.lessons[widget.count].copyWith(name: value),
                             decoration: const InputDecoration(hintText: "Название занятия"),
                             validator: (value) => value?.isEmpty ?? true ? "Необходимо заполнить поле" : null,
                             autovalidateMode: AutovalidateMode.always,
                             focusNode:
-                                (widget.count == widget.lessons.length - 1 && widget.lessons[widget.count].name.isEmpty) ? (FocusNode()..requestFocus()) : null,
+                                (widget.count == widget.lessons.length - 1 && widget.lessons[widget.count].name.isEmpty)
+                                    ? (FocusNode()..requestFocus())
+                                    : null,
+                            textCapitalization: TextCapitalization.words,
                           ),
                         ),
                         const Gap(16),
@@ -68,18 +69,25 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                       ],
                     ),
                     const Gap(16),
+                    const Text("Выберите режим добавления нового времени: "),
+                    const Gap(16),
                     SegmentedButton(
-                      segments: const [ButtonSegment(value: true, label: Text('Еженедельно')), ButtonSegment(value: false, label: Text('Дни'))],
+                      segments: const [
+                        ButtonSegment(value: true, label: Text('Еженедельно')),
+                        ButtonSegment(value: false, label: Text('Дни'))
+                      ],
                       showSelectedIcon: false,
-                      selected: {widget.lessons[widget.count].useWeekly},
+                      selected: {weeklySelected},
                       onSelectionChanged: (value) => setState(() {
-                        widget.lessons[widget.count] = widget.lessons[widget.count].copyWith(useWeekly: value.first);
+                        weeklySelected = value.first;
                       }),
                     ),
                     const Gap(16),
-                    widget.lessons[widget.count].useWeekly
-                        ? InfoList<WeeklyLessonSettingEntity>(widget.lessons[widget.count].weeklyLessons!, outerCount: widget.count)
-                        : InfoList<DatedLessonSettingEntity>(widget.lessons[widget.count].datedLessons!, outerCount: widget.count),
+                    InfoList<LessonTime>(
+                      widget.lessons[widget.count].lessonTimes,
+                      outerCount: widget.count,
+                      weeklySelected: weeklySelected,
+                    )
                   ],
                 ),
               ),

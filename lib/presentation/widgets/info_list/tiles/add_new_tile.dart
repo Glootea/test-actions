@@ -5,8 +5,9 @@ import 'package:queue/data/database/providers/local_database.dart';
 class AddNewTile<E> extends StatelessWidget {
   final Animation<double> animation;
   final GlobalKey<AnimatedListState> _listKey;
-  final List<E> list;
-  const AddNewTile(this.animation, this._listKey, this.list, {super.key});
+  final List list;
+  final bool? weeklySelected;
+  const AddNewTile(this.animation, this._listKey, this.list, {this.weeklySelected, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,9 @@ class AddNewTile<E> extends StatelessWidget {
                     DatedLessonSettingEntity => 'время, которое повторяется в определенные дни',
                     _ => 'вариант, который никто не увидит'
                   }}",
-                  style: (E == LessonSettingEntity || E == Student) ? Theme.of(context).textTheme.titleMedium : Theme.of(context).textTheme.bodyMedium),
+                  style: (E == LessonSettingEntity || E == Student)
+                      ? Theme.of(context).textTheme.titleMedium
+                      : Theme.of(context).textTheme.bodyMedium),
             ),
           ),
         ],
@@ -50,17 +53,21 @@ class AddNewTile<E> extends StatelessWidget {
       list.length,
       duration: const Duration(milliseconds: 500),
     );
+    print(E.toString());
     switch (E) {
       case StudentEntity:
         list.add(const StudentEntity('', -1) as E);
       case LessonSettingEntity:
         // ignore: prefer_const_literals_to_create_immutables to prevent error of not being able to change
-        list.add(LessonSettingEntity('', weeklyLessons: [], datedLessons: []) as E); //TODO: check if unable to change
+        list.add(LessonSettingEntity('', []) as E); //TODO: check if unable to change
       case WeeklyLessonSettingEntity:
-        list.add(const WeeklyLessonSettingEntity(TimeOfDay(hour: 0, minute: 0), TimeOfDay(hour: 0, minute: 0), [1]) as E);
+        list.add(
+            const WeeklyLessonSettingEntity(TimeOfDay(hour: 0, minute: 0), TimeOfDay(hour: 0, minute: 0), [1]) as E);
       case DatedLessonSettingEntity:
         final date = DateTime.now();
-        list.add(DatedLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [date]) as E);
+        list.add(
+            DatedLessonSettingEntity(const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0), [date])
+                as E);
     }
   }
 }
