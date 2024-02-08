@@ -1,12 +1,12 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:queue/data/database/providers/local_database/tables.dart';
+import 'package:queue/data/database/providers/local_database/src/tables.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
-import 'local_database/connection.dart' as impl;
+import 'src/connection.dart' as impl;
 
 part 'local_database.g.dart';
-part 'local_database/stored_values_enum.dart';
+part 'stored_values_enum.dart';
 
 @DriftDatabase(tables: [Recs, Lessons, Students, WeeklyLessons, DatedLessons, UserInfo])
 class LocalDatabase extends _$LocalDatabase {

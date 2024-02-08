@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:queue/entities/export.dart';
-import 'package:queue/data/database/providers/local_database.dart';
+import 'package:queue/data/database/providers/local_database/local_database.dart';
 
 class AddNewTile<E> extends StatelessWidget {
   final Animation<double> animation;

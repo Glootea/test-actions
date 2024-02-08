@@ -492,10 +492,10 @@ packages:
     dependency: "direct main"
     description:
       name: googleapis
-      sha256: c2f311bcd1b3e4052234162edc6b626a9013a7e1385d6aad37e9e6a6c5f89908
+      sha256: "8a8c311723162af077ca73f94b823b97ff68770d966e29614d20baca9fdb490a"
       url: "https://pub.dev"
     source: hosted
-    version: "11.4.0"
+    version: "12.0.0"
   googleapis_auth:
     dependency: transitive
     description:
@@ -830,7 +830,7 @@ packages:
     source: sdk
     version: "0.0.99"
   source_gen:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: source_gen
       sha256: "14658ba5f669685cd3d63701d01b31ea748310f7ab854e471962670abcf57832"
@@ -869,6 +869,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.34.0"
+  squadron:
+    dependency: "direct main"
+    description:
+      name: squadron
+      sha256: d605bab33b8ed864e7d3e2915895128991dac7c59f02a879463a551280f5a959
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.6"
+  squadron_builder:
+    dependency: "direct main"
+    description:
+      name: squadron_builder
+      sha256: "092f2dfb3605e9767ebe916e7214b6848388814a679a8e09f795f3651b44c808"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.5"
   stack_trace:
     dependency: transitive
     description:

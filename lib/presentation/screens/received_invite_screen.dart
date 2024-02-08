@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:queue/data/database/providers/online_database.dart';
+import 'package:queue/data/database/providers/online_database/online_database.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
@@ -37,18 +37,22 @@ class ReceivedInviteScreen extends StatelessWidget {
                           itemBuilder: (context, index) => ListTile(
                               title: GestureDetector(
                                   onTap: () => (studentNames[index].isAdmin == false)
-                                      ? context.read<QueueBloc>().add(RegisterInvitedUserEvent(infoTableID, studentNames[index].name))
+                                      ? context
+                                          .read<QueueBloc>()
+                                          .add(RegisterInvitedUserEvent(infoTableID, studentNames[index].name))
                                       : null,
                                   child: ColoredBox(
                                     color: Colors.transparent,
                                     child: Row(children: [
                                       Text(studentNames[index].name,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge
-                                              ?.copyWith(color: Theme.of(context).colorScheme.primary.withAlpha(studentNames[index].isAdmin ? 160 : 255))),
+                                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withAlpha(studentNames[index].isAdmin ? 160 : 255))),
                                       if (studentNames[index].isAdmin) const Gap(16),
-                                      if (studentNames[index].isAdmin) const Icon(Icons.verified_user_outlined, size: 24),
+                                      if (studentNames[index].isAdmin)
+                                        const Icon(Icons.verified_user_outlined, size: 24),
                                       if (studentNames[index].isAdmin) const Gap(16),
                                       if (studentNames[index].isAdmin)
                                         const Tooltip(

@@ -42,13 +42,12 @@
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
   <script src="https://unpkg.com/@zxing/library@0.19.1" type="application/javascript"></script>
-  <!-- TODO: Change for new hosting-->>
-  <link rel="preload" href="https://queueminder.web.app/main.dart.js" as="script" crossorigin>
+  <link rel="preload" href="https://queueminder.web.app/main.dart.js" as="script">
   <link rel="preload" href="https://queueminder.web.app/sqlite3.wasm" as="fetch" crossorigin>
   <link rel="preload" href="https://queueminder.web.app/assets/assets/panda.png" as="fetch" crossorigin>
   <link rel="preload" href="https://queueminder.web.app/assets/AssetManifest.bin.json" as="fetch" crossorigin>
-  <!-- <link rel="preload" href="
-  https://lottie.host/79fd9127-2397-42fe-9577-5258d616c7fa/3ElWD7CA3C.json" as="fetch" crossorigin> -->
+  <link rel="preload" href="
+  https://lottie.host/79fd9127-2397-42fe-9577-5258d616c7fa/3ElWD7CA3C.json" as="fetch" crossorigin>
   <link rel="preload"
     href="https://www.gstatic.com/flutter-canvaskit/f40e976bedff57e69e1b3d89a7c2a3c617a03dad/chromium/canvaskit.wasm"
     as="fetch" crossorigin>
@@ -66,9 +65,7 @@
     window.addEventListener('load', function (ev) {
       var loading = document.querySelector('#loading');
       _flutter.loader.loadEntrypoint({
-        // serviceWorker: {
-        //   serviceWorkerVersion: serviceWorkerVersion,
-        // }
+
         onEntrypointLoaded: async function (engineInitializer) {
           loading.classList.add('main_done');
           let appRunner = await engineInitializer.initializeEngine();

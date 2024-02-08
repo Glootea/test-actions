@@ -1,7 +1,7 @@
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:queue/data/database/providers/local_database.dart';
-import 'package:queue/data/database/providers/online_database.dart';
+import 'package:queue/data/database/providers/local_database/local_database.dart';
+import 'package:queue/data/database/providers/online_database/online_database.dart';
 import 'package:queue/entities/export.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:queue/extension.dart';
@@ -239,6 +239,7 @@ class DataBaseService {
         map[rec.lessonName] = tableID;
       }
       var recCreation = OnlineDataBase.createRec(map[rec.lessonName]!, rowNumber, rec.time).then((value) async {
+        //TODO: test if onlineDataBase is not inited due to
         if (value) await _localDatabase.updateUploadStatus(rec.lessonName, studentName, 1);
       });
       tasks.add(recCreation);

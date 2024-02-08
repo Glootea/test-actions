@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:gsheets/gsheets.dart';
+import 'package:queue/data/database/providers/online_database/expensive_online_tasks/expensive_online_tasks.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/secret/table_credentials.dart';
@@ -15,6 +16,7 @@ class OnlineDataBase {
   Worksheet? _lessonsSheet;
   Worksheet? _lessonTimesSheet;
   final String _infoTableID;
+  static final ExpensiveOnlineTasksWorker _worker = ExpensiveOnlineTasksWorker();
   // Map<String, String> mapLessonNameToId;
   // OnlineDataBase._(this._infoTableID, this.mapLessonNameToId);
   OnlineDataBase._(this._infoTableID);
@@ -24,6 +26,8 @@ class OnlineDataBase {
     if (_instance != null && tableID == null) {
       return _instance!;
     }
+
+    // await worker.start();
     _instance = OnlineDataBase._(tableID!);
     try {
       final spreadsheet = await _gsheets.spreadsheet(tableID);
@@ -128,74 +132,18 @@ class OnlineDataBase {
 
   static Future<bool> createRec(String lessonTableID, int onlineTableRowNumber, DateTime time) async {
     try {
-      final queueSheet =
-          await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
-      if (queueSheet == null) {
-        throw Exception("Failed to load database");
-      }
-      return await queueSheet.values.insertValue(time.toRecTime.toOnline, column: 1, row: onlineTableRowNumber);
-    } on SocketException {
+      return _worker.createRec(lessonTableID, _queueSheetName, onlineTableRowNumber, time.toRecTime.toOnline);
+    } on Exception {
       return false;
     }
   }
 
   static Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber) async {
     try {
-      final queueSheet =
-          await _gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(_queueSheetName));
-      if (queueSheet == null) {
-        throw Exception("Failed to load database");
-      }
-      return await queueSheet.values
-          .insertValue('', column: 1, row: onlineTableRowNumber)
-          .timeout(const Duration(seconds: 5), onTimeout: () => false);
-      // return false;
-    } on SocketException {
+      return _worker.deleteRec(lessonTableID, _queueSheetName, onlineTableRowNumber);
+    } on Exception {
       return false;
     }
-  }
-
-  // Future<bool> uploadFromQuery(String tableID, int rowNumber, DateTime time) async {
-  //   // List<String> params = query.split("&&&").map((e) => e.trim()).toList();
-  //   // String lessonName = params[1];
-  //   // final result = await Future.wait([
-  //   //   getStudents().then((list) => list.firstWhere((student) => student.name == params[2]).onlineTableRowNumber),
-  //   //   getLessons().then((result) => result.$2.then((ids) async => ids[await result.$1.then(
-  //   //         (lessons) => lessons.indexWhere(
-  //   //           (element) => element.name == lessonName,
-  //   //         ),
-  //   //       )]))
-  //   // ]);
-  //   // int onlineTableRowNumber = result[0] as int;
-  //   // String lessonID = result[1] as String;
-  //   // DateTime time = params[3].toRecDateTime;
-  //   await createRec(tableID, rowNumber, time);
-
-  //   return true;
-  // }
-
-  Future<Map<String, String>?> recExist(String query) async {
-    // List<String> params = query.split("&&&").map((e) => e.trim()).toList(); // TODO: rewrite
-    // String lessonName = params[1];
-    // String userName = params[2];
-    // DateTime time = DateTime.parse(params[3]);
-    // _spreadsheet ??= await _gsheets.spreadsheet(_infoTableID);
-    // _queueSheet ??= _spreadsheet!.worksheetByTitle(_queueSheetName) ?? await _spreadsheet!.addWorksheet(_queueSheetName);
-    // _nameColumn ??= (await _queueSheet!.cells.column(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    // _subjectRow ??= (await _queueSheet!.cells.row(1)).map((e) => e.value).where((element) => element.isNotEmpty).toList();
-    // int row = _nameColumn!.indexOf(userName) + 2;
-    // int column = _subjectRow!.indexOf(lessonName) + 2;
-    // final r = (await _queueSheet!.cells.cell(row: row, column: column)).value;
-    // final result = r == time.toString();
-    // if (result) {
-    //   final queue = (([...(await _queueSheet!.cells.column(column, fromRow: 2))].where((element) => element.value.isNotEmpty).toList()
-    //     ..sort((a, b) => DateTime.parse(a.value).compareTo(DateTime.parse(b.value)))));
-    //   final position = queue.indexWhere((element) => element.value == r) + 1;
-    //   return {'name': userName, 'position': position.toString(), 'last': _nameColumn![queue[math.max(position - 2, 0)].row - 2]};
-    // } else {
-    //   return null;
-    // }
-    return null;
   }
 
   Future<bool> fillStudents(List<StudentEntity> list) async {
