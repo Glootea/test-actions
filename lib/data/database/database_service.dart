@@ -99,7 +99,7 @@ class DataBaseService {
     }
     final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
-    final folderID = await _createFileOnDrive("Student Queue", 'application/vnd.google-apps.folder', driveApi);
+    final folderID = await _createFileOnDrive("QueueMinder", 'application/vnd.google-apps.folder', driveApi);
     final infoFileID =
         await _createFileOnDrive("info", "application/vnd.google-apps.spreadsheet", driveApi, folderId: folderID);
     // TODO: autorize user fully
@@ -181,7 +181,7 @@ class DataBaseService {
     final httpClient = (await _googleSignIn?.authenticatedClient())!;
     final driveApi = DriveApi(httpClient);
     final fileList = await driveApi.files
-        .list(q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false and name = 'Student Queue'");
+        .list(q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false and name = 'QueueMinder'");
     final count = fileList.files!.length;
     if (_checkFileCount(count)) {
       final folderID = fileList.files!.first.id!;
@@ -200,7 +200,7 @@ class DataBaseService {
       throw NoFileFoundOnDiskException("No file found on Google Disk.");
     } else if (count > 1) {
       throw MultipleFilesOnDiskException(
-          "Multiple files found on disk. Delete unnecessary files and folders named 'Student Queue'.");
+          "Multiple files found on disk. Delete unnecessary files and folders named 'QueueMinder'.");
     }
     return true;
   }

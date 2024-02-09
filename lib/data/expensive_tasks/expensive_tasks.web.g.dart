@@ -6,4 +6,11 @@
 
 import 'package:squadron/squadron.dart';
 
-EntryPoint $getExpensiveOnlineTasksActivator() => throw UnimplementedError();
+import 'expensive_tasks.dart';
+
+void main() {
+  /// Web entry point for ExpensiveTasks
+  run($ExpensiveTasksInitializer, null, null);
+}
+
+EntryPoint $getExpensiveTasksActivator() => 'expensive_tasks.web.g.dart.js';

@@ -11,12 +11,10 @@ import 'package:queue/logic/states.dart';
 import 'package:queue/navigation.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:squadron/squadron.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
-  Squadron.setId('HELLO_WORLD');
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
@@ -40,6 +38,7 @@ class MyApp extends StatelessWidget {
       create: (context) => bloc..add(FindUserEvent()),
       child: Consumer(
         builder: (context, a, b) => MaterialApp.router(
+            title: "QueueMinder",
             builder: (context, child) => MediaQuery(
                 data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child ?? Container()),
             routerConfig: router,

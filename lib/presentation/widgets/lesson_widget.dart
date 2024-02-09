@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
-import 'package:queue/presentation/widgets/padding.dart';
 import 'package:queue/presentation/widgets/qr_button.dart';
 import 'package:queue/presentation/widgets/rec_button.dart';
 import 'package:queue/presentation/widgets/timer_start_reg.dart';
@@ -62,14 +62,14 @@ class _LessonWidgetState extends State<LessonWidget> {
               border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer, width: 2),
               borderRadius: const BorderRadius.all(Radius.circular(20)),
               color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7)),
-          child: Stack(children: [
-            Column(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               children: [
-                const MySmallPadding(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const MySmallPadding(),
+                    const Gap(8),
                     Flexible(
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
@@ -93,38 +93,55 @@ class _LessonWidgetState extends State<LessonWidget> {
                     ),
                   ],
                 ),
-                const MySmallPadding(),
+                const Gap(8),
                 SizedBox(
                   height: 56,
                   child: Row(
                     children: [
-                      const MySmallPadding(),
-                      SizedBox(
-                        height: 56,
-                        child: Center(
+                      Expanded(
+                        child: Align(
+                            alignment: Alignment.centerLeft,
                             child: (widget.lesson.userRec == null)
                                 ? (!showTimer)
                                     ? Text(
                                         displayedRegState ? "Запись открыта" : "Запись закрыта",
-                                        textAlign: TextAlign.left,
                                       )
                                     : TimerStartReg(widget.lesson.startTime)
                                 : Text(
-                                    "Запись от\n${DateFormat('yyyy-MM-dd в kk:mm:ss').format(widget.lesson.userRec!.time)}",
+                                    "Запись от ${DateFormat('yyyy-MM-dd в kk:mm:ss').format(widget.lesson.userRec!.time)}",
                                   )),
                       ),
-                      const Spacer(),
+                      // const Spacer(),
+                      if (widget.lesson.userRec != null)
+                        Icon(
+                          Icons.save_outlined,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      const Gap(8),
+                      if (widget.lesson.userRec != null)
+                        (widget.lesson.userRec != null && (widget.lesson.userRec!.isUploaded))
+                            ? Icon(
+                                Icons.wifi_outlined,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              )
+                            : Icon(
+                                Icons.wifi_off_outlined,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+
+                      const Gap(8),
                       if (displayedRegState || widget.lesson.userRec != null)
                         SizedBox(height: 40, child: RecButton(widget.lesson)),
-                      const MySmallPadding(),
                     ],
                   ),
                 ),
-                const MySmallPadding(),
+                if (widget.lesson.userRec != null) const Gap(8),
                 if (widget.lesson.userRec != null)
                   Row(
                     children: [
-                      const MySmallPadding(),
                       Text(
                           widget.lesson.userQueuePosition == 0
                               ? "Очередь\nнедоступна"
@@ -132,29 +149,12 @@ class _LessonWidgetState extends State<LessonWidget> {
                           textAlign: TextAlign.start,
                           style: Theme.of(context).textTheme.headlineSmall),
                       const Spacer(),
-                      Icon(
-                        Icons.save_outlined,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
-                      const MySmallPadding(),
-                      (widget.lesson.userRec != null && (widget.lesson.userRec!.isUploaded))
-                          ? Icon(
-                              Icons.wifi_outlined,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.onPrimaryContainer,
-                            )
-                          : Icon(
-                              Icons.wifi_off_outlined,
-                              size: 20,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                      const MySmallPadding(),
-                      SizedBox(height: 40, child: QrButton(widget.lesson.name, widget.lesson.userRec!.time)),
-                      const MySmallPadding(),
+                      if (widget.lesson.userRec?.isUploaded == false)
+                        SizedBox(height: 32, child: QrButton(widget.lesson.name, widget.lesson.userRec!.time)),
+                      const Gap(8),
+                      // const Gap(16)
                     ],
                   ),
-                const MySmallPadding(),
                 AnimatedCrossFade(
                     firstChild: const SizedBox(width: double.infinity),
                     secondChild: SizedBox(
@@ -163,21 +163,22 @@ class _LessonWidgetState extends State<LessonWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const Gap(8),
                           const Text(
                             "Очередь: ",
                             textAlign: TextAlign.left,
                           ),
-                          const MySmallPadding(),
+                          const Gap(8),
                           ListView.builder(
                               shrinkWrap: true,
                               itemCount: widget.lesson.recs.length,
                               itemBuilder: (context, index) => Row(
                                     children: [
-                                      const MySmallPadding(),
+                                      const Gap(8),
                                       Text("${index + 1}"),
                                       const Spacer(),
                                       Text(widget.lesson.recs[index].userName),
-                                      const MySmallPadding(),
+                                      const Gap(8),
                                     ],
                                   ))
                         ],
@@ -186,44 +187,16 @@ class _LessonWidgetState extends State<LessonWidget> {
                     sizeCurve: Curves.easeInOut,
                     crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                     duration: const Duration(milliseconds: 1200)),
-                const MySmallPadding(),
+                const Gap(8),
               ],
             ),
-            // if ((widget.lesson.userRec != null && TODO: activate on release
-            //     widget.lesson.userRec!.isOnline == false))
-            // if (widget.lesson.userRec != null)
-            //   Positioned(
-            //     right: 16,
-            //     top: 128,
-            //     child: ,
-            //   ),
-            // if (widget.lesson.userRec != null)
-            //   Positioned(
-            //     right: 128,
-            //     top: 140,
-            //     child:
-            //   ),
-            // if (widget.lesson.userRec != null &&
-            //     widget.lesson.userRec!.isOnline)
-            //   Positioned(
-            //     right: 96,
-            //     top: 140,
-            //     child:
-            //   ),
-            // if (widget.lesson.userRec != null &&
-            //     !widget.lesson.userRec!.isOnline)
-            //   Positioned(
-            //     right: 96,
-            //     top: 140,
-            //     child:
-            //   ),
-          ])
+          )
           //   child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          //     const MySmallPadding(),
+          //     const Gap(8),
           //     Flexible(
           //       child: Column(
           //         children: [
-          //           const MySmallPadding(),
+          //           const Gap(8),
           //           SingleChildScrollView(
           //             scrollDirection: Axis.horizontal,
           //             child: Text(
@@ -231,18 +204,18 @@ class _LessonWidgetState extends State<LessonWidget> {
           //               style: Theme.of(context).textTheme.headlineSmall,
           //             ),
           //           ),
-          //           const MySmallPadding(),
+          //           const Gap(8),
           //           Text(
           //             displayedRegState ? "Запись открыта" : "Запись закрыта",
           //             textAlign: TextAlign.center,
           //           ),
           //           if (!displayedRegState)
           //             TimerStartReg(widget.lesson.pair.startTime),
-          //           const MySmallPadding(),
+          //           const Gap(8),
           //         ],
           //       ),
           //     ),
-          //     const MySmallPadding(),
+          //     const Gap(8),
           //     if (displayedRegState)
           //       SizedBox(
           //         width: 148,
@@ -252,14 +225,14 @@ class _LessonWidgetState extends State<LessonWidget> {
           //                     ? <Widget>[const QrButton()]
           //                     : [])),
           //       ),
-          //     const MySmallPadding(),
+          //     const Gap(8),
           //     AnimatedRotation(
           //       turns: expanded ? 0.5 : 0,
           //       duration: const Duration(milliseconds: 400),
           //       curve: Curves.easeInOut,
           //       child: const Icon(Icons.expand_more_outlined),
           //     ),
-          //     const MySmallPadding(),
+          //     const Gap(8),
           //   ]),
           // ),
           ),

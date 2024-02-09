@@ -1,10 +1,10 @@
 file:///C:/Programming/Files/flutter/bin/cache/dart-sdk/lib/_internal/dart2js_platform.dill
 file:///C:/Programming/Files/flutter/bin/cache/dart-sdk/lib/libraries.json
 file:///C:/Programming/Project/Flutter/queue/queue/.dart_tool/package_config.json
-file:///C:/Programming/Project/Flutter/queue/queue/lib/data/database/providers/online_database/expensive_online_tasks/expensive_online_tasks.activator.g.dart
-file:///C:/Programming/Project/Flutter/queue/queue/lib/data/database/providers/online_database/expensive_online_tasks/expensive_online_tasks.dart
-file:///C:/Programming/Project/Flutter/queue/queue/lib/data/database/providers/online_database/expensive_online_tasks/expensive_online_tasks.web.g.dart
-file:///C:/Programming/Project/Flutter/queue/queue/lib/data/database/providers/online_database/expensive_online_tasks/expensive_online_tasks.worker.g.dart
+file:///C:/Programming/Project/Flutter/queue/queue/lib/data/expensive_tasks/expensive_tasks.activator.g.dart
+file:///C:/Programming/Project/Flutter/queue/queue/lib/data/expensive_tasks/expensive_tasks.dart
+file:///C:/Programming/Project/Flutter/queue/queue/lib/data/expensive_tasks/expensive_tasks.web.g.dart
+file:///C:/Programming/Project/Flutter/queue/queue/lib/data/expensive_tasks/expensive_tasks.worker.g.dart
 file:///C:/Programming/Project/Flutter/queue/queue/lib/secret/table_credentials.dart
 file:///C:/Users/rybki/AppData/Local/Pub/Cache/hosted/pub.dev/_discoveryapis_commons-1.0.6/lib/_discoveryapis_commons.dart
 file:///C:/Users/rybki/AppData/Local/Pub/Cache/hosted/pub.dev/_discoveryapis_commons-1.0.6/lib/src/api_requester.dart

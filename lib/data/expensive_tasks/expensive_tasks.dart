@@ -1,15 +1,17 @@
 import 'package:gsheets/gsheets.dart';
 import 'package:queue/secret/table_credentials.dart';
 import 'package:squadron/squadron.dart';
-import 'expensive_online_tasks.activator.g.dart';
+import 'expensive_tasks.activator.g.dart';
 import 'package:squadron/squadron_annotations.dart';
-part 'expensive_online_tasks.worker.g.dart';
+part 'expensive_tasks.worker.g.dart';
+
 // Workflow for changing file:
 // 1) dart run build_runner build - to create squadron boilerplate code. Temporaly remove drift_dev from pubspec.yaml for build
-// 2) dart compile js lib\data\database\providers\online_database\expensive_online_tasks\expensive_online_tasks.web.g.dart -O2 -o lib\data\database\providers\online_database\expensive_online_tasks\expensive_online_tasks.web.g.dart.js
+// 2) Change the path in the web.g file to expensive_tasks.web.g.dart.js
+// 3) dart compile js lib\data\expensive_tasks\expensive_tasks.web.g.dart -O2 -o web\expensive_tasks.web.g.dart.js
 
 @SquadronService(web: true)
-class ExpensiveOnlineTasks {
+class ExpensiveTasks {
   static final gsheets = GSheets(CREDENTIALS);
   @SquadronMethod()
   Future<bool> createRec(String lessonTableID, String queueSheetName, int onlineTableRowNumber, String time) async {

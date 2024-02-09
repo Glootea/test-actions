@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/widgets/connectiom_status.dart';
 import 'package:queue/presentation/widgets/lesson_widget.dart';
-import 'package:queue/presentation/widgets/padding.dart';
 
 class TodayScreen extends StatelessWidget {
   const TodayScreen({
@@ -30,7 +30,7 @@ class TodayScreen extends StatelessWidget {
                 ListView(physics: const AlwaysScrollableScrollPhysics()),
                 Column(
                   children: [
-                    const MyPadding(),
+                    const Gap(16),
                     RepaintBoundary(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -42,7 +42,7 @@ class TodayScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const MyPadding(),
+                    const Gap(16),
                     Container(
                         decoration: BoxDecoration(
                             border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer, width: 2),
@@ -52,7 +52,7 @@ class TodayScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(8),
                             child: Text("Пары с очередью сегодня",
                                 textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge))),
-                    const MyPadding(),
+                    const Gap(16),
                     (mainState.todayLessons.isEmpty)
                         ? Text(
                             "Пар с очередью нет",
@@ -63,7 +63,7 @@ class TodayScreen extends StatelessWidget {
                               itemCount: mainState.todayLessons.length,
                               itemBuilder: (context, index) =>
                                   LessonWidget((mainState as MainState).todayLessons[index]),
-                              separatorBuilder: (context, index) => const MyPadding(),
+                              separatorBuilder: (context, index) => const Gap(16),
                             ),
                           ),
                   ],

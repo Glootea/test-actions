@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:gsheets/gsheets.dart';
-import 'package:queue/data/database/providers/online_database/expensive_online_tasks/expensive_online_tasks.dart';
+import 'package:queue/data/expensive_tasks/expensive_tasks.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/secret/table_credentials.dart';
@@ -16,7 +16,7 @@ class OnlineDataBase {
   Worksheet? _lessonsSheet;
   Worksheet? _lessonTimesSheet;
   final String _infoTableID;
-  static final ExpensiveOnlineTasksWorker _worker = ExpensiveOnlineTasksWorker();
+  static final ExpensiveTasksWorker _worker = ExpensiveTasksWorker();
   // Map<String, String> mapLessonNameToId;
   // OnlineDataBase._(this._infoTableID, this.mapLessonNameToId);
   OnlineDataBase._(this._infoTableID);

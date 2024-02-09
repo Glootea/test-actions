@@ -89,7 +89,7 @@ class _LoginViewState extends State<LoginView> {
                     ), // TODO: change to app icon
                     const Gap(16),
                     Text(
-                      "Student queue",
+                      "QueueMinder",
                       style: Theme.of(context).textTheme.displayLarge,
                     ),
                     const Gap(16),

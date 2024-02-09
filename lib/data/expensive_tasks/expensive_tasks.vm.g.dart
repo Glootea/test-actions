@@ -6,10 +6,10 @@
 
 import 'package:squadron/squadron.dart';
 
-import 'expensive_online_tasks.dart';
+import 'expensive_tasks.dart';
 
-/// VM entry point for ExpensiveOnlineTasks
-void _start$ExpensiveOnlineTasks(List<dynamic> command) =>
-    run($ExpensiveOnlineTasksInitializer, command, null);
+/// VM entry point for ExpensiveTasks
+void _start$ExpensiveTasks(List<dynamic> command) =>
+    run($ExpensiveTasksInitializer, command, null);
 
-EntryPoint $getExpensiveOnlineTasksActivator() => _start$ExpensiveOnlineTasks;
+EntryPoint $getExpensiveTasksActivator() => _start$ExpensiveTasks;
