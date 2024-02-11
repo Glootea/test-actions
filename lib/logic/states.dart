@@ -16,10 +16,12 @@ class MainState extends QueueState {
   final bool isAdmin;
   final String? message;
   final bool updateEnabled;
+  final bool processingActive;
 
   ///Should be provided to change to new
   final Uint8List? backgroundImageDecoded;
-  MainState(this.todayLessons, this.isAdmin, this.updateEnabled, {this.backgroundImageDecoded, this.message});
+  MainState(this.todayLessons, this.isAdmin, this.updateEnabled, this.processingActive,
+      {this.backgroundImageDecoded, this.message});
   @override
   bool operator ==(Object other) {
     if (other.runtimeType != MainState) return false;
@@ -27,7 +29,8 @@ class MainState extends QueueState {
     final r = isAdmin == other.isAdmin &&
         listEquals(todayLessons, other.todayLessons) &&
         backgroundImageDecoded == other.backgroundImageDecoded &&
-        updateEnabled == other.updateEnabled;
+        updateEnabled == other.updateEnabled &&
+        processingActive == other.processingActive;
     return r;
   }
 
@@ -37,7 +40,7 @@ class MainState extends QueueState {
 
 class ShowQRCodeState extends MainState {
   final String data;
-  ShowQRCodeState(this.data, super.todayLessons, super.isAdmin, super.updateEnabled);
+  ShowQRCodeState(this.data, super.todayLessons, super.isAdmin, super.updateEnabled, super.processingActive);
   @override
   bool operator ==(Object other) {
     if (other is! ShowQRCodeState) return false;
@@ -45,7 +48,8 @@ class ShowQRCodeState extends MainState {
         listEquals(todayLessons, other.todayLessons) &&
         isAdmin == other.isAdmin &&
         message == other.message &&
-        backgroundImageDecoded == other.backgroundImageDecoded;
+        backgroundImageDecoded == other.backgroundImageDecoded &&
+        processingActive == other.processingActive;
     return r;
   }
 

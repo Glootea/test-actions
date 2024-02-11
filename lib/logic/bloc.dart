@@ -113,14 +113,14 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   Future<void> _createReg(String lessonName, Emitter emit) async {
     DateTime time = DateTime.now();
     final fakedLessons = OptimisticUI.createRec((state as MainState).todayLessons, lessonName, time);
-    await _emitMainState(emit, todayLessons: fakedLessons);
+    await _emitMainState(emit, todayLessons: fakedLessons, processingActive: true);
     await _databaseService.createRec(lessonName, _userDataBase.getUserName, time);
     await _emitMainState(emit);
   }
 
   Future<void> _deleteReg(DeleteRegEvent event, Emitter emit) async {
     final fakedLessons = OptimisticUI.deleteRec((state as MainState).todayLessons, event.lessonName);
-    await _emitMainState(emit, todayLessons: fakedLessons);
+    await _emitMainState(emit, todayLessons: fakedLessons, processingActive: true);
     await _databaseService.deleteRec(
         event.lessonName, _userDataBase.getUserName, event.workCount); // TODO: catch network error if occur
     await _emitMainState(emit);
@@ -141,7 +141,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     ).wait;
     final data = QrCodeData.toQrData(tableID, rowNumber, event.time);
     final mainState = state as MainState;
-    emit(ShowQRCodeState(data, mainState.todayLessons, mainState.isAdmin, mainState.updateEnabled));
+    emit(ShowQRCodeState(data, mainState.todayLessons, mainState.isAdmin, mainState.updateEnabled, false));
   }
 
   // --- user Authentication ---
@@ -160,14 +160,14 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
   Future<void> _userAuthenticated(Emitter<QueueState> emit) async {
     {
-      await _emitMainState(emit);
+      await _emitMainState(emit, processingActive: true);
       final tasks = [
         _databaseService.postNotUploadedRecs(_userDataBase.getUserName),
         _databaseService.deleteNotUploadedRecs(_userDataBase.getUserName),
         _databaseService.autoDeleteQeueu()
       ];
       if (await Future.wait(tasks).then((value) => value.any((e) => e == true))) {
-        await _emitMainState(emit);
+        await _emitMainState(emit, processingActive: true);
       }
       await _databaseService.fetchRecs();
       await _emitMainState(emit);
@@ -256,7 +256,11 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _emitMainState(Emitter emit,
-      {List<LessonEntity>? todayLessons, bool? isAdmin, Uint8List? backgroundImageDecoded, bool? updateEnabled}) async {
+      {List<LessonEntity>? todayLessons,
+      bool? isAdmin,
+      Uint8List? backgroundImageDecoded,
+      bool? updateEnabled,
+      bool? processingActive}) async {
     final result = await Future.wait([
       todayLessons == null ? _todayLessons(_userDataBase.getUserName) : Future.value(null),
       isAdmin == null ? Future.value(_isAdmin) : Future.value(null),
@@ -267,6 +271,12 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     isAdmin ??= result[1] as bool;
     backgroundImageDecoded ??= result[2] as Uint8List;
     updateEnabled ??= result[3] as bool;
-    emit(MainState(todayLessons, isAdmin, updateEnabled, backgroundImageDecoded: backgroundImageDecoded));
+    emit(MainState(
+      todayLessons,
+      isAdmin,
+      updateEnabled,
+      processingActive ?? false,
+      backgroundImageDecoded: backgroundImageDecoded,
+    ));
   }
 }
