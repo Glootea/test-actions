@@ -42,21 +42,22 @@ class DataBaseService {
         .toList();
     final task1 = _localDatabase.createRec(lessonName, studentName, time);
     final task2 = OnlineDataBase.createRec(tableID, rowNumber, time);
-    final result = await Future.wait([task1, task2]);
+    final task3 = _onlineDataBase!.getWorkCount(tableID, rowNumber);
+    final result = await Future.wait([task1, task2, task3]);
     if (result[1] == true) {
-      await _localDatabase.updateUploadStatus(lessonName, studentName, 1);
+      await _localDatabase.updateUploadStatus(lessonName, studentName, 1, workCount: result[2] as int?);
     }
   }
 
-  Future<void> deleteRec(String lessonName, String studentName) async {
+  Future<void> deleteRec(String lessonName, String studentName, int? workCount) async {
     final [rowNumber as int, String tableID as String] = (await Future.wait(
             [_localDatabase.getOnlineTableRowNumber(studentName), _localDatabase.getLessonTableID(lessonName)]))
         .toList();
-    await OnlineDataBase.deleteRec(tableID, rowNumber).then((value) async {
+    await OnlineDataBase.deleteRec(tableID, rowNumber, workCount: workCount).then((value) async {
       if (value) {
         await _localDatabase.deleteRec(lessonName, studentName);
       } else {
-        await _localDatabase.updateUploadStatus(lessonName, studentName, -1);
+        await _localDatabase.updateUploadStatus(lessonName, studentName, -1, workCount: workCount);
       }
     }).timeout(const Duration(seconds: 5));
   }
@@ -262,12 +263,35 @@ class DataBaseService {
         String tableID = await _localDatabase.getLessonTableID(rec.lessonName);
         map[rec.lessonName] = tableID;
       }
-      var recDeletion = OnlineDataBase.deleteRec(map[rec.lessonName]!, rowNumber).then((value) async {
+      var recDeletion =
+          OnlineDataBase.deleteRec(map[rec.lessonName]!, rowNumber, workCount: rec.workCount).then((value) async {
         if (value) await _localDatabase.deleteRec(rec.lessonName, studentName);
       });
       tasks.add(recDeletion);
     }
     await Future.wait(tasks);
     return true;
+  }
+
+  Future<bool> autoDeleteQeueu() async {
+    Future getTask(String id, List tasks) async {
+      final lastLessonTime = await _localDatabase.getLastLessonTime(id);
+      if (lastLessonTime != null) {
+        final shouldDelete = await _onlineDataBase!.checkIfDeleteQueue(id, lastLessonTime);
+        if (shouldDelete) {
+          tasks.add(_onlineDataBase!.deleteQueue(id));
+        }
+      }
+    }
+
+    try {
+      final ids = await _localDatabase.getOnlineIDsOfLessonsToDeleteQueue();
+      List<Future> tasks = [];
+      Future.wait(ids.map((e) => getTask(e, tasks)));
+      Future.wait(tasks);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

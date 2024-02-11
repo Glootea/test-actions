@@ -53,13 +53,12 @@ class AddNewTile<E> extends StatelessWidget {
       list.length,
       duration: const Duration(milliseconds: 500),
     );
-    print(E.toString());
     switch (E) {
       case StudentEntity:
         list.add(const StudentEntity('', -1) as E);
       case LessonSettingEntity:
         // ignore: prefer_const_literals_to_create_immutables to prevent error of not being able to change
-        list.add(LessonSettingEntity('', []) as E); //TODO: check if unable to change
+        list.add(LessonSettingEntity('', [], false, false) as E); //TODO: check if unable to change
       case WeeklyLessonSettingEntity:
         list.add(
             const WeeklyLessonSettingEntity(TimeOfDay(hour: 0, minute: 0), TimeOfDay(hour: 0, minute: 0), [1]) as E);

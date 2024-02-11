@@ -23,9 +23,10 @@ class CreateRegEvent extends QueueEvent {
 }
 
 class DeleteRegEvent extends QueueEvent {
+  // TODO: implement work count
   final String lessonName;
-
-  DeleteRegEvent(this.lessonName);
+  final int? workCount;
+  DeleteRegEvent(this.lessonName, {this.workCount});
 }
 
 class ToggleUpdateEvent extends QueueEvent {}

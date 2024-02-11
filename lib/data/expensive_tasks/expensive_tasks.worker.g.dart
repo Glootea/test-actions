@@ -17,7 +17,7 @@ class _$ExpensiveTasksWorkerService extends ExpensiveTasks
   late final Map<int, CommandHandler> _operations =
       Map.unmodifiable(<int, CommandHandler>{
     _$createRecId: ($) => createRec($.args[0], $.args[1], $.args[2], $.args[3]),
-    _$deleteRecId: ($) => deleteRec($.args[0], $.args[1], $.args[2]),
+    _$deleteRecId: ($) => deleteRec($.args[0], $.args[1], $.args[2], $.args[3]),
   });
 
   static const int _$createRecId = 1;
@@ -52,9 +52,13 @@ class ExpensiveTasksWorker extends Worker implements ExpensiveTasks {
 
   @override
   Future<bool> deleteRec(String lessonTableID, String queueSheetName,
-          int onlineTableRowNumber) =>
-      send(_$ExpensiveTasksWorkerService._$deleteRecId,
-          args: [lessonTableID, queueSheetName, onlineTableRowNumber]);
+          int onlineTableRowNumber, int? workCount) =>
+      send(_$ExpensiveTasksWorkerService._$deleteRecId, args: [
+        lessonTableID,
+        queueSheetName,
+        onlineTableRowNumber,
+        workCount
+      ]);
 }
 
 /// Worker pool for ExpensiveTasks
@@ -75,7 +79,7 @@ class ExpensiveTasksWorkerPool extends WorkerPool<ExpensiveTasksWorker>
 
   @override
   Future<bool> deleteRec(String lessonTableID, String queueSheetName,
-          int onlineTableRowNumber) =>
-      execute((w) =>
-          w.deleteRec(lessonTableID, queueSheetName, onlineTableRowNumber));
+          int onlineTableRowNumber, int? workCount) =>
+      execute((w) => w.deleteRec(
+          lessonTableID, queueSheetName, onlineTableRowNumber, workCount));
 }

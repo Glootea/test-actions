@@ -62,7 +62,13 @@ class OnlineDataBase {
         ],
         fromRow: 2);
     final fillNames = result[1].values.insertRow(1, [_nameSurname]);
-    final fillLessons = result[2].values.insertRow(1, [_id, _name, _tableID, _useDoneWorkCount, _autodelete]);
+    final fillLessons = result[2].values.insertRow(1, [
+      _id,
+      _name,
+      _tableID,
+      _autodelete,
+      _useDoneWorkCount,
+    ]);
     final fillLessonTimes = result[3].values.insertRow(1, [_id, _dates, _weekdays, _startTime, _endTime]);
     await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
   }
@@ -86,19 +92,26 @@ class OnlineDataBase {
     List<RecEntity> result = <RecEntity>[];
     try {
       final queueSheet = await _gsheets.spreadsheet(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
-      final onlineTimes = await queueSheet?.values.column(1, fromRow: 2);
-      if (onlineTimes == null) return result;
+      if (queueSheet == null) return result;
+      final (onlineTimes, workCountString) =
+          await (queueSheet.values.column(1, fromRow: 2), queueSheet.values.column(2, fromRow: 2)).wait;
+      final workCountList = List.generate(onlineTimes.length, (index) => 0);
+
+      for (int i = 0; i < workCountString.length; i++) {
+        if (workCountString[i].isNotEmpty) {
+          workCountList[i] = int.parse(workCountString[i]);
+        }
+      }
       for (int i = 0; i < onlineTimes.length; i++) {
         final onlineTime = onlineTimes[i];
         if (onlineTime.isNotEmpty) {
           final time = onlineTime.toRecDateTime;
-          result.add(RecEntity(students[i + 2]!, time, lessonName, true));
+          result.add(RecEntity(students[i + 2]!, time, lessonName, isUploaded: true, workCount: workCountList[i]));
         }
       }
     } catch (e) {
-      log("Failed to get recs: " + e.toString());
+      log("Failed to get recs: $e");
     }
-
     return result;
   }
 
@@ -138,9 +151,9 @@ class OnlineDataBase {
     }
   }
 
-  static Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber) async {
+  static Future<bool> deleteRec(String lessonTableID, int onlineTableRowNumber, {int? workCount}) async {
     try {
-      return _worker.deleteRec(lessonTableID, _queueSheetName, onlineTableRowNumber);
+      return _worker.deleteRec(lessonTableID, _queueSheetName, onlineTableRowNumber, workCount);
     } on Exception {
       return false;
     }
@@ -210,6 +223,13 @@ class OnlineDataBase {
     return (await _infoSheet!.cells.cellByKeys(rowKey: _headMan, columnKey: _values))!.value;
   }
 
+  Future<int?> getWorkCount(String tableID, int rowNumber) async {
+    _spreadsheet = await _gsheets.spreadsheet(tableID);
+    final queueSheet = _spreadsheet!.worksheetByTitle(_queueSheetName);
+    final value = (await queueSheet!.cells.cell(row: rowNumber, column: 2)).value;
+    return int.tryParse(value);
+  }
+
   ///Returns List of [LessonSettingEntity] and lesson online table id
   Future<(Future<List<LessonSettingEntity>>, Future<List<String>>)> getLessons() async {
     _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
@@ -230,7 +250,8 @@ class OnlineDataBase {
                   return DatedLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, dates);
                 }
               });
-              final lesson = LessonSettingEntity(lessonRow[1], times.toList());
+              final lesson =
+                  LessonSettingEntity(lessonRow[1], times.toList(), lessonRow[3] == 'true', lessonRow[4] == 'true');
               return lesson;
             }))
         .then((value) => Future.wait(value.toList()));
@@ -275,7 +296,13 @@ class OnlineDataBase {
           lessonIndex++;
         }
       }
-      tasks.add(_lessonsSheet?.values.insertRow(lessonIndex, [lessonIndex, lesson.name, ids[i], 'нет', 'нет']) ??
+      tasks.add(_lessonsSheet?.values.insertRow(lessonIndex, [
+            lessonIndex,
+            lesson.name,
+            ids[i],
+            lesson.autoDelete.toString().toOnline,
+            lesson.useWorkCount.toString().toOnline,
+          ]) ??
           Future.value(null));
       lessonTimesIndex = _taskToFillWeeklyLessons(lesson, lessonIndex, lessonTimesTable, lessonTimesIndex, tasks);
       lessonTimesIndex = _taskToFillDatedLessons(lesson, lessonIndex, lessonTimesTable, lessonTimesIndex, tasks);
@@ -349,5 +376,43 @@ class OnlineDataBase {
           datedLesson.endTime.toShortString.toOnline
         ]) ??
         Future.value(null);
+  }
+
+  // Future<DateTime?> getLastQueueDeleteTime(String tableID) async {
+  //   final str = await _gsheets
+  //       .spreadsheet(tableID)
+  //       .then((value) => value.worksheetByTitle(_infoSheetName))
+  //       .then((value) async => await value?.values.valueByKeys(rowKey: _values, columnKey: _lastDelete));
+  //   if (str == null) throw Exception("Failed to load database");
+  //   if (str.isNotEmpty) {
+  //     return str.toRecDateTime;
+  //   }
+  //   return null;
+  // }
+
+  Future<bool> checkIfDeleteQueue(String tableID, DateTime lastLessonTime) async {
+    final spreadSheet = await _gsheets.spreadsheet(tableID);
+    final infoSheet = spreadSheet.worksheetByTitle(_infoSheetName);
+    if (infoSheet == null) throw Exception("Failed to load database");
+    final timeStr = await infoSheet.values.valueByKeys(columnKey: _values, rowKey: _lastDelete);
+    if (timeStr?.isEmpty ?? false) return true;
+    final lastDeleteTime = timeStr?.toDate;
+    return lastDeleteTime?.isBefore(lastLessonTime) ?? true;
+  }
+
+  Future<bool> deleteQueue(String tableID) async {
+    final time = DateTime.now();
+    final spreadSheet = await _gsheets.spreadsheet(tableID);
+    final queueSheet = spreadSheet.worksheetByTitle(_queueSheetName);
+    final infoSheet = spreadSheet.worksheetByTitle(_infoSheetName);
+    if (queueSheet == null || infoSheet == null) throw Exception("Failed to load database");
+    final queueColumn = await queueSheet.values
+        .column(1)
+        .then((value) => value.map((e) => e == _queueSheetName ? _queueSheetName : '').toList());
+
+    return Future.wait([
+      queueSheet.values.insertColumn(1, queueColumn),
+      infoSheet.values.insertValueByKeys(time.toOnlineDateString.toOnline, columnKey: _values, rowKey: _lastDelete)
+    ]).then((value) => value.every((element) => element == true));
   }
 }

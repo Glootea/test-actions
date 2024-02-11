@@ -62,7 +62,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
           case CreateRegEvent:
             await _createReg((event as CreateRegEvent).lessonName, emit);
           case DeleteRegEvent:
-            await _deleteReg((event as DeleteRegEvent).lessonName, emit);
+            await _deleteReg((event as DeleteRegEvent), emit);
           case ShowQRCodeEvent:
             await _showQrCode(event as ShowQRCodeEvent, emit);
           case ToggleUpdateEvent:
@@ -118,10 +118,11 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     await _emitMainState(emit);
   }
 
-  Future<void> _deleteReg(String lessonName, Emitter emit) async {
-    final fakedLessons = OptimisticUI.deleteRec((state as MainState).todayLessons, lessonName);
+  Future<void> _deleteReg(DeleteRegEvent event, Emitter emit) async {
+    final fakedLessons = OptimisticUI.deleteRec((state as MainState).todayLessons, event.lessonName);
     await _emitMainState(emit, todayLessons: fakedLessons);
-    await _databaseService.deleteRec(lessonName, _userDataBase.getUserName); // TODO: catch network error if occur
+    await _databaseService.deleteRec(
+        event.lessonName, _userDataBase.getUserName, event.workCount); // TODO: catch network error if occur
     await _emitMainState(emit);
     //   //TODO : cache for later upload
   }
@@ -162,7 +163,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       await _emitMainState(emit);
       final tasks = [
         _databaseService.postNotUploadedRecs(_userDataBase.getUserName),
-        _databaseService.deleteNotUploadedRecs(_userDataBase.getUserName)
+        _databaseService.deleteNotUploadedRecs(_userDataBase.getUserName),
+        _databaseService.autoDeleteQeueu()
       ];
       if (await Future.wait(tasks).then((value) => value.any((e) => e == true))) {
         await _emitMainState(emit);

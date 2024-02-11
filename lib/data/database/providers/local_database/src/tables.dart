@@ -8,18 +8,22 @@ class Recs extends Table {
 
   /// 1 - uploaded; 0 - not uploaded, but should be; -1 - should be deleted
   IntColumn get uploaded => integer()();
+  IntColumn get workCount => integer().nullable()();
 }
 
 class Lessons extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get onlineID => text()();
+  BoolColumn get autoDelete => boolean()();
+  BoolColumn get useWorkCount => boolean()();
+  DateTimeColumn get lastDelete => dateTime().nullable()();
 }
 
 class Students extends Table {
   @override
   Set<Column> get primaryKey => {id};
-  IntColumn get id => integer()(); // TODO: merge id and onlineTableRowNumber
+  IntColumn get id => integer()();
   TextColumn get name => text()();
   BoolColumn get isAdmin => boolean().nullable()();
 }

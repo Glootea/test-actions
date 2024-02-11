@@ -23,7 +23,7 @@ class LocalDatabase extends _$LocalDatabase {
               .get())
           .then((rows) => rows
               .map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!,
-                  (row.read(recs.uploaded) == 1)))
+                  isUploaded: (row.read(recs.uploaded) == 1), workCount: row.read(recs.workCount)))
               .toList());
 
   Future<List<RecEntity>> getNotUploadedRecs(String userName) => (((select(recs).join([
@@ -33,7 +33,8 @@ class LocalDatabase extends _$LocalDatabase {
             ..where(students.name.equals(userName) & recs.uploaded.equals(0)))
           .get()
           .then((rows) => rows
-              .map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!))
+              .map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!,
+                  workCount: row.read(recs.workCount)))
               .toList());
 
   Future<List<RecEntity>> getNotDeletedRecs(String userName) => (((select(recs).join([
@@ -43,7 +44,8 @@ class LocalDatabase extends _$LocalDatabase {
             ..where(students.name.equals(userName) & recs.uploaded.equals(-1)))
           .get()
           .then((rows) => rows
-              .map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!))
+              .map((row) => RecEntity(row.read(students.name)!, row.read(recs.time)!, row.read(lessons.name)!,
+                  workCount: row.read(recs.workCount)))
               .toList());
 
   Future<int> getQueuePlace(String lessonName, String userName) async => (await ((select(recs).join([
@@ -72,11 +74,12 @@ class LocalDatabase extends _$LocalDatabase {
     final studentRec = recs.where((element) => element.userName == studentName).firstOrNull;
     final startTime = (row['start_time']! as String).toTimeOfDay;
     final endTime = (row['end_time']! as String).toTimeOfDay;
+    final useWorkCount = (row['use_work_count']! as int) == 1;
     if (studentRec == null) {
-      return LessonEntity(lessonName, startTime, endTime, recs);
+      return LessonEntity(lessonName, startTime, endTime, recs, useWorkCount);
     } else {
       final queuePosition = recs.indexOf(studentRec) + 1;
-      return LessonEntity(lessonName, startTime, endTime, recs, studentRec, queuePosition);
+      return LessonEntity(lessonName, startTime, endTime, recs, useWorkCount, studentRec, queuePosition);
     }
   }
 
@@ -98,7 +101,7 @@ class LocalDatabase extends _$LocalDatabase {
         .toList();
   }
 
-  Future<bool> createRec(String lessonName, String studentName, DateTime time, {int? uploaded}) async {
+  Future<bool> createRec(String lessonName, String studentName, DateTime time, {int? uploaded, int? workCount}) async {
     int studentID = await (select(students)..where((tbl) => tbl.name.equals(studentName)))
         .getSingle()
         .then((student) => student.id);
@@ -106,20 +109,24 @@ class LocalDatabase extends _$LocalDatabase {
         await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
     await into(recs).insert(
         RecsCompanion(
-            lessonID: Value(lessonID), studentID: Value(studentID), time: Value(time), uploaded: Value(uploaded ?? 0)),
+            lessonID: Value(lessonID),
+            studentID: Value(studentID),
+            time: Value(time),
+            uploaded: Value(uploaded ?? 0),
+            workCount: Value(workCount)),
         mode: InsertMode.insertOrReplace);
     return true;
   }
 
   /// Status: 1 - uploaded; 0 - not uploaded, but should be; -1 - should be deleted
-  Future<void> updateUploadStatus(String lessonName, String studentName, int status) async {
+  Future<void> updateUploadStatus(String lessonName, String studentName, int status, {int? workCount}) async {
     int studentID = await (select(students)..where((tbl) => tbl.name.equals(studentName)))
         .getSingle()
         .then((student) => student.id);
     int lessonID =
         await (select(lessons)..where((tbl) => tbl.name.equals(lessonName))).getSingle().then((lesson) => lesson.id);
     await (update(recs)..where((tbl) => tbl.lessonID.equals(lessonID) & tbl.studentID.equals(studentID)))
-        .write(RecsCompanion(uploaded: Value(status)));
+        .write(RecsCompanion(uploaded: Value(status), workCount: Value(workCount)));
   }
 
   Future<void> deleteRec(String lessonName, String studentName) async {
@@ -138,13 +145,10 @@ class LocalDatabase extends _$LocalDatabase {
   }
 
   Future<void> import(List<RecEntity> list) async {
-    await Future.wait(list.map((i) async => createRec(i.lessonName, i.userName, i.time, uploaded: 1)));
+    await Future.wait(
+        list.map((i) async => createRec(i.lessonName, i.userName, i.time, uploaded: 1, workCount: i.workCount)));
   }
 
-  //-- user related
-  // final _backgroundImageKey = "backgroundImage";
-  // final _userNameKey = "userName";
-  // final _tableIDKey = 'tableID';
   Future<String?> get(StoredValues key) async {
     return (await (select(userInfo)..where((tbl) => tbl.key.equals(key.toString()))).getSingleOrNull())?.value;
   }
@@ -157,17 +161,6 @@ class LocalDatabase extends _$LocalDatabase {
   Future<int> clean(StoredValues key) async {
     return (delete(userInfo)..where((tbl) => tbl.key.equals(key.toString()))).go();
   }
-  // Future<String?> getUserName() async {
-  //   return (await (select(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).getSingleOrNull())?.value;
-  // }
-
-  // void setUserName(String userName) {
-  //   into(userInfo).insert(UserInfoCompanion(key: Value(_userNameKey), value: Value(userName)), mode: InsertMode.insertOrReplace);
-  // }
-
-  // void deleteUserName() {
-  //   (delete(userInfo)..where((tbl) => tbl.key.equals(_userNameKey))).go();
-  // }
 
   Future<bool> isAdmin(String studentName) async {
     return (await (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingleOrNull())?.isAdmin ?? false;
@@ -179,14 +172,14 @@ class LocalDatabase extends _$LocalDatabase {
         : StudentsCompanion(
             name: newUserName == null ? Value(userName) : Value(newUserName), isAdmin: Value(newIsAdmin)));
   }
-  // Future<String?> getBackgroundImage() async {
-  //   return (await (select(userInfo)..where((tbl) => tbl.key.equals(_backgroundImageKey))).getSingleOrNull())?.value;
-  // }
 
   Future<void> insertLessons(List<LessonSettingEntity> list, List<String> onlineIds) async {
     await Future.wait(list.map((lesson) async {
-      int id = await lessons
-          .insertOne(LessonsCompanion(name: Value(lesson.name), onlineID: Value(onlineIds[list.indexOf(lesson)])));
+      int id = await lessons.insertOne(LessonsCompanion(
+          name: Value(lesson.name),
+          onlineID: Value(onlineIds[list.indexOf(lesson)]),
+          autoDelete: Value(lesson.autoDelete),
+          useWorkCount: Value(lesson.useWorkCount)));
       List<WeeklyLessonSettingEntity> weeklyLessonList =
           lesson.lessonTimes.whereType<WeeklyLessonSettingEntity>().toList();
       List<DatedLessonSettingEntity> datedLessonsList =
@@ -240,6 +233,30 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<int> getOnlineTableRowNumber(String studentName) async {
     return (select(students)..where((tbl) => tbl.name.equals(studentName))).getSingle().then((value) => value.id);
+  }
+
+  Future<void> deleteQueue(String lessonName, DateTime lastDelete) async {
+    await Future.wait([
+      (update(lessons)..where((tbl) => tbl.name.equals(lessonName)))
+          .write(LessonsCompanion(lastDelete: Value(lastDelete))),
+      deleteAllRecs(lessonName)
+    ]);
+  }
+
+  Future<List<String>> getOnlineIDsOfLessonsToDeleteQueue() async {
+    return (select(lessons)..where((tbl) => tbl.autoDelete.equals(true)))
+        .get()
+        .then((value) => value.map((e) => e.onlineID).toList());
+  }
+
+  Future<DateTime?> getLastLessonTime(String onlineID) async {
+    final today = DateTime.now();
+    final daysBefore = await Future.wait(List.generate(
+        7,
+        (index) => todayLessons(today.subtract(Duration(days: index + 1)), '')
+            .then((value) => value.isNotEmpty ? index + 1 : null)));
+    daysBefore.sort();
+    return daysBefore.first != null ? today.subtract(Duration(days: daysBefore.first!)) : null;
   }
 
   Future<void> clearAll() async {

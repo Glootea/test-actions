@@ -35,7 +35,7 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
               decoration:
                   BoxDecoration(border: Border.all(color: Colors.white), borderRadius: BorderRadius.circular(10)),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
                     Row(
@@ -68,6 +68,25 @@ class _LessonInfoTileState extends State<LessonInfoTile> {
                         ),
                       ],
                     ),
+                    const Gap(16),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      const Expanded(child: Text("Учитывать количество работ при составлении очереди?")),
+                      Switch(
+                          value: widget.lessons[widget.count].useWorkCount,
+                          onChanged: (value) => setState(() {
+                                widget.lessons[widget.count] =
+                                    widget.lessons[widget.count].copyWith(useWorkCount: value);
+                              }))
+                    ]),
+                    const Gap(16),
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      const Expanded(child: Text("Удалять историю очереди после каждого занятия?")),
+                      Switch(
+                          value: widget.lessons[widget.count].autoDelete,
+                          onChanged: (value) => setState(() {
+                                widget.lessons[widget.count] = widget.lessons[widget.count].copyWith(autoClean: value);
+                              }))
+                    ]),
                     const Gap(16),
                     const Text("Выберите режим добавления нового времени: "),
                     const Gap(16),

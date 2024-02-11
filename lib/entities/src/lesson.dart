@@ -3,28 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:queue/entities/export.dart';
 
 ///To be displayed
-@immutable
 final class LessonEntity extends Equatable implements Comparable {
   final String name;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
   final List<RecEntity> recs;
+  final bool useWorkCount;
   final RecEntity? userRec;
   final int? userQueuePosition;
-  const LessonEntity(this.name, this.startTime, this.endTime, this.recs, [this.userRec, this.userQueuePosition]);
+  const LessonEntity(this.name, this.startTime, this.endTime, this.recs, this.useWorkCount,
+      [this.userRec, this.userQueuePosition]);
   LessonEntity copyWith(
       {String? name,
       TimeOfDay? startTime,
       TimeOfDay? endTime,
       List<RecEntity>? recs,
+      bool? useWorkCount,
       RecEntity? userRec,
       int? userQueuePosition}) {
     return LessonEntity(name ?? this.name, startTime ?? this.startTime, endTime ?? this.endTime, recs ?? this.recs,
-        userRec ?? this.userRec, userQueuePosition ?? this.userQueuePosition);
+        useWorkCount ?? this.useWorkCount, userRec ?? this.userRec, userQueuePosition ?? this.userQueuePosition);
   }
 
   LessonEntity copyWithoutUserRec() {
-    return LessonEntity(name, startTime, endTime, recs);
+    return LessonEntity(name, startTime, endTime, recs, useWorkCount);
   }
 
   @override
@@ -46,25 +48,28 @@ final class LessonEntity extends Equatable implements Comparable {
 }
 
 /// Used in settings menu.
-/// Either [WeeklyLessonSettingEntity] weeklyLessons or [DatedLessonSettingEntity] datedLessons must be provided
-@immutable
 final class LessonSettingEntity {
   final String name;
   final List<LessonTime> lessonTimes;
-
-  LessonSettingEntity(this.name, this.lessonTimes) {
-    // assert(lessons != null || datedLessons != null, "Either weeklyLessons or datedLessons must be provided");
-  }
+  final bool autoDelete;
+  final bool useWorkCount;
+  LessonSettingEntity(this.name, this.lessonTimes, this.autoDelete, this.useWorkCount);
 
   LessonSettingEntity copyWith({
     String? name,
     List<LessonTime>? lessonTimes,
+    bool? autoClean,
+    bool? useWorkCount,
   }) {
-    return LessonSettingEntity(name ?? this.name, lessonTimes ?? this.lessonTimes);
+    return LessonSettingEntity(
+      name ?? this.name,
+      lessonTimes ?? this.lessonTimes,
+      autoClean ?? this.autoDelete,
+      useWorkCount ?? this.useWorkCount,
+    );
   }
 }
 
-@immutable
 abstract final class LessonTime {
   final TimeOfDay startTime;
   final TimeOfDay endTime;
@@ -73,7 +78,6 @@ abstract final class LessonTime {
   LessonTime copyWith({TimeOfDay? startTime, TimeOfDay? endTime});
 }
 
-@immutable
 abstract class TimeChooser extends StatefulWidget {
   final int innerCount;
   final void Function(TimeOfDay, TimeOfDay) onTimeChanged;

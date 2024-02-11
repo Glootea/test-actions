@@ -32,16 +32,26 @@ class ExpensiveTasks {
     String lessonTableID,
     String queueSheetName,
     int onlineTableRowNumber,
+    int? workCount,
   ) async {
     try {
-      final queueSheet =
-          await gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(queueSheetName));
+      final spreadSheet = await gsheets.spreadsheet(lessonTableID);
+      final queueSheet = spreadSheet.worksheetByTitle(queueSheetName);
       if (queueSheet == null) {
         throw Exception("Failed to load database");
       }
-      return await queueSheet.values
-          .insertValue('', column: 1, row: onlineTableRowNumber)
-          .timeout(const Duration(seconds: 5), onTimeout: () => false);
+      Future<bool> task = ((workCount != null)
+          ? queueSheet.values
+              .insertValue(workCount, column: 2, row: onlineTableRowNumber)
+              .timeout(const Duration(seconds: 5), onTimeout: () => false)
+          : Future.value(true));
+
+      return Future.wait([
+        queueSheet.values
+            .insertValue('', column: 1, row: onlineTableRowNumber)
+            .timeout(const Duration(seconds: 5), onTimeout: () => false),
+        task
+      ]).then((value) => value.every((element) => element));
     } on Exception {
       return false;
     }

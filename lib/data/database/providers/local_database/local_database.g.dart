@@ -237,8 +237,33 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   late final GeneratedColumn<String> onlineID = GeneratedColumn<String>(
       'online_i_d', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _autoDeleteMeta =
+      const VerificationMeta('autoDelete');
   @override
-  List<GeneratedColumn> get $columns => [id, name, onlineID];
+  late final GeneratedColumn<bool> autoDelete = GeneratedColumn<bool>(
+      'auto_delete', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("auto_delete" IN (0, 1))'));
+  static const VerificationMeta _useWorkCountMeta =
+      const VerificationMeta('useWorkCount');
+  @override
+  late final GeneratedColumn<bool> useWorkCount = GeneratedColumn<bool>(
+      'use_work_count', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("use_work_count" IN (0, 1))'));
+  static const VerificationMeta _lastDeleteMeta =
+      const VerificationMeta('lastDelete');
+  @override
+  late final GeneratedColumn<DateTime> lastDelete = GeneratedColumn<DateTime>(
+      'last_delete', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, onlineID, autoDelete, useWorkCount, lastDelete];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -264,6 +289,28 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
     } else if (isInserting) {
       context.missing(_onlineIDMeta);
     }
+    if (data.containsKey('auto_delete')) {
+      context.handle(
+          _autoDeleteMeta,
+          autoDelete.isAcceptableOrUnknown(
+              data['auto_delete']!, _autoDeleteMeta));
+    } else if (isInserting) {
+      context.missing(_autoDeleteMeta);
+    }
+    if (data.containsKey('use_work_count')) {
+      context.handle(
+          _useWorkCountMeta,
+          useWorkCount.isAcceptableOrUnknown(
+              data['use_work_count']!, _useWorkCountMeta));
+    } else if (isInserting) {
+      context.missing(_useWorkCountMeta);
+    }
+    if (data.containsKey('last_delete')) {
+      context.handle(
+          _lastDeleteMeta,
+          lastDelete.isAcceptableOrUnknown(
+              data['last_delete']!, _lastDeleteMeta));
+    }
     return context;
   }
 
@@ -279,6 +326,12 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       onlineID: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}online_i_d'])!,
+      autoDelete: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}auto_delete'])!,
+      useWorkCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}use_work_count'])!,
+      lastDelete: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}last_delete']),
     );
   }
 
@@ -292,13 +345,27 @@ class Lesson extends DataClass implements Insertable<Lesson> {
   final int id;
   final String name;
   final String onlineID;
-  const Lesson({required this.id, required this.name, required this.onlineID});
+  final bool autoDelete;
+  final bool useWorkCount;
+  final DateTime? lastDelete;
+  const Lesson(
+      {required this.id,
+      required this.name,
+      required this.onlineID,
+      required this.autoDelete,
+      required this.useWorkCount,
+      this.lastDelete});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['online_i_d'] = Variable<String>(onlineID);
+    map['auto_delete'] = Variable<bool>(autoDelete);
+    map['use_work_count'] = Variable<bool>(useWorkCount);
+    if (!nullToAbsent || lastDelete != null) {
+      map['last_delete'] = Variable<DateTime>(lastDelete);
+    }
     return map;
   }
 
@@ -307,6 +374,11 @@ class Lesson extends DataClass implements Insertable<Lesson> {
       id: Value(id),
       name: Value(name),
       onlineID: Value(onlineID),
+      autoDelete: Value(autoDelete),
+      useWorkCount: Value(useWorkCount),
+      lastDelete: lastDelete == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastDelete),
     );
   }
 
@@ -317,6 +389,9 @@ class Lesson extends DataClass implements Insertable<Lesson> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       onlineID: serializer.fromJson<String>(json['onlineID']),
+      autoDelete: serializer.fromJson<bool>(json['autoDelete']),
+      useWorkCount: serializer.fromJson<bool>(json['useWorkCount']),
+      lastDelete: serializer.fromJson<DateTime?>(json['lastDelete']),
     );
   }
   @override
@@ -326,68 +401,113 @@ class Lesson extends DataClass implements Insertable<Lesson> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'onlineID': serializer.toJson<String>(onlineID),
+      'autoDelete': serializer.toJson<bool>(autoDelete),
+      'useWorkCount': serializer.toJson<bool>(useWorkCount),
+      'lastDelete': serializer.toJson<DateTime?>(lastDelete),
     };
   }
 
-  Lesson copyWith({int? id, String? name, String? onlineID}) => Lesson(
+  Lesson copyWith(
+          {int? id,
+          String? name,
+          String? onlineID,
+          bool? autoDelete,
+          bool? useWorkCount,
+          Value<DateTime?> lastDelete = const Value.absent()}) =>
+      Lesson(
         id: id ?? this.id,
         name: name ?? this.name,
         onlineID: onlineID ?? this.onlineID,
+        autoDelete: autoDelete ?? this.autoDelete,
+        useWorkCount: useWorkCount ?? this.useWorkCount,
+        lastDelete: lastDelete.present ? lastDelete.value : this.lastDelete,
       );
   @override
   String toString() {
     return (StringBuffer('Lesson(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('onlineID: $onlineID')
+          ..write('onlineID: $onlineID, ')
+          ..write('autoDelete: $autoDelete, ')
+          ..write('useWorkCount: $useWorkCount, ')
+          ..write('lastDelete: $lastDelete')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, onlineID);
+  int get hashCode =>
+      Object.hash(id, name, onlineID, autoDelete, useWorkCount, lastDelete);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Lesson &&
           other.id == this.id &&
           other.name == this.name &&
-          other.onlineID == this.onlineID);
+          other.onlineID == this.onlineID &&
+          other.autoDelete == this.autoDelete &&
+          other.useWorkCount == this.useWorkCount &&
+          other.lastDelete == this.lastDelete);
 }
 
 class LessonsCompanion extends UpdateCompanion<Lesson> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> onlineID;
+  final Value<bool> autoDelete;
+  final Value<bool> useWorkCount;
+  final Value<DateTime?> lastDelete;
   const LessonsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.onlineID = const Value.absent(),
+    this.autoDelete = const Value.absent(),
+    this.useWorkCount = const Value.absent(),
+    this.lastDelete = const Value.absent(),
   });
   LessonsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String onlineID,
+    required bool autoDelete,
+    required bool useWorkCount,
+    this.lastDelete = const Value.absent(),
   })  : name = Value(name),
-        onlineID = Value(onlineID);
+        onlineID = Value(onlineID),
+        autoDelete = Value(autoDelete),
+        useWorkCount = Value(useWorkCount);
   static Insertable<Lesson> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? onlineID,
+    Expression<bool>? autoDelete,
+    Expression<bool>? useWorkCount,
+    Expression<DateTime>? lastDelete,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (onlineID != null) 'online_i_d': onlineID,
+      if (autoDelete != null) 'auto_delete': autoDelete,
+      if (useWorkCount != null) 'use_work_count': useWorkCount,
+      if (lastDelete != null) 'last_delete': lastDelete,
     });
   }
 
   LessonsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<String>? onlineID}) {
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String>? onlineID,
+      Value<bool>? autoDelete,
+      Value<bool>? useWorkCount,
+      Value<DateTime?>? lastDelete}) {
     return LessonsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       onlineID: onlineID ?? this.onlineID,
+      autoDelete: autoDelete ?? this.autoDelete,
+      useWorkCount: useWorkCount ?? this.useWorkCount,
+      lastDelete: lastDelete ?? this.lastDelete,
     );
   }
 
@@ -403,6 +523,15 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
     if (onlineID.present) {
       map['online_i_d'] = Variable<String>(onlineID.value);
     }
+    if (autoDelete.present) {
+      map['auto_delete'] = Variable<bool>(autoDelete.value);
+    }
+    if (useWorkCount.present) {
+      map['use_work_count'] = Variable<bool>(useWorkCount.value);
+    }
+    if (lastDelete.present) {
+      map['last_delete'] = Variable<DateTime>(lastDelete.value);
+    }
     return map;
   }
 
@@ -411,7 +540,10 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
     return (StringBuffer('LessonsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('onlineID: $onlineID')
+          ..write('onlineID: $onlineID, ')
+          ..write('autoDelete: $autoDelete, ')
+          ..write('useWorkCount: $useWorkCount, ')
+          ..write('lastDelete: $lastDelete')
           ..write(')'))
         .toString();
   }
@@ -460,9 +592,15 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
   late final GeneratedColumn<int> uploaded = GeneratedColumn<int>(
       'uploaded', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _workCountMeta =
+      const VerificationMeta('workCount');
+  @override
+  late final GeneratedColumn<int> workCount = GeneratedColumn<int>(
+      'work_count', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, studentID, lessonID, time, uploaded];
+      [id, studentID, lessonID, time, uploaded, workCount];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -502,6 +640,10 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
     } else if (isInserting) {
       context.missing(_uploadedMeta);
     }
+    if (data.containsKey('work_count')) {
+      context.handle(_workCountMeta,
+          workCount.isAcceptableOrUnknown(data['work_count']!, _workCountMeta));
+    }
     return context;
   }
 
@@ -521,6 +663,8 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
           .read(DriftSqlType.dateTime, data['${effectivePrefix}time'])!,
       uploaded: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}uploaded'])!,
+      workCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}work_count']),
     );
   }
 
@@ -538,12 +682,14 @@ class Rec extends DataClass implements Insertable<Rec> {
 
   /// 1 - uploaded; 0 - not uploaded, but should be; -1 - should be deleted
   final int uploaded;
+  final int? workCount;
   const Rec(
       {required this.id,
       required this.studentID,
       required this.lessonID,
       required this.time,
-      required this.uploaded});
+      required this.uploaded,
+      this.workCount});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -552,6 +698,9 @@ class Rec extends DataClass implements Insertable<Rec> {
     map['lesson_i_d'] = Variable<int>(lessonID);
     map['time'] = Variable<DateTime>(time);
     map['uploaded'] = Variable<int>(uploaded);
+    if (!nullToAbsent || workCount != null) {
+      map['work_count'] = Variable<int>(workCount);
+    }
     return map;
   }
 
@@ -562,6 +711,9 @@ class Rec extends DataClass implements Insertable<Rec> {
       lessonID: Value(lessonID),
       time: Value(time),
       uploaded: Value(uploaded),
+      workCount: workCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(workCount),
     );
   }
 
@@ -574,6 +726,7 @@ class Rec extends DataClass implements Insertable<Rec> {
       lessonID: serializer.fromJson<int>(json['lessonID']),
       time: serializer.fromJson<DateTime>(json['time']),
       uploaded: serializer.fromJson<int>(json['uploaded']),
+      workCount: serializer.fromJson<int?>(json['workCount']),
     );
   }
   @override
@@ -585,6 +738,7 @@ class Rec extends DataClass implements Insertable<Rec> {
       'lessonID': serializer.toJson<int>(lessonID),
       'time': serializer.toJson<DateTime>(time),
       'uploaded': serializer.toJson<int>(uploaded),
+      'workCount': serializer.toJson<int?>(workCount),
     };
   }
 
@@ -593,13 +747,15 @@ class Rec extends DataClass implements Insertable<Rec> {
           int? studentID,
           int? lessonID,
           DateTime? time,
-          int? uploaded}) =>
+          int? uploaded,
+          Value<int?> workCount = const Value.absent()}) =>
       Rec(
         id: id ?? this.id,
         studentID: studentID ?? this.studentID,
         lessonID: lessonID ?? this.lessonID,
         time: time ?? this.time,
         uploaded: uploaded ?? this.uploaded,
+        workCount: workCount.present ? workCount.value : this.workCount,
       );
   @override
   String toString() {
@@ -608,13 +764,15 @@ class Rec extends DataClass implements Insertable<Rec> {
           ..write('studentID: $studentID, ')
           ..write('lessonID: $lessonID, ')
           ..write('time: $time, ')
-          ..write('uploaded: $uploaded')
+          ..write('uploaded: $uploaded, ')
+          ..write('workCount: $workCount')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, studentID, lessonID, time, uploaded);
+  int get hashCode =>
+      Object.hash(id, studentID, lessonID, time, uploaded, workCount);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -623,7 +781,8 @@ class Rec extends DataClass implements Insertable<Rec> {
           other.studentID == this.studentID &&
           other.lessonID == this.lessonID &&
           other.time == this.time &&
-          other.uploaded == this.uploaded);
+          other.uploaded == this.uploaded &&
+          other.workCount == this.workCount);
 }
 
 class RecsCompanion extends UpdateCompanion<Rec> {
@@ -632,12 +791,14 @@ class RecsCompanion extends UpdateCompanion<Rec> {
   final Value<int> lessonID;
   final Value<DateTime> time;
   final Value<int> uploaded;
+  final Value<int?> workCount;
   const RecsCompanion({
     this.id = const Value.absent(),
     this.studentID = const Value.absent(),
     this.lessonID = const Value.absent(),
     this.time = const Value.absent(),
     this.uploaded = const Value.absent(),
+    this.workCount = const Value.absent(),
   });
   RecsCompanion.insert({
     this.id = const Value.absent(),
@@ -645,6 +806,7 @@ class RecsCompanion extends UpdateCompanion<Rec> {
     required int lessonID,
     required DateTime time,
     required int uploaded,
+    this.workCount = const Value.absent(),
   })  : studentID = Value(studentID),
         lessonID = Value(lessonID),
         time = Value(time),
@@ -655,6 +817,7 @@ class RecsCompanion extends UpdateCompanion<Rec> {
     Expression<int>? lessonID,
     Expression<DateTime>? time,
     Expression<int>? uploaded,
+    Expression<int>? workCount,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -662,6 +825,7 @@ class RecsCompanion extends UpdateCompanion<Rec> {
       if (lessonID != null) 'lesson_i_d': lessonID,
       if (time != null) 'time': time,
       if (uploaded != null) 'uploaded': uploaded,
+      if (workCount != null) 'work_count': workCount,
     });
   }
 
@@ -670,13 +834,15 @@ class RecsCompanion extends UpdateCompanion<Rec> {
       Value<int>? studentID,
       Value<int>? lessonID,
       Value<DateTime>? time,
-      Value<int>? uploaded}) {
+      Value<int>? uploaded,
+      Value<int?>? workCount}) {
     return RecsCompanion(
       id: id ?? this.id,
       studentID: studentID ?? this.studentID,
       lessonID: lessonID ?? this.lessonID,
       time: time ?? this.time,
       uploaded: uploaded ?? this.uploaded,
+      workCount: workCount ?? this.workCount,
     );
   }
 
@@ -698,6 +864,9 @@ class RecsCompanion extends UpdateCompanion<Rec> {
     if (uploaded.present) {
       map['uploaded'] = Variable<int>(uploaded.value);
     }
+    if (workCount.present) {
+      map['work_count'] = Variable<int>(workCount.value);
+    }
     return map;
   }
 
@@ -708,7 +877,8 @@ class RecsCompanion extends UpdateCompanion<Rec> {
           ..write('studentID: $studentID, ')
           ..write('lessonID: $lessonID, ')
           ..write('time: $time, ')
-          ..write('uploaded: $uploaded')
+          ..write('uploaded: $uploaded, ')
+          ..write('workCount: $workCount')
           ..write(')'))
         .toString();
   }
