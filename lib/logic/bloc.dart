@@ -89,7 +89,8 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
 
           case UploadFromLinkEvent:
             await _uploadExternalRecEvent(event as UploadFromLinkEvent, emit);
-
+          case SignMeInEvent:
+            await _signMeIn(emit);
           //  --- invite ---
 
           case ReceivedInviteEvent:
@@ -142,6 +143,16 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     final data = QrCodeData.toQrData(tableID, rowNumber, event.time);
     final mainState = state as MainState;
     emit(ShowQRCodeState(data, mainState.todayLessons, mainState.isAdmin, mainState.updateEnabled, false));
+  }
+
+  Future<void> _signMeIn(Emitter<QueueState> emit) async {
+    final time = DateTime.now();
+    if (_userDataBase.userExist == false) return add(FindUserEvent());
+    final name = _userDataBase.getUserName;
+    final lessons = await _todayLessons(name);
+    await Future.wait(lessons.map(
+        (lesson) => lesson.regIsActive ? _databaseService.createRec(lesson.name, name, time) : Future.value(true)));
+    await _emitMainState(emit);
   }
 
   // --- user Authentication ---

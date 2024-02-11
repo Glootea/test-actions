@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
 import 'package:queue/presentation/screens/adminSettings/lesson_screen.dart';
@@ -30,12 +28,11 @@ class _Routes {
   static const String loadingScreen = '/';
   static const String createGroupScreen = '$loginScreen/$createGroupSubPath';
   static const String createGroupSubPath = 'create';
+  static const String signMeInPath = '/signMeIn';
 }
 
-GoRouter getRouter(Bloc bloc) => GoRouter(
-      //TODO: fix double navigation during upload using qr code
+GoRouter getRouter(Bloc<QueueEvent, QueueState> bloc) => GoRouter(
       redirect: (BuildContext context, GoRouterState state) {
-        final bloc = context.read<QueueBloc>();
         final blocState = bloc.state;
         if (state.pathParameters['info'] != ':info') {
           if (state.fullPath == _Routes.uploadScreen &&
@@ -49,6 +46,10 @@ GoRouter getRouter(Bloc bloc) => GoRouter(
             bloc.add(ReceivedInviteEvent(state.pathParameters['info']!));
           }
         }
+        if (state.matchedLocation == _Routes.signMeInPath) {
+          bloc.add(SignMeInEvent());
+        }
+
         if (state.fullPath == _Routes.uploadScreen && blocState is UploadFromLinkState) return null;
         switch (blocState.runtimeType) {
           case ShowQRCodeState:

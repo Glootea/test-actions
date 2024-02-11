@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:queue/entities/export.dart';
+import 'package:queue/extension.dart';
 
 ///To be displayed
 final class LessonEntity extends Equatable implements Comparable {
@@ -13,6 +14,12 @@ final class LessonEntity extends Equatable implements Comparable {
   final int? userQueuePosition;
   const LessonEntity(this.name, this.startTime, this.endTime, this.recs, this.useWorkCount,
       [this.userRec, this.userQueuePosition]);
+  final TimeOfDay timerStartDelay = const TimeOfDay(minute: 11, hour: 0);
+
+  bool get regIsActive => (timeToStart < timerStartDelay && const TimeOfDay(hour: 0, minute: 0) < timetillEnd);
+  bool get showTimer => timeToStart < const TimeOfDay(hour: 0, minute: 30) && timerStartDelay < timeToStart;
+  TimeOfDay get timeToStart => startTime - TimeOfDay.fromDateTime(DateTime.now());
+  TimeOfDay get timetillEnd => endTime - TimeOfDay.fromDateTime(DateTime.now());
   LessonEntity copyWith(
       {String? name,
       TimeOfDay? startTime,

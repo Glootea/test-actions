@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:queue/entities/export.dart';
-import 'package:queue/extension.dart';
 import 'package:queue/presentation/widgets/qr_button.dart';
 import 'package:queue/presentation/widgets/rec_button.dart';
 import 'package:queue/presentation/widgets/timer_start_reg.dart';
@@ -19,28 +18,21 @@ class LessonWidget extends StatefulWidget {
 
 class _LessonWidgetState extends State<LessonWidget> {
   DateTime get now => DateTime.now();
-  TimeOfDay timerStartDelay = const TimeOfDay(minute: 11, hour: 0);
 
   late bool displayedRegState;
-
-  bool get regIsActive => (timeToStart < timerStartDelay && const TimeOfDay(hour: 0, minute: 0) < timetillEnd);
-  bool get showTimer => timeToStart < const TimeOfDay(hour: 0, minute: 30) && timerStartDelay < timeToStart;
-  TimeOfDay get timeToStart => widget.lesson.startTime - TimeOfDay.fromDateTime(now);
-  TimeOfDay get timetillEnd => widget.lesson.endTime - TimeOfDay.fromDateTime(now);
-
   late Timer timer;
 
   bool expanded = false;
 
   @override
   void initState() {
-    displayedRegState = regIsActive;
+    displayedRegState = widget.lesson.regIsActive;
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (displayedRegState == false && regIsActive) {
+      if (displayedRegState == false && widget.lesson.regIsActive) {
         setState(() {
           displayedRegState = true;
         });
-      } else if (displayedRegState == true && !regIsActive) {
+      } else if (displayedRegState == true && !widget.lesson.regIsActive) {
         setState(() {
           displayedRegState = false;
         });
@@ -102,7 +94,7 @@ class _LessonWidgetState extends State<LessonWidget> {
                         child: Align(
                             alignment: Alignment.centerLeft,
                             child: (widget.lesson.userRec == null)
-                                ? (!showTimer)
+                                ? (!widget.lesson.showTimer)
                                     ? Text(
                                         displayedRegState ? "Запись открыта" : "Запись закрыта",
                                       )

@@ -45,6 +45,7 @@ class UploadFromLinkEvent extends QueueEvent {
   UploadFromLinkEvent(this.link);
 }
 
+class SignMeInEvent extends QueueEvent {}
 // --- invite
 
 class ReceivedInviteEvent extends QueueEvent {

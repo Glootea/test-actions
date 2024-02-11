@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = QueueBloc(userDataBase, databaseService, LoadingState());
     final router = getRouter(bloc);
-    return BlocProvider(
-      create: (context) => bloc..add(FindUserEvent()),
+    return BlocProvider<QueueBloc>.value(
+      value: bloc..add(FindUserEvent()),
       child: Consumer(
         builder: (context, a, b) => MaterialApp.router(
             title: "QueueMinder",
