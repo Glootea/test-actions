@@ -30,7 +30,7 @@ class OnlineDataBase {
     // await worker.start();
     _instance = OnlineDataBase._(tableID!);
     try {
-      final spreadsheet = await _gsheets.spreadsheet(tableID);
+      final spreadsheet = await _getSpreadsheetByTableID(tableID);
       if (spreadsheet.sheets
           .map((e) => e.title)
           .toSet()
@@ -74,7 +74,7 @@ class OnlineDataBase {
   }
 
   Future<bool> createFrameOfQueueTable(String fileID) async {
-    final spreadsheet = await _gsheets.spreadsheet(fileID);
+    final spreadsheet = await _getSpreadsheetByTableID(fileID);
     final workSheets =
         await Future.wait([spreadsheet.addWorksheet(_queueSheetName), spreadsheet.addWorksheet(_infoSheetName)])
             .whenComplete(() async => await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0)!));
@@ -91,7 +91,8 @@ class OnlineDataBase {
   Future<List<RecEntity>> getRecs(Map<int, String> students, String lessonName, String tableID) async {
     List<RecEntity> result = <RecEntity>[];
     try {
-      final queueSheet = await _gsheets.spreadsheet(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
+      final queueSheet =
+          await _getSpreadsheetByTableID(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
       if (queueSheet == null) return result;
       final (onlineTimes, workCountString) =
           await (queueSheet.values.column(1, fromRow: 2), queueSheet.values.column(2, fromRow: 2)).wait;
@@ -116,17 +117,24 @@ class OnlineDataBase {
   }
 
   static Future<(int, String?)> getQueuePosition(String queueTableID, int rowNumber) async {
+    Future<List<DateTime>> getRecTimeList(Worksheet? queueSheet) {
+      return queueSheet?.values.column(1, fromRow: 2).then((value) => value.map((e) => e.toRecDateTime).toList())
+          as Future<List<DateTime>>;
+    }
+
+    Future<String?> getInfoTableID(Worksheet? infoQueueSheet) =>
+        infoQueueSheet?.values.valueByKeys(rowKey: _infoTableIDString, columnKey: _values) as Future<String?>;
+
+    Future<List<String>> getStudentNameList(String? tableID) async =>
+        (await _getSpreadsheetByTableID(tableID!)).worksheetByTitle(_namesSheetName)?.values.column(1, fromRow: 2)
+            as Future<List<String>>;
+
     final [queueSheet, infoQueueSheet] = await _gsheets
         .spreadsheet(queueTableID)
         .then((value) => [value.worksheetByTitle(_queueSheetName), value.worksheetByTitle(_infoSheetName)]);
     final [onlineTimes as List<DateTime>?, studentNames as List<String>?] = await Future.wait([
-      queueSheet?.values.column(1, fromRow: 2).then((value) => value.map((e) => e.toRecDateTime).toList())
-          as Future<List<DateTime>>,
-      infoQueueSheet?.values.valueByKeys(rowKey: _infoTableIDString, columnKey: _values).then((infoTableID) async =>
-          (await _gsheets.spreadsheet(infoTableID!))
-              .worksheetByTitle(_namesSheetName)
-              ?.values
-              .column(1, fromRow: 2)) as Future<List<String>?>
+      getRecTimeList(queueSheet),
+      getInfoTableID(infoQueueSheet).then((infoTableID) async => await getStudentNameList(infoTableID))
     ]);
     if (onlineTimes == null || studentNames == null) throw Exception("Failed to load database");
     String? userName;
@@ -161,17 +169,12 @@ class OnlineDataBase {
 
   Future<bool> fillStudents(List<StudentEntity> list) async {
     // TODO: sort by alphabet, but remember to fill head(now index = 0, won't be later)
-    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
+    _spreadsheet = await _getSpreadsheetByTableID(_infoTableID);
     List<Future> tasks = [];
-    _namesSheet = _spreadsheet!.worksheetByTitle(_namesSheetName);
-    _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
+    _namesSheet = _getWorksheetByName(_namesSheetName);
+    _infoSheet = _getWorksheetByName(_infoSheetName);
     if (_namesSheet == null || _infoSheet == null) {
-      tasks.add(_namesSheet == null ? _spreadsheet!.addWorksheet(_namesSheetName) : Future.value(null));
-      tasks.add(_infoSheet == null ? _spreadsheet!.addWorksheet(_infoSheetName) : Future.value(null));
-      final result = await Future.wait(tasks);
-      _namesSheet = result[0];
-      _infoSheet = result[1];
-      tasks = [];
+      tasks = await _createWorksheets([_namesSheetName, _infoSheetName]);
     }
     final result = await _namesSheet?.cells.column(1);
     if (_namesSheet == null || result == null) {
@@ -200,10 +203,19 @@ class OnlineDataBase {
     return true;
   }
 
+  Future<List<Future<dynamic>>> _createWorksheets(List<String> workSheetsNameList) async {
+    List<Future> tasks =
+        List.generate(workSheetsNameList.length, (index) => _spreadsheet!.addWorksheet(workSheetsNameList[index]));
+    // tasks.add(_namesSheet == null ? _spreadsheet!.addWorksheet(_namesSheetName) : Future.value(null));
+    // tasks.add(_infoSheet == null ? _spreadsheet!.addWorksheet(_infoSheetName) : Future.value(null));
+    await Future.wait(tasks);
+    return tasks;
+  }
+
   Future<List<StudentEntity>> getStudents() async {
-    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
-    _namesSheet = _spreadsheet!.worksheetByTitle(_namesSheetName);
-    _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
+    _spreadsheet = await _getSpreadsheetByTableID(_infoTableID);
+    _namesSheet = _getWorksheetByName(_namesSheetName);
+    _infoSheet = _getWorksheetByName(_infoSheetName);
     final names = (await _namesSheet!.cells.column(1, fromRow: 2))
         .map((e) => e.value)
         .where((element) => element.isNotEmpty)
@@ -218,49 +230,82 @@ class OnlineDataBase {
   }
 
   Future<String> getHeadName() async {
-    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
-    _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
+    _spreadsheet = await _getSpreadsheetByTableID(_infoTableID);
+    _infoSheet = _getWorksheetByName(_infoSheetName);
     return (await _infoSheet!.cells.cellByKeys(rowKey: _headMan, columnKey: _values))!.value;
   }
 
   Future<int?> getWorkCount(String tableID, int rowNumber) async {
-    _spreadsheet = await _gsheets.spreadsheet(tableID);
-    final queueSheet = _spreadsheet!.worksheetByTitle(_queueSheetName);
-    final value = (await queueSheet!.cells.cell(row: rowNumber, column: 2)).value;
+    _spreadsheet = await _getSpreadsheetByTableID(tableID);
+    final queueSheet = _getWorksheetByName(_queueSheetName);
+    final value = (await queueSheet.cells.cell(row: rowNumber, column: 2)).value;
     return int.tryParse(value);
   }
 
   ///Returns List of [LessonSettingEntity] and lesson online table id
   Future<(Future<List<LessonSettingEntity>>, Future<List<String>>)> getLessons() async {
-    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
-    _lessonsSheet = _spreadsheet!.worksheetByTitle(_lessonsSheetName);
-    _lessonTimesSheet = _spreadsheet!.worksheetByTitle(_lessonTimesSheetName);
-    List<String> lessonIDs = [];
-    final lessonTimes = await _lessonTimesSheet!.values.allRows(fromRow: 2);
+    await _updateInfoTableReference();
+    _updateLessonsSheetReference();
+    _updateLessonTimesSheetReference();
+    List<String> lessonIDList = [];
+    final lessonTimesTableRows = await _getLessonTimesTableRows();
     final lessons = _lessonsSheet!.values
         .allRows(fromRow: 2)
-        .then((value) => value.map((lessonRow) async {
-              lessonIDs.add(lessonRow[2]);
-              final times = lessonTimes.where((lessonID) => lessonID[0] == lessonRow[0]).toList().map((time) {
-                if (time[1] == '-') {
-                  return WeeklyLessonSettingEntity(
-                      time[3].toTimeOfDay, time[4].toTimeOfDay, time[2].split(',').map((e) => int.parse(e)).toList());
-                } else {
-                  final dates = time[1].split(',').map((e) => e.toDate).toList();
-                  return DatedLessonSettingEntity(time[3].toTimeOfDay, time[4].toTimeOfDay, dates);
-                }
-              });
-              final lesson =
-                  LessonSettingEntity(lessonRow[1], times.toList(), lessonRow[3] == 'true', lessonRow[4] == 'true');
-              return lesson;
-            }))
+        .then((tableRows) => tableRows
+            .map((lessonRow) async => _parseLessonSettingEntity(lessonIDList, lessonRow, lessonTimesTableRows)))
         .then((value) => Future.wait(value.toList()));
-    return (lessons, Future.value(lessonIDs));
+    return (lessons, Future.value(lessonIDList));
   }
 
+  LessonSettingEntity _parseLessonSettingEntity(
+      List<String> lessonIDList, List<String> lessonRow, List<List<String>> lessonTimesTableRows) {
+    void fillLessonIDList(List<String> lessonIDs, List<String> lessonRow) {
+      lessonIDs.add(lessonRow[2]);
+    }
+
+    fillLessonIDList(lessonIDList, lessonRow);
+    final times = lessonTimesTableRows.where((lessonID) => lessonID[0] == lessonRow[0]).toList().map((row) {
+      if (_lessonIsWeekly(row)) {
+        return _parseWeeklyLessonSettingEntity(row);
+      } else {
+        return _parseDatedLessonSettingEntity(row);
+      }
+    });
+    return _filledLessonSettingEntity(lessonRow, times);
+  }
+
+  Future<List<List<String>>> _getLessonTimesTableRows() async => await _lessonTimesSheet!.values.allRows(fromRow: 2);
+
+  void _updateLessonTimesSheetReference() {
+    _lessonTimesSheet = _getWorksheetByName(_lessonTimesSheetName);
+  }
+
+  void _updateLessonsSheetReference() {
+    _lessonsSheet = _getWorksheetByName(_lessonsSheetName);
+  }
+
+  Future<void> _updateInfoTableReference() async {
+    _spreadsheet = await _getSpreadsheetByTableID(_infoTableID);
+  }
+
+  LessonSettingEntity _filledLessonSettingEntity(List<String> lessonRow, Iterable<LessonTime> times) =>
+      LessonSettingEntity(lessonRow[1], times.toList(), lessonRow[3] == 'true', lessonRow[4] == 'true');
+
+  DatedLessonSettingEntity _parseDatedLessonSettingEntity(List<String> row) {
+    final dates = row[1].split(',').map((e) => e.toDate).toList();
+    return DatedLessonSettingEntity(row[3].toTimeOfDay, row[4].toTimeOfDay, dates);
+  }
+
+  WeeklyLessonSettingEntity _parseWeeklyLessonSettingEntity(List<String> row) {
+    return WeeklyLessonSettingEntity(
+        row[3].toTimeOfDay, row[4].toTimeOfDay, row[2].split(',').map((e) => int.parse(e)).toList());
+  }
+
+  bool _lessonIsWeekly(List<String> time) => time[1] == '-';
+
   Future<bool> fillGroupInfo(String headManName, String groupName) async {
-    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
-    _infoSheet = _spreadsheet!.worksheetByTitle(_infoSheetName);
+    _spreadsheet = await _getSpreadsheetByTableID(_infoTableID);
+    _infoSheet = _getWorksheetByName(_infoSheetName);
     await Future.wait([
       _infoSheet?.values.insertValueByKeys(headManName, columnKey: _values, rowKey: _headMan) ?? Future(() => null),
       _infoSheet?.values.insertValueByKeys(groupName, columnKey: _values, rowKey: _group) ?? Future(() => null)
@@ -270,9 +315,9 @@ class OnlineDataBase {
 
   Future<bool> fillLessons(List<LessonSettingEntity> list, List<String> ids) async {
     // TODO: get new reference when starting new interaction with google sheet
-    _spreadsheet = await _gsheets.spreadsheet(_infoTableID);
-    _lessonsSheet = _spreadsheet!.worksheetByTitle(_lessonsSheetName);
-    _lessonTimesSheet = _spreadsheet!.worksheetByTitle(_lessonTimesSheetName);
+    _spreadsheet = await _getSpreadsheetByTableID(_infoTableID);
+    _lessonsSheet = _getWorksheetByName(_lessonsSheetName);
+    _lessonTimesSheet = _getWorksheetByName(_lessonTimesSheetName);
     List<Future> tasks = [];
     if (_lessonsSheet == null || _lessonTimesSheet == null) {
       tasks.add(_lessonsSheet == null ? _spreadsheet!.addWorksheet(_lessonsSheetName) : Future.value(null));
@@ -390,8 +435,8 @@ class OnlineDataBase {
   //   return null;
   // }
 
-  Future<bool> checkIfDeleteQueue(String tableID, DateTime lastLessonTime) async {
-    final spreadSheet = await _gsheets.spreadsheet(tableID);
+  Future<bool> checkIfShouldDeleteQueue(String tableID, DateTime lastLessonTime) async {
+    final spreadSheet = await _getSpreadsheetByTableID(tableID);
     final infoSheet = spreadSheet.worksheetByTitle(_infoSheetName);
     if (infoSheet == null) throw Exception("Failed to load database");
     final timeStr = await infoSheet.values.valueByKeys(columnKey: _values, rowKey: _lastDelete);
@@ -400,9 +445,11 @@ class OnlineDataBase {
     return lastDeleteTime?.isBefore(lastLessonTime) ?? true;
   }
 
+  static Future<Spreadsheet> _getSpreadsheetByTableID(String tableID) => _gsheets.spreadsheet(tableID);
+  Worksheet _getWorksheetByName(String sheetName) => _spreadsheet!.worksheetByTitle(sheetName)!;
   Future<bool> deleteQueue(String tableID) async {
     final time = DateTime.now();
-    final spreadSheet = await _gsheets.spreadsheet(tableID);
+    final spreadSheet = await _getSpreadsheetByTableID(tableID);
     final queueSheet = spreadSheet.worksheetByTitle(_queueSheetName);
     final infoSheet = spreadSheet.worksheetByTitle(_infoSheetName);
     if (queueSheet == null || infoSheet == null) throw Exception("Failed to load database");

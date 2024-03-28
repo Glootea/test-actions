@@ -15,7 +15,7 @@ class CreateGroupScreen extends StatefulWidget {
 }
 
 class _CreateGroupScreenState extends State<CreateGroupScreen> {
-  String? Name;
+  String? headName;
   String? groupName;
   int id = 1;
   List<StudentEntity> students = [];
@@ -61,7 +61,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 Text("Введите информацию", style: Theme.of(context).textTheme.headlineSmall),
                 const Gap(16),
                 TextFormField(
-                  onChanged: (value) => Name = value,
+                  onChanged: (value) => headName = value,
                   decoration: const InputDecoration(hintText: 'Ваши фамилия и имя'),
                   validator: (value) => value?.isEmpty ?? true ? "Необходимо заполнить поле" : null,
                   autovalidateMode: AutovalidateMode.always,
@@ -103,14 +103,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                 const Gap(16),
                 OutlinedButton(
                     onPressed: () {
-                      if ((Name?.isEmpty ?? true) ||
+                      if ((headName?.isEmpty ?? true) ||
                           (groupName?.isEmpty ?? true) ||
                           students.isEmpty ||
                           lessons.isEmpty) {
                         errorMessage = "Необходимо заполнить все поля, добавить хотя бы одного студента и занятие";
                         setState(() {});
                       } else {
-                        context.read<QueueBloc>().add(RegisterGroupEvent(Name!, groupName!, lessons, students));
+                        context.read<QueueBloc>().add(RegisterGroupEvent(headName!, groupName!, lessons, students));
                       }
                     },
                     child: const Text(

@@ -1,4 +1,4 @@
-package com.dev.queueminder
+package com.glootea.queueminder
 
 import io.flutter.embedding.android.FlutterActivity
 

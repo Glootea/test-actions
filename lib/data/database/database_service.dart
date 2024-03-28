@@ -277,7 +277,7 @@ class DataBaseService {
     Future getTask(String id, List tasks) async {
       final lastLessonTime = await _localDatabase.getLastLessonTime(id);
       if (lastLessonTime != null) {
-        final shouldDelete = await _onlineDataBase!.checkIfDeleteQueue(id, lastLessonTime);
+        final shouldDelete = await _onlineDataBase!.checkIfShouldDeleteQueue(id, lastLessonTime);
         if (shouldDelete) {
           tasks.add(_onlineDataBase!.deleteQueue(id));
         }

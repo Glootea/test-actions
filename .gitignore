@@ -45,3 +45,4 @@ app.*.map.json
 
 #Secret
 lib/secret/
+android/app/google-services.json
