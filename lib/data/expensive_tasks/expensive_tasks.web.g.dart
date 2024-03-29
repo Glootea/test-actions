@@ -6,7 +6,7 @@
 
 import 'package:squadron/squadron.dart';
 
-import 'expensive_tasks.dart';
+import 'package:queue/data/expensive_tasks/expensive_tasks.dart';
 
 void main() {
   /// Web entry point for ExpensiveTasks

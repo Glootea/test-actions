@@ -1,7 +1,7 @@
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:queue/data/database/providers/local_database/local_database.dart';
-import 'package:queue/data/database/providers/online_database/online_database.dart';
+import 'package:queue/data/database/sources/local_database/local_database.dart';
+import 'package:queue/data/database/sources/online_database/online_database.dart';
 import 'package:queue/entities/export.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:queue/extension.dart';
@@ -62,7 +62,7 @@ class DataBaseService {
     }).timeout(const Duration(seconds: 5));
   }
 
-  Future<List<LessonEntity>> todayLessons(DateTime today, String studentName) {
+  Future<List<LessonDisplayedEntity>> todayLessons(DateTime today, String studentName) {
     return _localDatabase.todayLessons(today, studentName);
   }
 
@@ -91,7 +91,7 @@ class DataBaseService {
   }
 
   Future<void> registerGroup(
-      List<LessonSettingEntity> lessons, List<StudentEntity> students, String headManName, String groupName) async {
+      List<LessonEntity> lessons, List<StudentEntity> students, String groupLeaderName, String groupName) async {
     if (_googleSignIn?.currentUser == null) {
       await signInGoogle();
     }
@@ -119,7 +119,7 @@ class DataBaseService {
     await Future.wait([
       insertLessons(lessons, lessonIds),
       insertStudents(students),
-      _onlineDataBase!.fillGroupInfo(headManName, groupName)
+      _onlineDataBase!.fillGroupInfo(groupLeaderName, groupName)
     ]);
   }
 
@@ -137,7 +137,7 @@ class DataBaseService {
     return onlineFile.id!;
   }
 
-  Future<void> insertLessons(List<LessonSettingEntity> lessons, List<String> lessonIds) async {
+  Future<void> insertLessons(List<LessonEntity> lessons, List<String> lessonIds) async {
     if (_onlineDataBase == null) {
       throw Exception("Online database not initialized");
     }
@@ -153,7 +153,7 @@ class DataBaseService {
     await _localDatabase.insertStudents(students);
   }
 
-  /// Provide headman's [GoogleSignInAccount] to fetch data from their Google Drive, otherwise data for drive search will be fetched from local database
+  /// Provide groupLeader's [GoogleSignInAccount] to fetch data from their Google Drive, otherwise data for drive search will be fetched from local database
   Future<void> fetchDataFromDrive({GoogleSignInAccount? account}) async {
     String? infoTableID = (account != null) ? await _findInfoTableOnDrive() : await get(StoredValues.infoTableID);
     if (infoTableID == null) {
@@ -161,15 +161,12 @@ class DataBaseService {
     }
     _onlineDataBase = await OnlineDataBase.instance(tableID: infoTableID);
     final students = await _onlineDataBase!.getStudents();
-    // final headManName = result[1] as String;
-    final _ = await Future.wait([
-      _localDatabase.insertStudents(students),
-      // _localDatabase.set(StoredValues.userName, headManName),
-      _localDatabase.set(StoredValues.infoTableID, infoTableID)
-    ]);
+
+    final _ = await Future.wait(
+        [_localDatabase.insertStudents(students), _localDatabase.set(StoredValues.infoTableID, infoTableID)]);
     final (lessons, ids) = await _onlineDataBase!.getLessons();
     final result2 = await Future.wait([lessons, ids]);
-    await _localDatabase.insertLessons(result2[0] as List<LessonSettingEntity>, result2[1] as List<String>);
+    await _localDatabase.insertLessons(result2[0] as List<LessonEntity>, result2[1] as List<String>);
   }
 
   Future<String?> _findInfoTableOnDrive() async {
@@ -212,7 +209,7 @@ class DataBaseService {
       _localDatabase.todayLessons(DateTime.now(), '')
     ]);
     final studentNames = {for (var e in result[0] as List<List>) e[0] as int: e[1] as String};
-    final lessonNames = (result[1] as List<LessonEntity>).map((e) => e.name);
+    final lessonNames = (result[1] as List<LessonDisplayedEntity>).map((e) => e.name);
     for (final lessonName in lessonNames) {
       final recs = await _localDatabase
           .getLessonTableID(lessonName)

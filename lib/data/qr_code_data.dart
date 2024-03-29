@@ -3,7 +3,9 @@ import 'package:queue/extension.dart';
 
 class QrCodeData {
   static String toQrData(String tableID, int rowNumber, DateTime time) {
-    final result = "https://queue-01-22.web.app/upload/${Encryption.encryct("&&&$tableID&&&$rowNumber&&&${time.toRecTime}")}";
+    //TODO: change to new hosting name
+    final result =
+        "https://queue-01-22.web.app/upload/${Encryption.encryct("&&&$tableID&&&$rowNumber&&&${time.toRecTime}")}";
 
     return result;
   }

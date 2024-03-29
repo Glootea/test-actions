@@ -8,8 +8,8 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:queue/data/database/database_service.dart';
-import 'package:queue/data/database/providers/local_database/local_database.dart';
-import 'package:queue/data/database/providers/online_database/online_database.dart';
+import 'package:queue/data/database/sources/local_database/local_database.dart';
+import 'package:queue/data/database/sources/online_database/online_database.dart';
 import 'package:queue/data/qr_code_data.dart';
 import 'package:queue/data/user_database.dart';
 import 'package:queue/entities/export.dart';
@@ -37,7 +37,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
         .then((value) => value == 'true' || value == null);
   }
 
-  Future<List<LessonEntity>> _todayLessons(String studentName) async {
+  Future<List<LessonDisplayedEntity>> _todayLessons(String studentName) async {
     DateTime today = DateTime.now();
     return await _databaseService.todayLessons(today, studentName);
   }
@@ -193,7 +193,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     } else {
       emit(LoadingState());
       await _databaseService.fetchDataFromDrive(account: userSignInAccount);
-      await _databaseService.set(StoredValues.userName, await _databaseService.onlineDataBase.getHeadName());
+      await _databaseService.set(StoredValues.userName, await _databaseService.onlineDataBase.getGroupLeaderName());
       final result = await (
         UserDataBase.getConfiguredUserDataBase(_databaseService.localDatabase),
         _databaseService.fetchRecs()
@@ -267,7 +267,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
   }
 
   Future<void> _emitMainState(Emitter emit,
-      {List<LessonEntity>? todayLessons,
+      {List<LessonDisplayedEntity>? todayLessons,
       bool? isAdmin,
       Uint8List? backgroundImageDecoded,
       bool? updateEnabled,
@@ -278,7 +278,7 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
       backgroundImageDecoded == null ? _getBackgroundImage() : Future.value(null),
       updateEnabled == null ? getUpdateEnabled : Future.value(null)
     ]);
-    todayLessons ??= result[0] as List<LessonEntity>;
+    todayLessons ??= result[0] as List<LessonDisplayedEntity>;
     isAdmin ??= result[1] as bool;
     backgroundImageDecoded ??= result[2] as Uint8List;
     updateEnabled ??= result[3] as bool;

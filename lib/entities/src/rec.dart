@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
-@immutable
+/// Rec - Record (Запись)
 final class RecEntity extends Equatable implements Comparable {
   final String userName;
   final String lessonName;

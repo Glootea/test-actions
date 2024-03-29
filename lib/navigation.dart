@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/screens/adminSettings/lesson_screen.dart';
-import 'package:queue/presentation/screens/adminSettings/queue_screen.dart';
-import 'package:queue/presentation/screens/adminSettings/students_screen.dart';
-import 'package:queue/presentation/screens/adminSettings/telegram_bot_screen.dart';
-import 'package:queue/presentation/screens/create_group_screen.dart';
-import 'package:queue/presentation/screens/received_invite_screen.dart';
-import 'package:queue/presentation/screens/welcome_screen.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/admin_page/adminSettings/lesson_screen.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/admin_page/adminSettings/queue_screen.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/admin_page/adminSettings/students_screen.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/admin_page/adminSettings/telegram_bot_screen.dart';
+import 'package:queue/presentation/screens/create_group_screen/create_group_screen.dart';
+import 'package:queue/presentation/screens/received_invite_screen/received_invite_screen.dart';
+import 'package:queue/presentation/screens/welcome_screen/welcome_screen.dart';
 import 'package:queue/presentation/screens/mainScreen/main_screen.dart';
-import 'package:queue/presentation/screens/upload_screen.dart';
+import 'package:queue/presentation/screens/upload_screen/upload_screen.dart';
 import 'package:go_router/go_router.dart';
-import 'package:queue/presentation/widgets/dialog_page.dart';
-import 'package:queue/presentation/widgets/qr_code_dialog.dart';
+import 'package:queue/presentation/common_src/dialog_page_generic.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/today_page/src/lesson_tile/src/qr_code_dialog.dart';
 
 class _Routes {
   static const String mainScreen = '/home'; // TODO: change and save index of subScreens
@@ -72,7 +72,7 @@ GoRouter getRouter(Bloc<QueueEvent, QueueState> bloc) => GoRouter(
         return null;
       },
       initialLocation: _Routes.mainScreen,
-      refreshListenable: _GoRouterRefreshStream(bloc.stream.map<QueueState>((event) => event as QueueState)),
+      refreshListenable: _GoRouterRefreshStream(bloc.stream.map<QueueState>((event) => event)),
       routes: [
         GoRoute(
             path: _Routes.loginScreen,

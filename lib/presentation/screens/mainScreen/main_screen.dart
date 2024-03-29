@@ -4,9 +4,9 @@ import 'package:gap/gap.dart';
 import 'package:queue/logic/bloc.dart';
 import 'package:queue/logic/events.dart';
 import 'package:queue/logic/states.dart';
-import 'package:queue/presentation/screens/mainScreen/subscreens/admin_view.dart';
-import 'package:queue/presentation/screens/mainScreen/subscreens/qr_scanner_screen.dart';
-import 'package:queue/presentation/screens/mainScreen/subscreens/today_screen.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/admin_page/admin_page.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/qr_scanner_page/qr_scanner_page.dart';
+import 'package:queue/presentation/screens/mainScreen/pages/today_page/today_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -68,9 +68,9 @@ class _MainScreenState extends State<MainScreen> {
                   controller: pageController,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    if (isAdmin) const AdminView(),
-                    const TodayScreen(),
-                    const QRScannerScreen(),
+                    if (isAdmin) const AdminPage(),
+                    const TodayPage(),
+                    const QRScannerPage(),
                   ],
                 ),
               ),

@@ -4,7 +4,7 @@ import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
 
 ///To be displayed
-final class LessonEntity extends Equatable implements Comparable {
+final class LessonDisplayedEntity extends Equatable implements Comparable {
   final String name;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
@@ -12,7 +12,7 @@ final class LessonEntity extends Equatable implements Comparable {
   final bool useWorkCount;
   final RecEntity? userRec;
   final int? userQueuePosition;
-  const LessonEntity(this.name, this.startTime, this.endTime, this.recs, this.useWorkCount,
+  const LessonDisplayedEntity(this.name, this.startTime, this.endTime, this.recs, this.useWorkCount,
       [this.userRec, this.userQueuePosition]);
   final TimeOfDay timerStartDelay = const TimeOfDay(minute: 11, hour: 0);
 
@@ -20,7 +20,7 @@ final class LessonEntity extends Equatable implements Comparable {
   bool get showTimer => timeToStart < const TimeOfDay(hour: 0, minute: 30) && timerStartDelay < timeToStart;
   TimeOfDay get timeToStart => startTime - TimeOfDay.fromDateTime(DateTime.now());
   TimeOfDay get timetillEnd => endTime - TimeOfDay.fromDateTime(DateTime.now());
-  LessonEntity copyWith(
+  LessonDisplayedEntity copyWith(
       {String? name,
       TimeOfDay? startTime,
       TimeOfDay? endTime,
@@ -28,17 +28,23 @@ final class LessonEntity extends Equatable implements Comparable {
       bool? useWorkCount,
       RecEntity? userRec,
       int? userQueuePosition}) {
-    return LessonEntity(name ?? this.name, startTime ?? this.startTime, endTime ?? this.endTime, recs ?? this.recs,
-        useWorkCount ?? this.useWorkCount, userRec ?? this.userRec, userQueuePosition ?? this.userQueuePosition);
+    return LessonDisplayedEntity(
+        name ?? this.name,
+        startTime ?? this.startTime,
+        endTime ?? this.endTime,
+        recs ?? this.recs,
+        useWorkCount ?? this.useWorkCount,
+        userRec ?? this.userRec,
+        userQueuePosition ?? this.userQueuePosition);
   }
 
-  LessonEntity copyWithoutUserRec() {
-    return LessonEntity(name, startTime, endTime, recs, useWorkCount);
+  LessonDisplayedEntity copyWithoutUserRec() {
+    return LessonDisplayedEntity(name, startTime, endTime, recs, useWorkCount);
   }
 
   @override
   int compareTo(other) {
-    if (other is LessonEntity) {
+    if (other is LessonDisplayedEntity) {
       if (startTime == other.startTime) {
         return 0;
       } else if (startTime.hour * 60 + startTime.minute < other.startTime.hour * 60 + other.startTime.minute) {
@@ -55,23 +61,23 @@ final class LessonEntity extends Equatable implements Comparable {
 }
 
 /// Used in settings menu.
-final class LessonSettingEntity {
+final class LessonEntity {
   final String name;
   final List<LessonTime> lessonTimes;
   final bool autoDelete;
   final bool useWorkCount;
-  LessonSettingEntity(this.name, this.lessonTimes, this.autoDelete, this.useWorkCount);
+  LessonEntity(this.name, this.lessonTimes, this.autoDelete, this.useWorkCount);
 
-  LessonSettingEntity copyWith({
+  LessonEntity copyWith({
     String? name,
     List<LessonTime>? lessonTimes,
-    bool? autoClean,
+    bool? autoDelete,
     bool? useWorkCount,
   }) {
-    return LessonSettingEntity(
+    return LessonEntity(
       name ?? this.name,
       lessonTimes ?? this.lessonTimes,
-      autoClean ?? this.autoDelete,
+      autoDelete ?? this.autoDelete,
       useWorkCount ?? this.useWorkCount,
     );
   }
@@ -93,12 +99,12 @@ abstract class TimeChooser extends StatefulWidget {
       {required this.innerCount, required this.onTimeChanged, required this.onDeleteButtonPressed, super.key});
 }
 
-final class WeeklyLessonSettingEntity extends LessonTime {
+final class WeeklyLessonEntity extends LessonTime {
   final List<int> weekdays;
-  const WeeklyLessonSettingEntity(super.startTime, super.endTime, this.weekdays);
+  const WeeklyLessonEntity(super.startTime, super.endTime, this.weekdays);
   @override
-  WeeklyLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<int>? weekdays}) {
-    return WeeklyLessonSettingEntity(
+  WeeklyLessonEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<int>? weekdays}) {
+    return WeeklyLessonEntity(
       startTime ?? super.startTime,
       endTime ?? super.endTime,
       weekdays ?? this.weekdays,
@@ -106,12 +112,12 @@ final class WeeklyLessonSettingEntity extends LessonTime {
   }
 }
 
-final class DatedLessonSettingEntity extends LessonTime {
+final class DatedLessonEntity extends LessonTime {
   final List<DateTime> date;
-  const DatedLessonSettingEntity(super.startTime, super.endTime, this.date);
+  const DatedLessonEntity(super.startTime, super.endTime, this.date);
   @override
-  DatedLessonSettingEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<DateTime>? date}) {
-    return DatedLessonSettingEntity(
+  DatedLessonEntity copyWith({TimeOfDay? startTime, TimeOfDay? endTime, List<DateTime>? date}) {
+    return DatedLessonEntity(
       startTime ?? super.startTime,
       endTime ?? super.endTime,
       date ?? this.date,

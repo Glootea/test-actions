@@ -67,7 +67,7 @@ class CreateGroupIntentionEvent extends QueueEvent {}
 class RegisterGroupEvent extends QueueEvent {
   final String name;
   final String groupName;
-  final List<LessonSettingEntity> lessons;
+  final List<LessonEntity> lessons;
   final List<StudentEntity> students;
 
   RegisterGroupEvent(this.name, this.groupName, this.lessons, this.students);

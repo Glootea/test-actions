@@ -12,7 +12,7 @@ class UserUnAuthenticatedState extends QueueState {
 class LoadingState extends QueueState {}
 
 class MainState extends QueueState {
-  final List<LessonEntity> todayLessons;
+  final List<LessonDisplayedEntity> todayLessons;
   final bool isAdmin;
   final String? message;
   final bool updateEnabled;

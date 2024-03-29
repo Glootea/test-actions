@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 
+@Deprecated("Should be migrated to serverless functions ")
 class TelegramBot {
   static const String _botToken = String.fromEnvironment("TELEGRAM_BOT_TOKEN");
 
