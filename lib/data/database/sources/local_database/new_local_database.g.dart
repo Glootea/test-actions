@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'local_database.dart';
+part of 'new_local_database.dart';
 
 // ignore_for_file: type=lint
 class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
@@ -590,11 +590,12 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
   }
 }
 
-class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
+class $QueueRecsTable extends QueueRecs
+    with TableInfo<$QueueRecsTable, QueueRec> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $RecsTable(this.attachedDatabase, [this._alias]);
+  $QueueRecsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -604,20 +605,20 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _studentIDMeta =
-      const VerificationMeta('studentID');
+  static const VerificationMeta _studentRowNumberMeta =
+      const VerificationMeta('studentRowNumber');
   @override
-  late final GeneratedColumn<int> studentID = GeneratedColumn<int>(
-      'student_i_d', aliasedName, false,
+  late final GeneratedColumn<int> studentRowNumber = GeneratedColumn<int>(
+      'student_row_number', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES students (row_number)'));
-  static const VerificationMeta _lessonIDMeta =
-      const VerificationMeta('lessonID');
+  static const VerificationMeta _subjectIDMeta =
+      const VerificationMeta('subjectID');
   @override
-  late final GeneratedColumn<int> lessonID = GeneratedColumn<int>(
-      'lesson_i_d', aliasedName, false,
+  late final GeneratedColumn<int> subjectID = GeneratedColumn<int>(
+      'subject_i_d', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints:
@@ -627,12 +628,11 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
   late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
       'time', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _uploadedMeta =
-      const VerificationMeta('uploaded');
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<int> uploaded = GeneratedColumn<int>(
-      'uploaded', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _workCountMeta =
       const VerificationMeta('workCount');
   @override
@@ -641,33 +641,35 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
       type: DriftSqlType.int, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, studentID, lessonID, time, uploaded, workCount];
+      [id, studentRowNumber, subjectID, time, status, workCount];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'recs';
+  static const String $name = 'queue_recs';
   @override
-  VerificationContext validateIntegrity(Insertable<Rec> instance,
+  VerificationContext validateIntegrity(Insertable<QueueRec> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('student_i_d')) {
+    if (data.containsKey('student_row_number')) {
       context.handle(
-          _studentIDMeta,
-          studentID.isAcceptableOrUnknown(
-              data['student_i_d']!, _studentIDMeta));
+          _studentRowNumberMeta,
+          studentRowNumber.isAcceptableOrUnknown(
+              data['student_row_number']!, _studentRowNumberMeta));
     } else if (isInserting) {
-      context.missing(_studentIDMeta);
+      context.missing(_studentRowNumberMeta);
     }
-    if (data.containsKey('lesson_i_d')) {
-      context.handle(_lessonIDMeta,
-          lessonID.isAcceptableOrUnknown(data['lesson_i_d']!, _lessonIDMeta));
+    if (data.containsKey('subject_i_d')) {
+      context.handle(
+          _subjectIDMeta,
+          subjectID.isAcceptableOrUnknown(
+              data['subject_i_d']!, _subjectIDMeta));
     } else if (isInserting) {
-      context.missing(_lessonIDMeta);
+      context.missing(_subjectIDMeta);
     }
     if (data.containsKey('time')) {
       context.handle(
@@ -675,11 +677,11 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
     } else if (isInserting) {
       context.missing(_timeMeta);
     }
-    if (data.containsKey('uploaded')) {
-      context.handle(_uploadedMeta,
-          uploaded.isAcceptableOrUnknown(data['uploaded']!, _uploadedMeta));
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
     } else if (isInserting) {
-      context.missing(_uploadedMeta);
+      context.missing(_statusMeta);
     }
     if (data.containsKey('work_count')) {
       context.handle(_workCountMeta,
@@ -691,80 +693,80 @@ class $RecsTable extends Recs with TableInfo<$RecsTable, Rec> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Rec map(Map<String, dynamic> data, {String? tablePrefix}) {
+  QueueRec map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Rec(
+    return QueueRec(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      studentID: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}student_i_d'])!,
-      lessonID: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}lesson_i_d'])!,
+      studentRowNumber: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}student_row_number'])!,
+      subjectID: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}subject_i_d'])!,
       time: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}time'])!,
-      uploaded: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}uploaded'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
       workCount: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}work_count']),
     );
   }
 
   @override
-  $RecsTable createAlias(String alias) {
-    return $RecsTable(attachedDatabase, alias);
+  $QueueRecsTable createAlias(String alias) {
+    return $QueueRecsTable(attachedDatabase, alias);
   }
 }
 
-class Rec extends DataClass implements Insertable<Rec> {
+class QueueRec extends DataClass implements Insertable<QueueRec> {
   final int id;
-  final int studentID;
-  final int lessonID;
+  final int studentRowNumber;
+  final int subjectID;
   final DateTime time;
-  final int uploaded;
+  final String status;
   final int? workCount;
-  const Rec(
+  const QueueRec(
       {required this.id,
-      required this.studentID,
-      required this.lessonID,
+      required this.studentRowNumber,
+      required this.subjectID,
       required this.time,
-      required this.uploaded,
+      required this.status,
       this.workCount});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['student_i_d'] = Variable<int>(studentID);
-    map['lesson_i_d'] = Variable<int>(lessonID);
+    map['student_row_number'] = Variable<int>(studentRowNumber);
+    map['subject_i_d'] = Variable<int>(subjectID);
     map['time'] = Variable<DateTime>(time);
-    map['uploaded'] = Variable<int>(uploaded);
+    map['status'] = Variable<String>(status);
     if (!nullToAbsent || workCount != null) {
       map['work_count'] = Variable<int>(workCount);
     }
     return map;
   }
 
-  RecsCompanion toCompanion(bool nullToAbsent) {
-    return RecsCompanion(
+  QueueRecsCompanion toCompanion(bool nullToAbsent) {
+    return QueueRecsCompanion(
       id: Value(id),
-      studentID: Value(studentID),
-      lessonID: Value(lessonID),
+      studentRowNumber: Value(studentRowNumber),
+      subjectID: Value(subjectID),
       time: Value(time),
-      uploaded: Value(uploaded),
+      status: Value(status),
       workCount: workCount == null && nullToAbsent
           ? const Value.absent()
           : Value(workCount),
     );
   }
 
-  factory Rec.fromJson(Map<String, dynamic> json,
+  factory QueueRec.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Rec(
+    return QueueRec(
       id: serializer.fromJson<int>(json['id']),
-      studentID: serializer.fromJson<int>(json['studentID']),
-      lessonID: serializer.fromJson<int>(json['lessonID']),
+      studentRowNumber: serializer.fromJson<int>(json['studentRowNumber']),
+      subjectID: serializer.fromJson<int>(json['subjectID']),
       time: serializer.fromJson<DateTime>(json['time']),
-      uploaded: serializer.fromJson<int>(json['uploaded']),
+      status: serializer.fromJson<String>(json['status']),
       workCount: serializer.fromJson<int?>(json['workCount']),
     );
   }
@@ -773,37 +775,37 @@ class Rec extends DataClass implements Insertable<Rec> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'studentID': serializer.toJson<int>(studentID),
-      'lessonID': serializer.toJson<int>(lessonID),
+      'studentRowNumber': serializer.toJson<int>(studentRowNumber),
+      'subjectID': serializer.toJson<int>(subjectID),
       'time': serializer.toJson<DateTime>(time),
-      'uploaded': serializer.toJson<int>(uploaded),
+      'status': serializer.toJson<String>(status),
       'workCount': serializer.toJson<int?>(workCount),
     };
   }
 
-  Rec copyWith(
+  QueueRec copyWith(
           {int? id,
-          int? studentID,
-          int? lessonID,
+          int? studentRowNumber,
+          int? subjectID,
           DateTime? time,
-          int? uploaded,
+          String? status,
           Value<int?> workCount = const Value.absent()}) =>
-      Rec(
+      QueueRec(
         id: id ?? this.id,
-        studentID: studentID ?? this.studentID,
-        lessonID: lessonID ?? this.lessonID,
+        studentRowNumber: studentRowNumber ?? this.studentRowNumber,
+        subjectID: subjectID ?? this.subjectID,
         time: time ?? this.time,
-        uploaded: uploaded ?? this.uploaded,
+        status: status ?? this.status,
         workCount: workCount.present ? workCount.value : this.workCount,
       );
   @override
   String toString() {
-    return (StringBuffer('Rec(')
+    return (StringBuffer('QueueRec(')
           ..write('id: $id, ')
-          ..write('studentID: $studentID, ')
-          ..write('lessonID: $lessonID, ')
+          ..write('studentRowNumber: $studentRowNumber, ')
+          ..write('subjectID: $subjectID, ')
           ..write('time: $time, ')
-          ..write('uploaded: $uploaded, ')
+          ..write('status: $status, ')
           ..write('workCount: $workCount')
           ..write(')'))
         .toString();
@@ -811,76 +813,76 @@ class Rec extends DataClass implements Insertable<Rec> {
 
   @override
   int get hashCode =>
-      Object.hash(id, studentID, lessonID, time, uploaded, workCount);
+      Object.hash(id, studentRowNumber, subjectID, time, status, workCount);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Rec &&
+      (other is QueueRec &&
           other.id == this.id &&
-          other.studentID == this.studentID &&
-          other.lessonID == this.lessonID &&
+          other.studentRowNumber == this.studentRowNumber &&
+          other.subjectID == this.subjectID &&
           other.time == this.time &&
-          other.uploaded == this.uploaded &&
+          other.status == this.status &&
           other.workCount == this.workCount);
 }
 
-class RecsCompanion extends UpdateCompanion<Rec> {
+class QueueRecsCompanion extends UpdateCompanion<QueueRec> {
   final Value<int> id;
-  final Value<int> studentID;
-  final Value<int> lessonID;
+  final Value<int> studentRowNumber;
+  final Value<int> subjectID;
   final Value<DateTime> time;
-  final Value<int> uploaded;
+  final Value<String> status;
   final Value<int?> workCount;
-  const RecsCompanion({
+  const QueueRecsCompanion({
     this.id = const Value.absent(),
-    this.studentID = const Value.absent(),
-    this.lessonID = const Value.absent(),
+    this.studentRowNumber = const Value.absent(),
+    this.subjectID = const Value.absent(),
     this.time = const Value.absent(),
-    this.uploaded = const Value.absent(),
+    this.status = const Value.absent(),
     this.workCount = const Value.absent(),
   });
-  RecsCompanion.insert({
+  QueueRecsCompanion.insert({
     this.id = const Value.absent(),
-    required int studentID,
-    required int lessonID,
+    required int studentRowNumber,
+    required int subjectID,
     required DateTime time,
-    required int uploaded,
+    required String status,
     this.workCount = const Value.absent(),
-  })  : studentID = Value(studentID),
-        lessonID = Value(lessonID),
+  })  : studentRowNumber = Value(studentRowNumber),
+        subjectID = Value(subjectID),
         time = Value(time),
-        uploaded = Value(uploaded);
-  static Insertable<Rec> custom({
+        status = Value(status);
+  static Insertable<QueueRec> custom({
     Expression<int>? id,
-    Expression<int>? studentID,
-    Expression<int>? lessonID,
+    Expression<int>? studentRowNumber,
+    Expression<int>? subjectID,
     Expression<DateTime>? time,
-    Expression<int>? uploaded,
+    Expression<String>? status,
     Expression<int>? workCount,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (studentID != null) 'student_i_d': studentID,
-      if (lessonID != null) 'lesson_i_d': lessonID,
+      if (studentRowNumber != null) 'student_row_number': studentRowNumber,
+      if (subjectID != null) 'subject_i_d': subjectID,
       if (time != null) 'time': time,
-      if (uploaded != null) 'uploaded': uploaded,
+      if (status != null) 'status': status,
       if (workCount != null) 'work_count': workCount,
     });
   }
 
-  RecsCompanion copyWith(
+  QueueRecsCompanion copyWith(
       {Value<int>? id,
-      Value<int>? studentID,
-      Value<int>? lessonID,
+      Value<int>? studentRowNumber,
+      Value<int>? subjectID,
       Value<DateTime>? time,
-      Value<int>? uploaded,
+      Value<String>? status,
       Value<int?>? workCount}) {
-    return RecsCompanion(
+    return QueueRecsCompanion(
       id: id ?? this.id,
-      studentID: studentID ?? this.studentID,
-      lessonID: lessonID ?? this.lessonID,
+      studentRowNumber: studentRowNumber ?? this.studentRowNumber,
+      subjectID: subjectID ?? this.subjectID,
       time: time ?? this.time,
-      uploaded: uploaded ?? this.uploaded,
+      status: status ?? this.status,
       workCount: workCount ?? this.workCount,
     );
   }
@@ -891,17 +893,17 @@ class RecsCompanion extends UpdateCompanion<Rec> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (studentID.present) {
-      map['student_i_d'] = Variable<int>(studentID.value);
+    if (studentRowNumber.present) {
+      map['student_row_number'] = Variable<int>(studentRowNumber.value);
     }
-    if (lessonID.present) {
-      map['lesson_i_d'] = Variable<int>(lessonID.value);
+    if (subjectID.present) {
+      map['subject_i_d'] = Variable<int>(subjectID.value);
     }
     if (time.present) {
       map['time'] = Variable<DateTime>(time.value);
     }
-    if (uploaded.present) {
-      map['uploaded'] = Variable<int>(uploaded.value);
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
     }
     if (workCount.present) {
       map['work_count'] = Variable<int>(workCount.value);
@@ -911,12 +913,12 @@ class RecsCompanion extends UpdateCompanion<Rec> {
 
   @override
   String toString() {
-    return (StringBuffer('RecsCompanion(')
+    return (StringBuffer('QueueRecsCompanion(')
           ..write('id: $id, ')
-          ..write('studentID: $studentID, ')
-          ..write('lessonID: $lessonID, ')
+          ..write('studentRowNumber: $studentRowNumber, ')
+          ..write('subjectID: $subjectID, ')
           ..write('time: $time, ')
-          ..write('uploaded: $uploaded, ')
+          ..write('status: $status, ')
           ..write('workCount: $workCount')
           ..write(')'))
         .toString();
@@ -1692,11 +1694,11 @@ class KeyValueStorageCompanion extends UpdateCompanion<KeyValueStorageData> {
   }
 }
 
-abstract class _$LocalDatabase extends GeneratedDatabase {
-  _$LocalDatabase(QueryExecutor e) : super(e);
+abstract class _$NewLocalDatabase extends GeneratedDatabase {
+  _$NewLocalDatabase(QueryExecutor e) : super(e);
   late final $StudentsTable students = $StudentsTable(this);
   late final $LessonsTable lessons = $LessonsTable(this);
-  late final $RecsTable recs = $RecsTable(this);
+  late final $QueueRecsTable queueRecs = $QueueRecsTable(this);
   late final $WeeklyLessonsTable weeklyLessons = $WeeklyLessonsTable(this);
   late final $DatedLessonsTable datedLessons = $DatedLessonsTable(this);
   late final $KeyValueStorageTable keyValueStorage =
@@ -1705,8 +1707,14 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [students, lessons, recs, weeklyLessons, datedLessons, keyValueStorage];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        students,
+        lessons,
+        queueRecs,
+        weeklyLessons,
+        datedLessons,
+        keyValueStorage
+      ];
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);

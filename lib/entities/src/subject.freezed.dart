@@ -16,9 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$Subject {
-  int get id => throw _privateConstructorUsedError;
+  int get localId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get tableID => throw _privateConstructorUsedError;
+  String get onlineTableID => throw _privateConstructorUsedError;
   bool get autoDelete => throw _privateConstructorUsedError;
   bool get useWorkCount => throw _privateConstructorUsedError;
 
@@ -32,9 +32,9 @@ abstract class $SubjectCopyWith<$Res> {
       _$SubjectCopyWithImpl<$Res, Subject>;
   @useResult
   $Res call(
-      {int id,
+      {int localId,
       String name,
-      String tableID,
+      String onlineTableID,
       bool autoDelete,
       bool useWorkCount});
 }
@@ -52,24 +52,24 @@ class _$SubjectCopyWithImpl<$Res, $Val extends Subject>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? localId = null,
     Object? name = null,
-    Object? tableID = null,
+    Object? onlineTableID = null,
     Object? autoDelete = null,
     Object? useWorkCount = null,
   }) {
     return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      localId: null == localId
+          ? _value.localId
+          : localId // ignore: cast_nullable_to_non_nullable
               as int,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      tableID: null == tableID
-          ? _value.tableID
-          : tableID // ignore: cast_nullable_to_non_nullable
+      onlineTableID: null == onlineTableID
+          ? _value.onlineTableID
+          : onlineTableID // ignore: cast_nullable_to_non_nullable
               as String,
       autoDelete: null == autoDelete
           ? _value.autoDelete
@@ -91,9 +91,9 @@ abstract class _$$SubjectImplCopyWith<$Res> implements $SubjectCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {int id,
+      {int localId,
       String name,
-      String tableID,
+      String onlineTableID,
       bool autoDelete,
       bool useWorkCount});
 }
@@ -109,24 +109,24 @@ class __$$SubjectImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? localId = null,
     Object? name = null,
-    Object? tableID = null,
+    Object? onlineTableID = null,
     Object? autoDelete = null,
     Object? useWorkCount = null,
   }) {
     return _then(_$SubjectImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      localId: null == localId
+          ? _value.localId
+          : localId // ignore: cast_nullable_to_non_nullable
               as int,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      tableID: null == tableID
-          ? _value.tableID
-          : tableID // ignore: cast_nullable_to_non_nullable
+      onlineTableID: null == onlineTableID
+          ? _value.onlineTableID
+          : onlineTableID // ignore: cast_nullable_to_non_nullable
               as String,
       autoDelete: null == autoDelete
           ? _value.autoDelete
@@ -144,19 +144,19 @@ class __$$SubjectImplCopyWithImpl<$Res>
 
 class _$SubjectImpl extends _Subject {
   const _$SubjectImpl(
-      {required this.id,
+      {required this.localId,
       required this.name,
-      required this.tableID,
+      required this.onlineTableID,
       required this.autoDelete,
       required this.useWorkCount})
       : super._();
 
   @override
-  final int id;
+  final int localId;
   @override
   final String name;
   @override
-  final String tableID;
+  final String onlineTableID;
   @override
   final bool autoDelete;
   @override
@@ -164,7 +164,7 @@ class _$SubjectImpl extends _Subject {
 
   @override
   String toString() {
-    return 'Subject(id: $id, name: $name, tableID: $tableID, autoDelete: $autoDelete, useWorkCount: $useWorkCount)';
+    return 'Subject(localId: $localId, name: $name, onlineTableID: $onlineTableID, autoDelete: $autoDelete, useWorkCount: $useWorkCount)';
   }
 
   @override
@@ -172,9 +172,10 @@ class _$SubjectImpl extends _Subject {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SubjectImpl &&
-            (identical(other.id, id) || other.id == id) &&
+            (identical(other.localId, localId) || other.localId == localId) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.tableID, tableID) || other.tableID == tableID) &&
+            (identical(other.onlineTableID, onlineTableID) ||
+                other.onlineTableID == onlineTableID) &&
             (identical(other.autoDelete, autoDelete) ||
                 other.autoDelete == autoDelete) &&
             (identical(other.useWorkCount, useWorkCount) ||
@@ -182,8 +183,8 @@ class _$SubjectImpl extends _Subject {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, tableID, autoDelete, useWorkCount);
+  int get hashCode => Object.hash(
+      runtimeType, localId, name, onlineTableID, autoDelete, useWorkCount);
 
   @JsonKey(ignore: true)
   @override
@@ -194,19 +195,19 @@ class _$SubjectImpl extends _Subject {
 
 abstract class _Subject extends Subject {
   const factory _Subject(
-      {required final int id,
+      {required final int localId,
       required final String name,
-      required final String tableID,
+      required final String onlineTableID,
       required final bool autoDelete,
       required final bool useWorkCount}) = _$SubjectImpl;
   const _Subject._() : super._();
 
   @override
-  int get id;
+  int get localId;
   @override
   String get name;
   @override
-  String get tableID;
+  String get onlineTableID;
   @override
   bool get autoDelete;
   @override

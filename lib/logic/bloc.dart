@@ -8,7 +8,7 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:queue/data/database/database_service.dart';
-import 'package:queue/data/database/sources/local_database/local_database.dart';
+import 'package:queue/data/database/sources/local_database/stored_values_enum.dart';
 import 'package:queue/data/database/sources/online_database/online_database.dart';
 import 'package:queue/data/qr_code_data.dart';
 import 'package:queue/data/user_database.dart';

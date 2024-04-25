@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:gsheets/gsheets.dart';
 import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/entities/src/new_lesson_time.dart';
+import 'package:queue/entities/src/new_queue_record.dart';
 import 'package:queue/entities/src/subject.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/secret/table_credentials.dart';
@@ -182,6 +185,31 @@ class NewOnlineDataBase {
     final spreadsheet = await _getSpreadsheet(_getInfoTableID);
     final worksheet = spreadsheet.worksheetByTitle(_namesSheetName);
     await worksheet!.values.insertValue(name, row: rowNumber, column: 1);
+  }
+
+  Future<bool> addNewQueueRecord(NewQueueRecord queueRecord) async {
+    try {
+      final spreadsheet = await _getSpreadsheet(queueRecord.onlineTableID);
+      final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
+      queueWorksheet!.values.insertRow(queueRecord.studentRowNumber, queueRecord.toOnlineRow);
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> deleteQueueRecord(NewQueueRecord queueRecord) async {
+    try {
+      final spreadsheet = await _getSpreadsheet(queueRecord.onlineTableID);
+      final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
+      final row = ['', queueRecord.workCount.toString()].toOnline;
+      queueWorksheet!.values.insertRow(queueRecord.studentRowNumber, row);
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
   }
 }
 

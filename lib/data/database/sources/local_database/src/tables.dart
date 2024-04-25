@@ -1,12 +1,20 @@
 import 'package:drift/drift.dart';
 
+class QueueRecs extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get studentRowNumber => integer().references(Students, #rowNumber)();
+  IntColumn get subjectID => integer().references(Lessons, #id)();
+  DateTimeColumn get time => dateTime()();
+  TextColumn get status => text()();
+  IntColumn get workCount => integer().nullable()();
+}
+
+@Deprecated("Use QueueRecs instead")
 class Recs extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get studentID => integer().references(Students, #id)();
+  IntColumn get studentID => integer().references(Students, #rowNumber)();
   IntColumn get lessonID => integer().references(Lessons, #id)();
   DateTimeColumn get time => dateTime()();
-
-  /// 1 - uploaded; 0 - not uploaded, but should be; -1 - should be deleted
   IntColumn get uploaded => integer()();
   IntColumn get workCount => integer().nullable()();
 }
@@ -22,7 +30,9 @@ class Lessons extends Table {
 
 class Students extends Table {
   @override
-  Set<Column> get primaryKey => {id};
+  Set<Column> get primaryKey => {rowNumber};
+  IntColumn get rowNumber => integer()();
+  @Deprecated("Use rowNumber instead")
   IntColumn get id => integer()();
   TextColumn get name => text()();
   BoolColumn get isAdmin => boolean().nullable()();
@@ -44,7 +54,7 @@ class DatedLessons extends Table {
   TextColumn get endTime => text()();
 }
 
-class UserInfo extends Table {
+class KeyValueStorage extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
   @override

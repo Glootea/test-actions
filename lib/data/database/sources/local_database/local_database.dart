@@ -1,22 +1,23 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:queue/data/database/sources/local_database/src/tables.dart';
+import 'package:queue/data/database/sources/local_database/stored_values_enum.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/data/database/sources/local_database/src/connection.dart' as impl;
 
 part 'local_database.g.dart';
-part 'stored_values_enum.dart';
 
-@DriftDatabase(tables: [Recs, Lessons, Students, WeeklyLessons, DatedLessons, UserInfo])
+@DriftDatabase(tables: [Recs, Lessons, Students, WeeklyLessons, DatedLessons, KeyValueStorage])
+@Deprecated("Switch to new version")
 class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(impl.connect());
 
   @override
   int get schemaVersion => 2;
-  Future<List<RecEntity>> getRecs(String lessonName) => (((select(recs).join([
+  Future<List<RecEntity>> getrecs(String lessonName) => (((select(recs).join([
         leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
-        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.rowNumber)),
       ]))
                 ..where(lessons.name.equals(lessonName) & recs.uploaded.isNotValue(-1))
                 ..orderBy([OrderingTerm.asc(recs.time)]))
@@ -28,7 +29,7 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<List<RecEntity>> getNotUploadedRecs(String userName) => (((select(recs).join([
         leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
-        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.rowNumber)),
       ])))
             ..where(students.name.equals(userName) & recs.uploaded.equals(0)))
           .get()
@@ -39,7 +40,7 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<List<RecEntity>> getNotDeletedRecs(String userName) => (((select(recs).join([
         leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
-        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.rowNumber)),
       ])))
             ..where(students.name.equals(userName) & recs.uploaded.equals(-1)))
           .get()
@@ -50,7 +51,7 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<int> getQueuePlace(String lessonName, String userName) async => (await ((select(recs).join([
         leftOuterJoin(lessons, recs.lessonID.equalsExp(lessons.id)),
-        leftOuterJoin(students, recs.studentID.equalsExp(students.id)),
+        leftOuterJoin(students, recs.studentID.equalsExp(students.rowNumber)),
       ]))
                 ..where(lessons.name.equals(lessonName))
                 ..orderBy([OrderingTerm(expression: recs.time)]))
@@ -70,7 +71,7 @@ class LocalDatabase extends _$LocalDatabase {
   Future<LessonDisplayedEntity> _mapTypedResultToLessonEntity(TypedResult rawRow, String studentName) async {
     final Map row = rawRow.rawData.data.map((key, value) => MapEntry(key.split('.').last, value));
     final lessonName = row['name']!;
-    final recs = await getRecs(lessonName);
+    final recs = await getrecs(lessonName);
     final studentRec = recs.where((element) => element.userName == studentName).firstOrNull;
     final startTime = (row['start_time']! as String).toTimeOfDay;
     final endTime = (row['end_time']! as String).toTimeOfDay;
@@ -150,16 +151,16 @@ class LocalDatabase extends _$LocalDatabase {
   }
 
   Future<String?> get(StoredValues key) async {
-    return (await (select(userInfo)..where((tbl) => tbl.key.equals(key.toString()))).getSingleOrNull())?.value;
+    return (await (select(keyValueStorage)..where((tbl) => tbl.key.equals(key.toString()))).getSingleOrNull())?.value;
   }
 
   Future<int> set(StoredValues key, String value) async {
-    return into(userInfo)
-        .insert(UserInfoCompanion(key: Value(key.toString()), value: Value(value)), mode: InsertMode.insertOrReplace);
+    return into(keyValueStorage).insert(KeyValueStorageCompanion(key: Value(key.toString()), value: Value(value)),
+        mode: InsertMode.insertOrReplace);
   }
 
   Future<int> clean(StoredValues key) async {
-    return (delete(userInfo)..where((tbl) => tbl.key.equals(key.toString()))).go();
+    return (delete(keyValueStorage)..where((tbl) => tbl.key.equals(key.toString()))).go();
   }
 
   Future<bool> isAdmin(String studentName) async {
@@ -263,7 +264,7 @@ class LocalDatabase extends _$LocalDatabase {
     await delete(students).go();
     await delete(weeklyLessons).go();
     await delete(datedLessons).go();
-    await delete(userInfo).go();
+    await delete(keyValueStorage).go();
   }
 
   @override

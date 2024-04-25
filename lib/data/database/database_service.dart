@@ -1,11 +1,13 @@
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:queue/data/database/sources/local_database/local_database.dart';
+import 'package:queue/data/database/sources/local_database/stored_values_enum.dart';
 import 'package:queue/data/database/sources/online_database/online_database.dart';
 import 'package:queue/entities/export.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:queue/extension.dart';
 
+@Deprecated("Use new version")
 class DataBaseService {
   OnlineDataBase? _onlineDataBase;
   final LocalDatabase _localDatabase;

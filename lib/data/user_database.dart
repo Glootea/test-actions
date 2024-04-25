@@ -1,5 +1,7 @@
 import 'package:queue/data/database/sources/local_database/local_database.dart';
+import 'package:queue/data/database/sources/local_database/stored_values_enum.dart';
 
+@Deprecated("Switched to cubit")
 class UserDataBase {
   final LocalDatabase _storage;
   String? _userName;

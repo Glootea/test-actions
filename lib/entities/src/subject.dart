@@ -7,9 +7,9 @@ part 'subject.freezed.dart';
 class Subject with _$Subject {
   const Subject._();
   const factory Subject({
-    required int id,
+    required int localId,
     required String name,
-    required String tableID,
+    required String onlineTableID,
     required bool autoDelete,
     required bool useWorkCount,
   }) = _Subject;
@@ -17,18 +17,18 @@ class Subject with _$Subject {
   factory Subject.fromRow(List<String> row) {
     row = row.fromOnline;
     return Subject(
-      id: int.parse(row[0]),
+      localId: int.parse(row[0]),
       name: row[1],
-      tableID: row[2],
+      onlineTableID: row[2],
       autoDelete: row[3] == 'true',
       useWorkCount: row[4] == 'true',
     );
   }
   List<String> get toRow {
     final row = [
-      id.toString(),
+      localId.toString(),
       name,
-      tableID,
+      onlineTableID,
       autoDelete ? 'true' : 'false',
       useWorkCount ? 'true' : 'false',
     ];
