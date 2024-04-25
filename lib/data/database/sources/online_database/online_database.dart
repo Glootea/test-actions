@@ -8,6 +8,7 @@ import 'package:queue/extension.dart';
 import 'package:queue/secret/table_credentials.dart';
 part 'table_strings.dart';
 
+@Deprecated("Switch to new version")
 class OnlineDataBase {
   static final _gsheets = GSheets(CREDENTIALS);
   Spreadsheet? _spreadsheet;
@@ -53,22 +54,9 @@ class OnlineDataBase {
     final result = await Future.wait([insertInfo, insertNames, insertLessons, insertLessonTimes]);
     final _ = await spreadsheet.deleteWorksheet(spreadsheet.worksheetByIndex(0)!);
     final fillInfo1 = result[0].values.insertRow(1, [_keys, _values]);
-    final fillInfo2 = result[0].values.insertColumn(
-        1,
-        [
-          _group,
-          _groupLeader,
-          _admins,
-        ],
-        fromRow: 2);
+    final fillInfo2 = result[0].values.insertColumn(1, [_group, _groupLeader, _admins], fromRow: 2);
     final fillNames = result[1].values.insertRow(1, [_nameSurname]);
-    final fillLessons = result[2].values.insertRow(1, [
-      _id,
-      _name,
-      _tableID,
-      _autodelete,
-      _useDoneWorkCount,
-    ]);
+    final fillLessons = result[2].values.insertRow(1, [_id, _name, _tableID, _autodelete, _useDoneWorkCount]);
     final fillLessonTimes = result[3].values.insertRow(1, [_id, _dates, _weekdays, _startTime, _endTime]);
     await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
   }
@@ -89,67 +77,98 @@ class OnlineDataBase {
   }
 
   Future<List<RecEntity>> getRecs(Map<int, String> students, String lessonName, String tableID) async {
-    List<RecEntity> result = <RecEntity>[];
-    try {
-      final queueSheet =
-          await _getSpreadsheetByTableID(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
-      if (queueSheet == null) return result;
-      final (onlineTimes, workCountString) =
-          await (queueSheet.values.column(1, fromRow: 2), queueSheet.values.column(2, fromRow: 2)).wait;
-      final workCountList = List.generate(onlineTimes.length, (index) => 0);
+    late List<RecEntity> result;
 
-      for (int i = 0; i < workCountString.length; i++) {
-        if (workCountString[i].isNotEmpty) {
-          workCountList[i] = int.parse(workCountString[i]);
-        }
-      }
-      for (int i = 0; i < onlineTimes.length; i++) {
-        final onlineTime = onlineTimes[i];
-        if (onlineTime.isNotEmpty) {
-          final time = onlineTime.toRecDateTime;
-          result.add(RecEntity(students[i + 2]!, time, lessonName, isUploaded: true, workCount: workCountList[i]));
-        }
-      }
+    try {
+      final queueSheet = await _getQueueSheet(tableID);
+      if (queueSheet == null) throw Exception("Failed to load database");
+      final (onlineTimes, workCountString) = await (_getOnlineTimes(queueSheet), _getWorkCount(queueSheet)).wait;
+      final workCountList = List.filled(onlineTimes.length, 0);
+      result = _parseRecEntityList(onlineTimes, students, lessonName, workCountList, workCountString);
     } catch (e) {
       log("Failed to get recs: $e");
     }
     return result;
   }
 
-  static Future<(int, String?)> getQueuePosition(String queueTableID, int rowNumber) async {
-    Future<List<DateTime>> getRecTimeList(Worksheet? queueSheet) {
-      return queueSheet?.values.column(1, fromRow: 2).then((value) => value.map((e) => e.toRecDateTime).toList())
-          as Future<List<DateTime>>;
+  List<RecEntity> _parseRecEntityList(List<String> onlineTimes, Map<int, String> students, String lessonName,
+      List<int> workCountList, List<String> workCountString) {
+    final recEntities = <RecEntity>[];
+    for (int i = 0; i < onlineTimes.length; i++) {
+      final recEntity = _parseRecEntity(onlineTimes, i, students, lessonName, workCountList);
+      if (recEntity != null) {
+        recEntities.add(recEntity);
+      }
+      _parseWorkCount(workCountString, i, workCountList);
     }
+    return recEntities;
+  }
 
-    Future<String?> getInfoTableID(Worksheet? infoQueueSheet) =>
-        infoQueueSheet?.values.valueByKeys(rowKey: _infoTableIDString, columnKey: _values) as Future<String?>;
+  RecEntity? _parseRecEntity(
+      List<String> onlineTimes, int i, Map<int, String> students, String lessonName, List<int> workCountList) {
+    final onlineTime = onlineTimes[i];
+    if (onlineTime.isNotEmpty) {
+      final time = onlineTime.toRecDateTime;
+      return RecEntity(students[i + 2]!, time, lessonName, isUploaded: true, workCount: workCountList[i]);
+    }
+    return null;
+  }
 
-    Future<List<String>> getStudentNameList(String? tableID) async =>
-        (await _getSpreadsheetByTableID(tableID!)).worksheetByTitle(_namesSheetName)?.values.column(1, fromRow: 2)
-            as Future<List<String>>;
+  void _parseWorkCount(List<String> workCountString, int i, List<int> workCountList) {
+    if (workCountString[i].isNotEmpty) {
+      workCountList[i] = int.parse(workCountString[i]);
+    }
+  }
 
-    final [queueSheet, infoQueueSheet] = await _gsheets
-        .spreadsheet(queueTableID)
-        .then((value) => [value.worksheetByTitle(_queueSheetName), value.worksheetByTitle(_infoSheetName)]);
-    final [onlineTimes as List<DateTime>?, studentNames as List<String>?] = await Future.wait([
-      getRecTimeList(queueSheet),
-      getInfoTableID(infoQueueSheet).then((infoTableID) async => await getStudentNameList(infoTableID))
-    ]);
-    if (onlineTimes == null || studentNames == null) throw Exception("Failed to load database");
-    String? userName;
-    final sortedRecs = List.generate(onlineTimes.length, (index) {
-      if (index + 2 == rowNumber) userName = studentNames[index];
-      return RecEntity(studentNames[index], onlineTimes[index], 'junkLessonName');
-    })
-      ..sort();
-    if (userName == null) throw Exception("Failed to find user");
+  Future<List<String>> _getOnlineTimes(Worksheet queueSheet) => (queueSheet.values.column(1, fromRow: 2));
+  Future<List<String>> _getWorkCount(Worksheet queueSheet) => queueSheet.values.column(2, fromRow: 2);
+
+  Future<Worksheet?> _getQueueSheet(String tableID) async =>
+      _getSpreadsheetByTableID(tableID).then((value) => value.worksheetByTitle(_queueSheetName));
+
+  static Future<(int, String?)> getQueuePosition(String queueTableID, int rowNumber) async {
+    final (queueSheet, infoQueueSheet) = await _getQueueSheetTables(queueTableID);
+    final (onlineTimes, studentNames) = await (
+      _getRecTimeList(queueSheet),
+      _getStudentNameListFromQueueSheet(infoQueueSheet),
+    ).wait;
+
+    final recs = List.generate(
+        onlineTimes.length, (index) => RecEntity(studentNames[index], onlineTimes[index], 'junkLessonName'));
+    String userName = recs[rowNumber - 2].userName;
+    final sortedRecs = recs..sort();
+    // if (userName == null) throw Exception("Failed to find user");
     int queuePosition = sortedRecs.indexWhere((element) => element.userName == userName);
     if (queuePosition != 0) {
       return (queuePosition + 1, sortedRecs[queuePosition - 1].userName);
     }
     return (queuePosition + 1, null);
   }
+
+  // static String? _getUserName(List<String> studentNames, int index, int rowNumber) {
+  //   if (index + 2 == rowNumber) return studentNames[index];
+  //   return null;
+  // }
+
+  static Future<List<String>> _getStudentNameListFromQueueSheet(Worksheet infoQueueSheet) =>
+      _getInfoTableID(infoQueueSheet).then((infoTableID) async => await _getStudentNameList(infoTableID));
+
+  static Future<(Worksheet, Worksheet)> _getQueueSheetTables(String queueTableID) {
+    return _gsheets
+        .spreadsheet(queueTableID)
+        .then((value) => ((value.worksheetByTitle(_queueSheetName)!, value.worksheetByTitle(_infoSheetName)!)));
+  }
+
+  static Future<List<DateTime>> _getRecTimeList(Worksheet? queueSheet) {
+    return queueSheet?.values.column(1, fromRow: 2).then((value) => value.map((e) => e.toRecDateTime).toList())
+        as Future<List<DateTime>>;
+  }
+
+  static Future<String?> _getInfoTableID(Worksheet? infoQueueSheet) =>
+      infoQueueSheet?.values.valueByKeys(rowKey: _infoTableIDString, columnKey: _values) as Future<String?>;
+  static Future<List<String>> _getStudentNameList(String? tableID) async =>
+      (await _getSpreadsheetByTableID(tableID!)).worksheetByTitle(_namesSheetName)?.values.column(1, fromRow: 2)
+          as Future<List<String>>;
 
   static Future<bool> createRec(String lessonTableID, int onlineTableRowNumber, DateTime time) async {
     try {
@@ -170,9 +189,9 @@ class OnlineDataBase {
   Future<bool> fillStudents(List<StudentEntity> list) async {
     // TODO: sort by alphabet, but remember to fill head(now index = 0, won't be later)
     _spreadsheet = await _getSpreadsheetByTableID(_infoTableID);
-    List<Future> tasks = [];
     _namesSheet = _getWorksheetByName(_namesSheetName);
     _infoSheet = _getWorksheetByName(_infoSheetName);
+    List<Future> tasks = [];
     if (_namesSheet == null || _infoSheet == null) {
       tasks = await _createWorksheets([_namesSheetName, _infoSheetName]);
     }
@@ -264,13 +283,8 @@ class OnlineDataBase {
     }
 
     fillLessonIDList(lessonIDList, lessonRow);
-    final times = lessonTimesTableRows.where((lessonID) => lessonID[0] == lessonRow[0]).toList().map((row) {
-      if (_lessonIsWeekly(row)) {
-        return _parseWeeklyLessonSettingEntity(row);
-      } else {
-        return _parseDatedLessonSettingEntity(row);
-      }
-    });
+    final times = lessonTimesTableRows.where((lessonID) => lessonID[0] == lessonRow[0]).toList().map(
+        (row) => _lessonIsWeekly(row) ? _parseWeeklyLessonSettingEntity(row) : _parseDatedLessonSettingEntity(row));
     return _filledLessonSettingEntity(lessonRow, times);
   }
 
@@ -403,8 +417,8 @@ class OnlineDataBase {
           lessonIndex,
           '-',
           weeklyLesson.weekdays.join(', ').toOnline,
-          weeklyLesson.startTime.toShortString.toOnline,
-          weeklyLesson.endTime.toShortString.toOnline
+          weeklyLesson.startTime.toOnlineString.toOnline,
+          weeklyLesson.endTime.toOnlineString.toOnline
         ]) ??
         Future.value(null);
   }
@@ -415,8 +429,8 @@ class OnlineDataBase {
           lessonIndex,
           datedLesson.date.map((e) => e.toOnlineDateString).join(',').toOnline,
           '-',
-          datedLesson.startTime.toShortString.toOnline,
-          datedLesson.endTime.toShortString.toOnline
+          datedLesson.startTime.toOnlineString.toOnline,
+          datedLesson.endTime.toOnlineString.toOnline
         ]) ??
         Future.value(null);
   }

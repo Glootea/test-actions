@@ -29,7 +29,6 @@ class MyApp extends StatelessWidget {
   const MyApp(this.userDataBase, this.databaseService, {super.key});
   final DataBaseService databaseService;
   final UserDataBase userDataBase;
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final bloc = QueueBloc(userDataBase, databaseService, LoadingState());
@@ -37,51 +36,48 @@ class MyApp extends StatelessWidget {
     return BlocProvider<QueueBloc>.value(
       value: bloc..add(FindUserEvent()),
       child: Consumer(
-        builder: (context, a, b) => MaterialApp.router(
-            title: "QueueMinder",
-            builder: (context, child) => MediaQuery(
-                data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child ?? Container()),
-            routerConfig: router,
-            theme: ThemeData(
-                fontFamily: 'Roboto',
-                colorScheme: const ColorScheme(
-                    brightness: Brightness.dark,
-                    primary: Colors.white,
-                    onPrimary: Colors.black,
-                    secondary: Colors.grey,
-                    onSecondary: Colors.black,
-                    error: Colors.red,
-                    onError: Colors.redAccent,
-                    background: Colors.black,
-                    onBackground: Colors.white,
-                    surface: Colors.black38,
-                    onSurface: Colors.white,
-                    primaryContainer: Colors.black,
-                    onPrimaryContainer: Colors.white),
-                textTheme: Typography.dense2021
-                    .copyWith(
-                        // bodySmall: Theme.of(context).textTheme.body,
-                        headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
-                        displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
-                        displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
-                        titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
-                        bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
-                        bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
-                        headlineMedium: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
-                        headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white))
-                    .apply(fontFamily: 'Roboto'),
-
-                // outlinedButtonTheme: OutlinedButtonThemeData(
-                //   style: OutlinedButton.styleFrom(
-                //     textStyle: const TextStyle(color: Colors.black),
-                //     backgroundColor: Colors.white.withOpacity(0.8),
-                //     side: const BorderSide(color: Colors.black, width: 1.5),
-                //   ),
-                // ),
-                useMaterial3: true,
-                timePickerTheme: TimePickerThemeData(dayPeriodColor: Theme.of(context).colorScheme.primaryContainer))),
+        builder: (context, a, b) {
+          final typographyTheme = Typography.dense2021
+              .copyWith(
+                  headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
+                  displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
+                  displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
+                  titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+                  bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                  bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
+                  headlineMedium: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+                  headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white))
+              .apply(fontFamily: 'Roboto');
+          return MaterialApp.router(
+              title: "QueueMinder",
+              builder: (context, child) => MediaQuery(
+                    data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                    child: child ?? Container(),
+                  ),
+              routerConfig: router,
+              theme: ThemeData(
+                  fontFamily: 'Roboto',
+                  colorScheme: _colorTheme,
+                  textTheme: typographyTheme,
+                  timePickerTheme:
+                      TimePickerThemeData(dayPeriodColor: Theme.of(context).colorScheme.primaryContainer)));
+        },
       ),
     );
-    // home: const LoginScreen(),
   }
 }
+
+const _colorTheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: Colors.white,
+    onPrimary: Colors.black,
+    secondary: Colors.grey,
+    onSecondary: Colors.black,
+    error: Colors.red,
+    onError: Colors.redAccent,
+    background: Colors.black,
+    onBackground: Colors.white,
+    surface: Colors.black38,
+    onSurface: Colors.white,
+    primaryContainer: Colors.black,
+    onPrimaryContainer: Colors.white);

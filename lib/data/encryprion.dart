@@ -10,13 +10,7 @@ class Encryption {
   static final _encrypter = Encrypter(AES(Key.fromBase64(_encriptionKey), padding: null));
   static final _iv = IV.fromBase64(_encriptionKey.substring(0, 4));
   static String encryct(String data) {
-    final output = _encrypter
-        .encrypt(
-          data,
-          iv: _iv,
-        )
-        .base64
-        .replaceAll('/', '[]');
+    final output = _encrypter.encrypt(data, iv: _iv).base64.replaceAll('/', '[]');
     return output;
   }
 

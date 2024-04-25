@@ -104,7 +104,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                               }
                                             },
                                             child:
-                                                Text(widget.weeklyLessons[widget.innerCount].startTime.toShortString)),
+                                                Text(widget.weeklyLessons[widget.innerCount].startTime.toOnlineString)),
                                       )
                                     ],
                                   ),
@@ -134,7 +134,8 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                                                 newSetState(() {});
                                               }
                                             },
-                                            child: Text(widget.weeklyLessons[widget.innerCount].endTime.toShortString)),
+                                            child:
+                                                Text(widget.weeklyLessons[widget.innerCount].endTime.toOnlineString)),
                                       ),
                                     ],
                                   )
@@ -168,7 +169,7 @@ class _WeeklyLessonTileState extends State<WeeklyLessonTile> {
                       ),
                     ),
                     Text(
-                        ": ${widget.weeklyLessons[widget.innerCount].startTime.toShortString} - ${widget.weeklyLessons[widget.innerCount].endTime.toShortString}"),
+                        ": ${widget.weeklyLessons[widget.innerCount].startTime.toOnlineString} - ${widget.weeklyLessons[widget.innerCount].endTime.toOnlineString}"),
                     TextButton(
                         onPressed: () =>
                             widget.onDeleteButtonPressed((context.findRenderObject() as RenderBox).size.height),

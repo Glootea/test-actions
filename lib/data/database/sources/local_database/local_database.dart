@@ -187,8 +187,8 @@ class LocalDatabase extends _$LocalDatabase {
               .map((lesson) => lesson.weekdays.map((weekday) => WeeklyLessonsCompanion(
                   lessonID: Value(id),
                   weekDay: Value(weekday),
-                  startTime: Value(lesson.startTime.toShortString),
-                  endTime: Value(lesson.endTime.toShortString))))
+                  startTime: Value(lesson.startTime.toOnlineString),
+                  endTime: Value(lesson.endTime.toOnlineString))))
               .toList()
               .expand((element) => element),
           mode: InsertMode.insertOrReplace);
@@ -198,8 +198,8 @@ class LocalDatabase extends _$LocalDatabase {
               .map((lesson) => lesson.date.map((date) => DatedLessonsCompanion(
                   lessonID: Value(id),
                   date: Value(date),
-                  startTime: Value(lesson.startTime.toShortString),
-                  endTime: Value(lesson.endTime.toShortString))))
+                  startTime: Value(lesson.startTime.toOnlineString),
+                  endTime: Value(lesson.endTime.toOnlineString))))
               .toList()
               .expand((element) => element),
           mode: InsertMode.insertOrReplace);

@@ -21,7 +21,7 @@ extension TimeArithmetic on TimeOfDay {
     return false;
   }
 
-  String get toShortString {
+  String get toOnlineString {
     return '$hour:${minute < 10 ? '0$minute' : minute}';
   }
 }
@@ -36,10 +36,6 @@ extension TimeFromString on String {
     List<int> list = split('-').map((e) => int.parse(e)).toList();
     return DateTime(list[0], list[1], list[2], list[3], list[4], list[5], list[6]);
   }
-
-  String get toOnline => "'$this";
-
-  ///Used to store time in online spreadsheet to prevent from being proportion of day
 }
 
 extension DateToString on DateTime {
@@ -57,6 +53,18 @@ extension DateStringToDate on String {
     final numbers = split('.').map((e) => int.parse(e)).toList();
     return DateTime(numbers[2], numbers[1], numbers[0]);
   }
+
+  List<DateTime> get toDatesList => split(',').map((e) => e.toDate).toList();
+
+  List<int> get toWeekDays => split(',').map((e) => int.parse(e)).toList();
+}
+
+extension WeekDays on List<int> {
+  String get toOnlineString => join(',');
+}
+
+extension Dates on List<DateTime> {
+  String get toOnlineString => map((e) => e.toOnlineDateString).join(',');
 }
 
 class MultipleFilesOnDiskException implements Exception {
@@ -67,4 +75,17 @@ class MultipleFilesOnDiskException implements Exception {
 class NoFileFoundOnDiskException implements Exception {
   final String message;
   NoFileFoundOnDiskException(this.message);
+}
+
+extension HandleBlank on List<String> {
+  /// Useful when selecting several columns at a time for mathing rows
+  List<String?> get getHandledBlanks => map((cell) => cell.isEmpty ? null : cell).toList();
+  List<String> get removeBlanks => where((cell) => cell.isNotEmpty).toList();
+  List<String> get toOnline => map((e) => e.toOnline).toList();
+  List<String> get fromOnline => map((e) => e.fromOnline).toList();
+}
+
+extension Online on String {
+  String get toOnline => "'$this";
+  String get fromOnline => substring(1);
 }

@@ -60,7 +60,19 @@ final class LessonDisplayedEntity extends Equatable implements Comparable {
   List<Object?> get props => [name, startTime, endTime, recs, userRec, userQueuePosition];
 }
 
+class SubjectInfo {
+  final DateTime lastDelete;
+
+  SubjectInfo({required this.lastDelete});
+  factory SubjectInfo.fromMap(Map<String, dynamic> json) {
+    return SubjectInfo(
+      lastDelete: DateTime.parse(json['lastDelete'] as String), //TODO: now: 17.11.2022 -> accepted: 18-11-2022
+    );
+  }
+}
+
 /// Used in settings menu.
+@Deprecated("Switch to freezed version")
 final class LessonEntity {
   final String name;
   final List<LessonTime> lessonTimes;

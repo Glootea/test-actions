@@ -1,5 +1,6 @@
 part of 'online_database.dart';
 
+// part of 'new_online_database.dart';
 const String _infoSheetName = 'info';
 const String _namesSheetName = 'names';
 const String _lessonsSheetName = 'lessons';
