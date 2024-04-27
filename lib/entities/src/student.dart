@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-@immutable
-final class StudentEntity {
-  final String name;
-  final bool isAdmin;
-  final int onlineTableRowNumber;
-  StudentEntity copyWith({String? name, int? onlineTableRowNumber, bool? isAdmin}) {
-    return StudentEntity(name ?? this.name, onlineTableRowNumber ?? this.onlineTableRowNumber, isAdmin: isAdmin ?? this.isAdmin);
-  }
+part 'student.freezed.dart';
 
-  const StudentEntity(this.name, this.onlineTableRowNumber, {this.isAdmin = false});
+@freezed
+class StudentEntity with _$StudentEntity {
+  const factory StudentEntity({
+    required String name,
+    required bool isAdmin,
+    required int onlineTableRowNumber,
+  }) = _StudentEntity;
 }

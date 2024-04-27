@@ -9,15 +9,15 @@ class QueueRecs extends Table {
   IntColumn get workCount => integer().nullable()();
 }
 
-@Deprecated("Use QueueRecs instead")
-class Recs extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get studentID => integer().references(Students, #rowNumber)();
-  IntColumn get lessonID => integer().references(Lessons, #id)();
-  DateTimeColumn get time => dateTime()();
-  IntColumn get uploaded => integer()();
-  IntColumn get workCount => integer().nullable()();
-}
+// @Deprecated("Use QueueRecs instead")
+// class Recs extends Table {
+//   IntColumn get id => integer().autoIncrement()();
+//   IntColumn get studentID => integer().references(Students, #rowNumber)();
+//   IntColumn get lessonID => integer().references(Lessons, #id)();
+//   DateTimeColumn get time => dateTime()();
+//   IntColumn get uploaded => integer()();
+//   IntColumn get workCount => integer().nullable()();
+// }
 
 class Lessons extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -32,8 +32,8 @@ class Students extends Table {
   @override
   Set<Column> get primaryKey => {rowNumber};
   IntColumn get rowNumber => integer()();
-  @Deprecated("Use rowNumber instead")
-  IntColumn get id => integer()();
+  // @Deprecated("Use rowNumber instead")
+  // IntColumn get id => integer()();
   TextColumn get name => text()();
   BoolColumn get isAdmin => boolean().nullable()();
 }

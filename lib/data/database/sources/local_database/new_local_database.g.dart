@@ -14,11 +14,6 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
   late final GeneratedColumn<int> rowNumber = GeneratedColumn<int>(
       'row_number', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -34,7 +29,7 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("is_admin" IN (0, 1))'));
   @override
-  List<GeneratedColumn> get $columns => [rowNumber, id, name, isAdmin];
+  List<GeneratedColumn> get $columns => [rowNumber, name, isAdmin];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -48,11 +43,6 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
     if (data.containsKey('row_number')) {
       context.handle(_rowNumberMeta,
           rowNumber.isAcceptableOrUnknown(data['row_number']!, _rowNumberMeta));
-    }
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -75,8 +65,6 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
     return Student(
       rowNumber: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}row_number'])!,
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       isAdmin: attachedDatabase.typeMapping
@@ -92,19 +80,13 @@ class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
 
 class Student extends DataClass implements Insertable<Student> {
   final int rowNumber;
-  final int id;
   final String name;
   final bool? isAdmin;
-  const Student(
-      {required this.rowNumber,
-      required this.id,
-      required this.name,
-      this.isAdmin});
+  const Student({required this.rowNumber, required this.name, this.isAdmin});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['row_number'] = Variable<int>(rowNumber);
-    map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || isAdmin != null) {
       map['is_admin'] = Variable<bool>(isAdmin);
@@ -115,7 +97,6 @@ class Student extends DataClass implements Insertable<Student> {
   StudentsCompanion toCompanion(bool nullToAbsent) {
     return StudentsCompanion(
       rowNumber: Value(rowNumber),
-      id: Value(id),
       name: Value(name),
       isAdmin: isAdmin == null && nullToAbsent
           ? const Value.absent()
@@ -128,7 +109,6 @@ class Student extends DataClass implements Insertable<Student> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Student(
       rowNumber: serializer.fromJson<int>(json['rowNumber']),
-      id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       isAdmin: serializer.fromJson<bool?>(json['isAdmin']),
     );
@@ -138,7 +118,6 @@ class Student extends DataClass implements Insertable<Student> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'rowNumber': serializer.toJson<int>(rowNumber),
-      'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'isAdmin': serializer.toJson<bool?>(isAdmin),
     };
@@ -146,12 +125,10 @@ class Student extends DataClass implements Insertable<Student> {
 
   Student copyWith(
           {int? rowNumber,
-          int? id,
           String? name,
           Value<bool?> isAdmin = const Value.absent()}) =>
       Student(
         rowNumber: rowNumber ?? this.rowNumber,
-        id: id ?? this.id,
         name: name ?? this.name,
         isAdmin: isAdmin.present ? isAdmin.value : this.isAdmin,
       );
@@ -159,7 +136,6 @@ class Student extends DataClass implements Insertable<Student> {
   String toString() {
     return (StringBuffer('Student(')
           ..write('rowNumber: $rowNumber, ')
-          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('isAdmin: $isAdmin')
           ..write(')'))
@@ -167,57 +143,46 @@ class Student extends DataClass implements Insertable<Student> {
   }
 
   @override
-  int get hashCode => Object.hash(rowNumber, id, name, isAdmin);
+  int get hashCode => Object.hash(rowNumber, name, isAdmin);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Student &&
           other.rowNumber == this.rowNumber &&
-          other.id == this.id &&
           other.name == this.name &&
           other.isAdmin == this.isAdmin);
 }
 
 class StudentsCompanion extends UpdateCompanion<Student> {
   final Value<int> rowNumber;
-  final Value<int> id;
   final Value<String> name;
   final Value<bool?> isAdmin;
   const StudentsCompanion({
     this.rowNumber = const Value.absent(),
-    this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.isAdmin = const Value.absent(),
   });
   StudentsCompanion.insert({
     this.rowNumber = const Value.absent(),
-    required int id,
     required String name,
     this.isAdmin = const Value.absent(),
-  })  : id = Value(id),
-        name = Value(name);
+  }) : name = Value(name);
   static Insertable<Student> custom({
     Expression<int>? rowNumber,
-    Expression<int>? id,
     Expression<String>? name,
     Expression<bool>? isAdmin,
   }) {
     return RawValuesInsertable({
       if (rowNumber != null) 'row_number': rowNumber,
-      if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (isAdmin != null) 'is_admin': isAdmin,
     });
   }
 
   StudentsCompanion copyWith(
-      {Value<int>? rowNumber,
-      Value<int>? id,
-      Value<String>? name,
-      Value<bool?>? isAdmin}) {
+      {Value<int>? rowNumber, Value<String>? name, Value<bool?>? isAdmin}) {
     return StudentsCompanion(
       rowNumber: rowNumber ?? this.rowNumber,
-      id: id ?? this.id,
       name: name ?? this.name,
       isAdmin: isAdmin ?? this.isAdmin,
     );
@@ -228,9 +193,6 @@ class StudentsCompanion extends UpdateCompanion<Student> {
     final map = <String, Expression>{};
     if (rowNumber.present) {
       map['row_number'] = Variable<int>(rowNumber.value);
-    }
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -245,7 +207,6 @@ class StudentsCompanion extends UpdateCompanion<Student> {
   String toString() {
     return (StringBuffer('StudentsCompanion(')
           ..write('rowNumber: $rowNumber, ')
-          ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('isAdmin: $isAdmin')
           ..write(')'))
