@@ -66,6 +66,8 @@ dependencies:
   squadron_builder: ^2.4.5
   freezed: ^2.5.2
   freezed_annotation: ^2.4.1
+  go_router_builder: ^2.6.0
+  rive: ^0.13.2
 
 dev_dependencies:
   flutter_test:
@@ -93,6 +95,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/panda.png
+    - assets/queue.riv
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'main_screen_cubit.dart';
+part of 'today_screen_cubit.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -19,6 +19,7 @@ mixin _$MainScreenState {
   List<NewLesson> get newLessonList => throw _privateConstructorUsedError;
   Map<String, List<NewQueueRecord>> get recList =>
       throw _privateConstructorUsedError;
+  LoadingState get isLoading => throw _privateConstructorUsedError;
   DialogData? get dialogData => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -35,6 +36,7 @@ abstract class $MainScreenStateCopyWith<$Res> {
   $Res call(
       {List<NewLesson> newLessonList,
       Map<String, List<NewQueueRecord>> recList,
+      LoadingState isLoading,
       DialogData? dialogData});
 }
 
@@ -53,6 +55,7 @@ class _$MainScreenStateCopyWithImpl<$Res, $Val extends MainScreenState>
   $Res call({
     Object? newLessonList = null,
     Object? recList = null,
+    Object? isLoading = null,
     Object? dialogData = freezed,
   }) {
     return _then(_value.copyWith(
@@ -64,6 +67,10 @@ class _$MainScreenStateCopyWithImpl<$Res, $Val extends MainScreenState>
           ? _value.recList
           : recList // ignore: cast_nullable_to_non_nullable
               as Map<String, List<NewQueueRecord>>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as LoadingState,
       dialogData: freezed == dialogData
           ? _value.dialogData
           : dialogData // ignore: cast_nullable_to_non_nullable
@@ -83,6 +90,7 @@ abstract class _$$MainScreenStateImplCopyWith<$Res>
   $Res call(
       {List<NewLesson> newLessonList,
       Map<String, List<NewQueueRecord>> recList,
+      LoadingState isLoading,
       DialogData? dialogData});
 }
 
@@ -99,6 +107,7 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
   $Res call({
     Object? newLessonList = null,
     Object? recList = null,
+    Object? isLoading = null,
     Object? dialogData = freezed,
   }) {
     return _then(_$MainScreenStateImpl(
@@ -110,6 +119,10 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
           ? _value._recList
           : recList // ignore: cast_nullable_to_non_nullable
               as Map<String, List<NewQueueRecord>>,
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as LoadingState,
       dialogData: freezed == dialogData
           ? _value.dialogData
           : dialogData // ignore: cast_nullable_to_non_nullable
@@ -124,6 +137,7 @@ class _$MainScreenStateImpl implements _MainScreenState {
   const _$MainScreenStateImpl(
       {required final List<NewLesson> newLessonList,
       required final Map<String, List<NewQueueRecord>> recList,
+      this.isLoading = LoadingState.loaded,
       this.dialogData})
       : _newLessonList = newLessonList,
         _recList = recList;
@@ -145,11 +159,14 @@ class _$MainScreenStateImpl implements _MainScreenState {
   }
 
   @override
+  @JsonKey()
+  final LoadingState isLoading;
+  @override
   final DialogData? dialogData;
 
   @override
   String toString() {
-    return 'MainScreenState(newLessonList: $newLessonList, recList: $recList, dialogData: $dialogData)';
+    return 'MainScreenState(newLessonList: $newLessonList, recList: $recList, isLoading: $isLoading, dialogData: $dialogData)';
   }
 
   @override
@@ -160,6 +177,8 @@ class _$MainScreenStateImpl implements _MainScreenState {
             const DeepCollectionEquality()
                 .equals(other._newLessonList, _newLessonList) &&
             const DeepCollectionEquality().equals(other._recList, _recList) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading) &&
             (identical(other.dialogData, dialogData) ||
                 other.dialogData == dialogData));
   }
@@ -169,6 +188,7 @@ class _$MainScreenStateImpl implements _MainScreenState {
       runtimeType,
       const DeepCollectionEquality().hash(_newLessonList),
       const DeepCollectionEquality().hash(_recList),
+      isLoading,
       dialogData);
 
   @JsonKey(ignore: true)
@@ -183,12 +203,15 @@ abstract class _MainScreenState implements MainScreenState {
   const factory _MainScreenState(
       {required final List<NewLesson> newLessonList,
       required final Map<String, List<NewQueueRecord>> recList,
+      final LoadingState isLoading,
       final DialogData? dialogData}) = _$MainScreenStateImpl;
 
   @override
   List<NewLesson> get newLessonList;
   @override
   Map<String, List<NewQueueRecord>> get recList;
+  @override
+  LoadingState get isLoading;
   @override
   DialogData? get dialogData;
   @override

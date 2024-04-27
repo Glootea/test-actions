@@ -15,13 +15,15 @@ class NewDatabaseService {
 
   Future<List<NewLesson>> todayLessons() async {
     // final date = DateTime.now();
+    return Future.delayed(const Duration(milliseconds: 5200), () => []);
     // TODO: implement
     throw UnimplementedError();
   }
 
   /// {"SubjectName": [NewQueueRecord]}
   Future<Map<String, List<NewQueueRecord>>> getQueueRecords(List<String> onlineTableID) // TODO: implement
-  {
+  async {
+    return <String, List<NewQueueRecord>>{};
     throw UnimplementedError();
   }
 

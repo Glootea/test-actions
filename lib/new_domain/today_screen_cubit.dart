@@ -1,25 +1,29 @@
 import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:go_router/go_router.dart';
 import 'package:queue/data/database/new_database_service.dart';
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
 import 'package:queue/new_domain/user_cubit.dart';
-part 'main_screen_cubit.freezed.dart';
+import 'package:queue/navigation.dart';
+part 'today_screen_cubit.freezed.dart';
 
-class MainScreenCubit extends Cubit<MainScreenState?> {
+abstract class LoadableCubit<T> extends Cubit<T> {
+  LoadableCubit(super.initialState);
+
+  void endLoading();
+}
+
+class TodayScreenCubit extends LoadableCubit<MainScreenState> {
   final NewDatabaseService _databaseService;
   final UserCubit _userCubit;
-  final GoRouter _router;
-  MainScreenCubit({required NewDatabaseService databaseService, required UserCubit userCubit, required GoRouter router})
+
+  TodayScreenCubit({required NewDatabaseService databaseService, required UserCubit userCubit})
       : _databaseService = databaseService,
-        _router = router,
         _userCubit = userCubit,
-        super(null) {
+        super(MainScreenState.loading()) {
     _userCubitSubscription = _userCubit.stream.listen((state) {
-      if (state == null) _router.push('/login');
+      if (state == null) router.push('/login');
     });
   }
 
@@ -29,13 +33,13 @@ class MainScreenCubit extends Cubit<MainScreenState?> {
     final todayLessons = await _databaseService.todayLessons();
     final onlineTableIDs = todayLessons.map((e) => e.onlineTableID).toList();
     final queueRecordList = await _databaseService.getQueueRecords(onlineTableIDs);
-    emit(MainScreenState(newLessonList: todayLessons, recList: queueRecordList));
+    emit(MainScreenState(newLessonList: todayLessons, recList: queueRecordList, isLoading: LoadingState.loaded));
   }
 
   Future<void> addNewQueueRecord({required int index}) async {
-    final lesson = state!.newLessonList[index];
+    final lesson = state.newLessonList[index];
     var queueRec = _getNewQueueRecord(lesson);
-    state!.recList[lesson.name]!.add(queueRec);
+    state.recList[lesson.name]!.add(queueRec);
     emit(state);
     final uploaded = await _databaseService.addNewQueueRecord(queueRec, _userCubit.rowNumber);
     if (uploaded) {
@@ -54,20 +58,20 @@ class MainScreenCubit extends Cubit<MainScreenState?> {
       );
 
   int? _getWorkCount(String lessonName) {
-    return state!.recList[lessonName]
+    return state.recList[lessonName]
         ?.firstWhere((queueRec) => queueRec.studentRowNumber == _userCubit.rowNumber)
         .workCount;
   }
 
   void _setLastQueueRecordToUploaded(NewQueueRecord queueRec, String lessonName) {
     queueRec = queueRec.copyWith(status: NewQueueRecordStatus.uploaded);
-    state!.recList[lessonName]!.removeLast();
-    state!.recList[lessonName]!.add(queueRec);
+    state.recList[lessonName]!.removeLast();
+    state.recList[lessonName]!.add(queueRec);
   }
 
   Future<void> deleteQueueRecord({required NewQueueRecord queueRecord}) async {
-    final lessons = state!.newLessonList.where((element) => element.localID == queueRecord.localSubjectID);
-    lessons.map((lesson) => state!.recList[lesson.name]!.remove(queueRecord));
+    final lessons = state.newLessonList.where((element) => element.localID == queueRecord.localSubjectID);
+    lessons.map((lesson) => state.recList[lesson.name]!.remove(queueRecord));
     emit(state);
     await _databaseService.deleteQueueRecord(queueRecord);
   }
@@ -77,15 +81,30 @@ class MainScreenCubit extends Cubit<MainScreenState?> {
     _userCubitSubscription.cancel();
     return super.close();
   }
+
+  @override
+  void endLoading() => emit(state.copyWith(isLoading: LoadingState.ended));
+}
+
+enum LoadingState { started, loaded, ended, error }
+
+abstract interface class LoadableState {
+  final LoadingState isLoading;
+  const LoadableState(this.isLoading);
 }
 
 @freezed
-class MainScreenState with _$MainScreenState {
+class MainScreenState with _$MainScreenState implements LoadableState {
+  // @override
+  // LoadingState get isLoading;
   const factory MainScreenState({
     required List<NewLesson> newLessonList,
     required Map<String, List<NewQueueRecord>> recList,
+    @Default(LoadingState.loaded) LoadingState isLoading,
     DialogData? dialogData,
   }) = _MainScreenState;
+  factory MainScreenState.loading() =>
+      const MainScreenState(newLessonList: [], recList: {}, isLoading: LoadingState.started);
 }
 
 abstract class DialogData {
