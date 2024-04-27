@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 class QueueRecs extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get studentRowNumber => integer().references(Students, #rowNumber)();
-  IntColumn get subjectID => integer().references(Lessons, #id)();
+  IntColumn get subjectID => integer().references(Subject, #id)();
   DateTimeColumn get time => dateTime()();
   TextColumn get status => text()();
   IntColumn get workCount => integer().nullable()();
@@ -19,7 +19,7 @@ class QueueRecs extends Table {
 //   IntColumn get workCount => integer().nullable()();
 // }
 
-class Lessons extends Table {
+class Subject extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get onlineID => text()();
@@ -40,7 +40,7 @@ class Students extends Table {
 
 class WeeklyLessons extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get lessonID => integer().references(Lessons, #id)();
+  IntColumn get lessonID => integer().references(Subject, #id)();
   TextColumn get startTime => text()();
   TextColumn get endTime => text()();
   IntColumn get weekDay => integer()();
@@ -48,13 +48,13 @@ class WeeklyLessons extends Table {
 
 class DatedLessons extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get lessonID => integer().references(Lessons, #id)();
+  IntColumn get lessonID => integer().references(Subject, #id)();
   DateTimeColumn get date => dateTime()();
   TextColumn get startTime => text()();
   TextColumn get endTime => text()();
 }
 
-class KeyValueStorage extends Table {
+class KeyValueStorageTable extends Table {
   TextColumn get key => text()();
   TextColumn get value => text()();
   @override

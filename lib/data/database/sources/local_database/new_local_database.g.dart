@@ -214,11 +214,11 @@ class StudentsCompanion extends UpdateCompanion<Student> {
   }
 }
 
-class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
+class $SubjectTable extends Subject with TableInfo<$SubjectTable, SubjectData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $LessonsTable(this.attachedDatabase, [this._alias]);
+  $SubjectTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -270,9 +270,9 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'lessons';
+  static const String $name = 'subject';
   @override
-  VerificationContext validateIntegrity(Insertable<Lesson> instance,
+  VerificationContext validateIntegrity(Insertable<SubjectData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -319,9 +319,9 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Lesson map(Map<String, dynamic> data, {String? tablePrefix}) {
+  SubjectData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Lesson(
+    return SubjectData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
@@ -338,19 +338,19 @@ class $LessonsTable extends Lessons with TableInfo<$LessonsTable, Lesson> {
   }
 
   @override
-  $LessonsTable createAlias(String alias) {
-    return $LessonsTable(attachedDatabase, alias);
+  $SubjectTable createAlias(String alias) {
+    return $SubjectTable(attachedDatabase, alias);
   }
 }
 
-class Lesson extends DataClass implements Insertable<Lesson> {
+class SubjectData extends DataClass implements Insertable<SubjectData> {
   final int id;
   final String name;
   final String onlineID;
   final bool autoDelete;
   final bool useWorkCount;
   final DateTime? lastDelete;
-  const Lesson(
+  const SubjectData(
       {required this.id,
       required this.name,
       required this.onlineID,
@@ -371,8 +371,8 @@ class Lesson extends DataClass implements Insertable<Lesson> {
     return map;
   }
 
-  LessonsCompanion toCompanion(bool nullToAbsent) {
-    return LessonsCompanion(
+  SubjectCompanion toCompanion(bool nullToAbsent) {
+    return SubjectCompanion(
       id: Value(id),
       name: Value(name),
       onlineID: Value(onlineID),
@@ -384,10 +384,10 @@ class Lesson extends DataClass implements Insertable<Lesson> {
     );
   }
 
-  factory Lesson.fromJson(Map<String, dynamic> json,
+  factory SubjectData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Lesson(
+    return SubjectData(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       onlineID: serializer.fromJson<String>(json['onlineID']),
@@ -409,14 +409,14 @@ class Lesson extends DataClass implements Insertable<Lesson> {
     };
   }
 
-  Lesson copyWith(
+  SubjectData copyWith(
           {int? id,
           String? name,
           String? onlineID,
           bool? autoDelete,
           bool? useWorkCount,
           Value<DateTime?> lastDelete = const Value.absent()}) =>
-      Lesson(
+      SubjectData(
         id: id ?? this.id,
         name: name ?? this.name,
         onlineID: onlineID ?? this.onlineID,
@@ -426,7 +426,7 @@ class Lesson extends DataClass implements Insertable<Lesson> {
       );
   @override
   String toString() {
-    return (StringBuffer('Lesson(')
+    return (StringBuffer('SubjectData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('onlineID: $onlineID, ')
@@ -443,7 +443,7 @@ class Lesson extends DataClass implements Insertable<Lesson> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Lesson &&
+      (other is SubjectData &&
           other.id == this.id &&
           other.name == this.name &&
           other.onlineID == this.onlineID &&
@@ -452,14 +452,14 @@ class Lesson extends DataClass implements Insertable<Lesson> {
           other.lastDelete == this.lastDelete);
 }
 
-class LessonsCompanion extends UpdateCompanion<Lesson> {
+class SubjectCompanion extends UpdateCompanion<SubjectData> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> onlineID;
   final Value<bool> autoDelete;
   final Value<bool> useWorkCount;
   final Value<DateTime?> lastDelete;
-  const LessonsCompanion({
+  const SubjectCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.onlineID = const Value.absent(),
@@ -467,7 +467,7 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
     this.useWorkCount = const Value.absent(),
     this.lastDelete = const Value.absent(),
   });
-  LessonsCompanion.insert({
+  SubjectCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String onlineID,
@@ -478,7 +478,7 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
         onlineID = Value(onlineID),
         autoDelete = Value(autoDelete),
         useWorkCount = Value(useWorkCount);
-  static Insertable<Lesson> custom({
+  static Insertable<SubjectData> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? onlineID,
@@ -496,14 +496,14 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
     });
   }
 
-  LessonsCompanion copyWith(
+  SubjectCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
       Value<String>? onlineID,
       Value<bool>? autoDelete,
       Value<bool>? useWorkCount,
       Value<DateTime?>? lastDelete}) {
-    return LessonsCompanion(
+    return SubjectCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       onlineID: onlineID ?? this.onlineID,
@@ -539,7 +539,7 @@ class LessonsCompanion extends UpdateCompanion<Lesson> {
 
   @override
   String toString() {
-    return (StringBuffer('LessonsCompanion(')
+    return (StringBuffer('SubjectCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('onlineID: $onlineID, ')
@@ -583,7 +583,7 @@ class $QueueRecsTable extends QueueRecs
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
+          GeneratedColumn.constraintIsAlways('REFERENCES subject (id)'));
   static const VerificationMeta _timeMeta = const VerificationMeta('time');
   @override
   late final GeneratedColumn<DateTime> time = GeneratedColumn<DateTime>(
@@ -909,7 +909,7 @@ class $WeeklyLessonsTable extends WeeklyLessons
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
+          GeneratedColumn.constraintIsAlways('REFERENCES subject (id)'));
   static const VerificationMeta _startTimeMeta =
       const VerificationMeta('startTime');
   @override
@@ -1201,7 +1201,7 @@ class $DatedLessonsTable extends DatedLessons
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES lessons (id)'));
+          GeneratedColumn.constraintIsAlways('REFERENCES subject (id)'));
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
@@ -1469,12 +1469,12 @@ class DatedLessonsCompanion extends UpdateCompanion<DatedLesson> {
   }
 }
 
-class $KeyValueStorageTable extends KeyValueStorage
-    with TableInfo<$KeyValueStorageTable, KeyValueStorageData> {
+class $KeyValueStorageTableTable extends KeyValueStorageTable
+    with TableInfo<$KeyValueStorageTableTable, KeyValueStorageTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $KeyValueStorageTable(this.attachedDatabase, [this._alias]);
+  $KeyValueStorageTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _keyMeta = const VerificationMeta('key');
   @override
   late final GeneratedColumn<String> key = GeneratedColumn<String>(
@@ -1491,10 +1491,10 @@ class $KeyValueStorageTable extends KeyValueStorage
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'key_value_storage';
+  static const String $name = 'key_value_storage_table';
   @override
   VerificationContext validateIntegrity(
-      Insertable<KeyValueStorageData> instance,
+      Insertable<KeyValueStorageTableData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1516,9 +1516,10 @@ class $KeyValueStorageTable extends KeyValueStorage
   @override
   Set<GeneratedColumn> get $primaryKey => {key};
   @override
-  KeyValueStorageData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  KeyValueStorageTableData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return KeyValueStorageData(
+    return KeyValueStorageTableData(
       key: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
       value: attachedDatabase.typeMapping
@@ -1527,16 +1528,16 @@ class $KeyValueStorageTable extends KeyValueStorage
   }
 
   @override
-  $KeyValueStorageTable createAlias(String alias) {
-    return $KeyValueStorageTable(attachedDatabase, alias);
+  $KeyValueStorageTableTable createAlias(String alias) {
+    return $KeyValueStorageTableTable(attachedDatabase, alias);
   }
 }
 
-class KeyValueStorageData extends DataClass
-    implements Insertable<KeyValueStorageData> {
+class KeyValueStorageTableData extends DataClass
+    implements Insertable<KeyValueStorageTableData> {
   final String key;
   final String value;
-  const KeyValueStorageData({required this.key, required this.value});
+  const KeyValueStorageTableData({required this.key, required this.value});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1545,17 +1546,17 @@ class KeyValueStorageData extends DataClass
     return map;
   }
 
-  KeyValueStorageCompanion toCompanion(bool nullToAbsent) {
-    return KeyValueStorageCompanion(
+  KeyValueStorageTableCompanion toCompanion(bool nullToAbsent) {
+    return KeyValueStorageTableCompanion(
       key: Value(key),
       value: Value(value),
     );
   }
 
-  factory KeyValueStorageData.fromJson(Map<String, dynamic> json,
+  factory KeyValueStorageTableData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return KeyValueStorageData(
+    return KeyValueStorageTableData(
       key: serializer.fromJson<String>(json['key']),
       value: serializer.fromJson<String>(json['value']),
     );
@@ -1569,14 +1570,14 @@ class KeyValueStorageData extends DataClass
     };
   }
 
-  KeyValueStorageData copyWith({String? key, String? value}) =>
-      KeyValueStorageData(
+  KeyValueStorageTableData copyWith({String? key, String? value}) =>
+      KeyValueStorageTableData(
         key: key ?? this.key,
         value: value ?? this.value,
       );
   @override
   String toString() {
-    return (StringBuffer('KeyValueStorageData(')
+    return (StringBuffer('KeyValueStorageTableData(')
           ..write('key: $key, ')
           ..write('value: $value')
           ..write(')'))
@@ -1588,27 +1589,28 @@ class KeyValueStorageData extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is KeyValueStorageData &&
+      (other is KeyValueStorageTableData &&
           other.key == this.key &&
           other.value == this.value);
 }
 
-class KeyValueStorageCompanion extends UpdateCompanion<KeyValueStorageData> {
+class KeyValueStorageTableCompanion
+    extends UpdateCompanion<KeyValueStorageTableData> {
   final Value<String> key;
   final Value<String> value;
   final Value<int> rowid;
-  const KeyValueStorageCompanion({
+  const KeyValueStorageTableCompanion({
     this.key = const Value.absent(),
     this.value = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  KeyValueStorageCompanion.insert({
+  KeyValueStorageTableCompanion.insert({
     required String key,
     required String value,
     this.rowid = const Value.absent(),
   })  : key = Value(key),
         value = Value(value);
-  static Insertable<KeyValueStorageData> custom({
+  static Insertable<KeyValueStorageTableData> custom({
     Expression<String>? key,
     Expression<String>? value,
     Expression<int>? rowid,
@@ -1620,9 +1622,9 @@ class KeyValueStorageCompanion extends UpdateCompanion<KeyValueStorageData> {
     });
   }
 
-  KeyValueStorageCompanion copyWith(
+  KeyValueStorageTableCompanion copyWith(
       {Value<String>? key, Value<String>? value, Value<int>? rowid}) {
-    return KeyValueStorageCompanion(
+    return KeyValueStorageTableCompanion(
       key: key ?? this.key,
       value: value ?? this.value,
       rowid: rowid ?? this.rowid,
@@ -1646,7 +1648,7 @@ class KeyValueStorageCompanion extends UpdateCompanion<KeyValueStorageData> {
 
   @override
   String toString() {
-    return (StringBuffer('KeyValueStorageCompanion(')
+    return (StringBuffer('KeyValueStorageTableCompanion(')
           ..write('key: $key, ')
           ..write('value: $value, ')
           ..write('rowid: $rowid')
@@ -1655,26 +1657,26 @@ class KeyValueStorageCompanion extends UpdateCompanion<KeyValueStorageData> {
   }
 }
 
-abstract class _$NewLocalDatabase extends GeneratedDatabase {
-  _$NewLocalDatabase(QueryExecutor e) : super(e);
+abstract class _$LocalDatabase extends GeneratedDatabase {
+  _$LocalDatabase(QueryExecutor e) : super(e);
   late final $StudentsTable students = $StudentsTable(this);
-  late final $LessonsTable lessons = $LessonsTable(this);
+  late final $SubjectTable subject = $SubjectTable(this);
   late final $QueueRecsTable queueRecs = $QueueRecsTable(this);
   late final $WeeklyLessonsTable weeklyLessons = $WeeklyLessonsTable(this);
   late final $DatedLessonsTable datedLessons = $DatedLessonsTable(this);
-  late final $KeyValueStorageTable keyValueStorage =
-      $KeyValueStorageTable(this);
+  late final $KeyValueStorageTableTable keyValueStorageTable =
+      $KeyValueStorageTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         students,
-        lessons,
+        subject,
         queueRecs,
         weeklyLessons,
         datedLessons,
-        keyValueStorage
+        keyValueStorageTable
       ];
   @override
   DriftDatabaseOptions get options =>

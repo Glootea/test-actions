@@ -3,19 +3,29 @@ import 'package:queue/data/database/sources/online_database/new_online_database.
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
 
-class NewDatabaseService {
-  final NewLocalDatabase _localDatabase;
-  final NewOnlineDataBase _onlineDataBase;
+class DatabaseService {
+  final LocalDatabase _localDatabase;
+  final OnlineDataBase _onlineDataBase;
 
-  NewDatabaseService({
-    required NewLocalDatabase localDatabase,
-    required NewOnlineDataBase onlineDataBase,
+  DatabaseService({
+    required LocalDatabase localDatabase,
+    required OnlineDataBase onlineDataBase,
   })  : _localDatabase = localDatabase,
         _onlineDataBase = onlineDataBase;
 
-  Future<List<NewLesson>> todayLessons() async {
+  Future<List<Lesson>> todayLessons() async {
     // final date = DateTime.now();
-    return Future.delayed(const Duration(milliseconds: 5200), () => []);
+    return Future.delayed(
+        const Duration(milliseconds: 100),
+        () => [
+              Lesson(
+                  name: "АКМС",
+                  startTime: DateTime(2024, 4, 28, 17, 0),
+                  endTime: DateTime(2024, 4, 28, 18, 30),
+                  subjectLocalID: 0,
+                  subjectOnlineTableID: '4566',
+                  recList: [])
+            ]);
     // TODO: implement
     throw UnimplementedError();
   }

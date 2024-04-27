@@ -15,35 +15,36 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$NewLesson {
+mixin _$Lesson {
   String get name => throw _privateConstructorUsedError;
-  int get localID => throw _privateConstructorUsedError;
-  String get onlineTableID => throw _privateConstructorUsedError;
   DateTime get startTime => throw _privateConstructorUsedError;
   DateTime get endTime => throw _privateConstructorUsedError;
+  int get subjectLocalID => throw _privateConstructorUsedError;
+  String get subjectOnlineTableID => throw _privateConstructorUsedError;
+  List<NewQueueRecord> get recList => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $NewLessonCopyWith<NewLesson> get copyWith =>
-      throw _privateConstructorUsedError;
+  $LessonCopyWith<Lesson> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NewLessonCopyWith<$Res> {
-  factory $NewLessonCopyWith(NewLesson value, $Res Function(NewLesson) then) =
-      _$NewLessonCopyWithImpl<$Res, NewLesson>;
+abstract class $LessonCopyWith<$Res> {
+  factory $LessonCopyWith(Lesson value, $Res Function(Lesson) then) =
+      _$LessonCopyWithImpl<$Res, Lesson>;
   @useResult
   $Res call(
       {String name,
-      int localID,
-      String onlineTableID,
       DateTime startTime,
-      DateTime endTime});
+      DateTime endTime,
+      int subjectLocalID,
+      String subjectOnlineTableID,
+      List<NewQueueRecord> recList});
 }
 
 /// @nodoc
-class _$NewLessonCopyWithImpl<$Res, $Val extends NewLesson>
-    implements $NewLessonCopyWith<$Res> {
-  _$NewLessonCopyWithImpl(this._value, this._then);
+class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
+    implements $LessonCopyWith<$Res> {
+  _$LessonCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -54,23 +55,16 @@ class _$NewLessonCopyWithImpl<$Res, $Val extends NewLesson>
   @override
   $Res call({
     Object? name = null,
-    Object? localID = null,
-    Object? onlineTableID = null,
     Object? startTime = null,
     Object? endTime = null,
+    Object? subjectLocalID = null,
+    Object? subjectOnlineTableID = null,
+    Object? recList = null,
   }) {
     return _then(_value.copyWith(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      localID: null == localID
-          ? _value.localID
-          : localID // ignore: cast_nullable_to_non_nullable
-              as int,
-      onlineTableID: null == onlineTableID
-          ? _value.onlineTableID
-          : onlineTableID // ignore: cast_nullable_to_non_nullable
               as String,
       startTime: null == startTime
           ? _value.startTime
@@ -80,13 +74,24 @@ class _$NewLessonCopyWithImpl<$Res, $Val extends NewLesson>
           ? _value.endTime
           : endTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      subjectLocalID: null == subjectLocalID
+          ? _value.subjectLocalID
+          : subjectLocalID // ignore: cast_nullable_to_non_nullable
+              as int,
+      subjectOnlineTableID: null == subjectOnlineTableID
+          ? _value.subjectOnlineTableID
+          : subjectOnlineTableID // ignore: cast_nullable_to_non_nullable
+              as String,
+      recList: null == recList
+          ? _value.recList
+          : recList // ignore: cast_nullable_to_non_nullable
+              as List<NewQueueRecord>,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$NewLessonImplCopyWith<$Res>
-    implements $NewLessonCopyWith<$Res> {
+abstract class _$$NewLessonImplCopyWith<$Res> implements $LessonCopyWith<$Res> {
   factory _$$NewLessonImplCopyWith(
           _$NewLessonImpl value, $Res Function(_$NewLessonImpl) then) =
       __$$NewLessonImplCopyWithImpl<$Res>;
@@ -94,15 +99,16 @@ abstract class _$$NewLessonImplCopyWith<$Res>
   @useResult
   $Res call(
       {String name,
-      int localID,
-      String onlineTableID,
       DateTime startTime,
-      DateTime endTime});
+      DateTime endTime,
+      int subjectLocalID,
+      String subjectOnlineTableID,
+      List<NewQueueRecord> recList});
 }
 
 /// @nodoc
 class __$$NewLessonImplCopyWithImpl<$Res>
-    extends _$NewLessonCopyWithImpl<$Res, _$NewLessonImpl>
+    extends _$LessonCopyWithImpl<$Res, _$NewLessonImpl>
     implements _$$NewLessonImplCopyWith<$Res> {
   __$$NewLessonImplCopyWithImpl(
       _$NewLessonImpl _value, $Res Function(_$NewLessonImpl) _then)
@@ -112,23 +118,16 @@ class __$$NewLessonImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? name = null,
-    Object? localID = null,
-    Object? onlineTableID = null,
     Object? startTime = null,
     Object? endTime = null,
+    Object? subjectLocalID = null,
+    Object? subjectOnlineTableID = null,
+    Object? recList = null,
   }) {
     return _then(_$NewLessonImpl(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      localID: null == localID
-          ? _value.localID
-          : localID // ignore: cast_nullable_to_non_nullable
-              as int,
-      onlineTableID: null == onlineTableID
-          ? _value.onlineTableID
-          : onlineTableID // ignore: cast_nullable_to_non_nullable
               as String,
       startTime: null == startTime
           ? _value.startTime
@@ -138,34 +137,56 @@ class __$$NewLessonImplCopyWithImpl<$Res>
           ? _value.endTime
           : endTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      subjectLocalID: null == subjectLocalID
+          ? _value.subjectLocalID
+          : subjectLocalID // ignore: cast_nullable_to_non_nullable
+              as int,
+      subjectOnlineTableID: null == subjectOnlineTableID
+          ? _value.subjectOnlineTableID
+          : subjectOnlineTableID // ignore: cast_nullable_to_non_nullable
+              as String,
+      recList: null == recList
+          ? _value._recList
+          : recList // ignore: cast_nullable_to_non_nullable
+              as List<NewQueueRecord>,
     ));
   }
 }
 
 /// @nodoc
 
-class _$NewLessonImpl implements _NewLesson {
+class _$NewLessonImpl extends _NewLesson {
   const _$NewLessonImpl(
       {required this.name,
-      required this.localID,
-      required this.onlineTableID,
       required this.startTime,
-      required this.endTime});
+      required this.endTime,
+      required this.subjectLocalID,
+      required this.subjectOnlineTableID,
+      required final List<NewQueueRecord> recList})
+      : _recList = recList,
+        super._();
 
   @override
   final String name;
   @override
-  final int localID;
-  @override
-  final String onlineTableID;
-  @override
   final DateTime startTime;
   @override
   final DateTime endTime;
+  @override
+  final int subjectLocalID;
+  @override
+  final String subjectOnlineTableID;
+  final List<NewQueueRecord> _recList;
+  @override
+  List<NewQueueRecord> get recList {
+    if (_recList is EqualUnmodifiableListView) return _recList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_recList);
+  }
 
   @override
   String toString() {
-    return 'NewLesson(name: $name, localID: $localID, onlineTableID: $onlineTableID, startTime: $startTime, endTime: $endTime)';
+    return 'Lesson(name: $name, startTime: $startTime, endTime: $endTime, subjectLocalID: $subjectLocalID, subjectOnlineTableID: $subjectOnlineTableID, recList: $recList)';
   }
 
   @override
@@ -174,17 +195,25 @@ class _$NewLessonImpl implements _NewLesson {
         (other.runtimeType == runtimeType &&
             other is _$NewLessonImpl &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.localID, localID) || other.localID == localID) &&
-            (identical(other.onlineTableID, onlineTableID) ||
-                other.onlineTableID == onlineTableID) &&
             (identical(other.startTime, startTime) ||
                 other.startTime == startTime) &&
-            (identical(other.endTime, endTime) || other.endTime == endTime));
+            (identical(other.endTime, endTime) || other.endTime == endTime) &&
+            (identical(other.subjectLocalID, subjectLocalID) ||
+                other.subjectLocalID == subjectLocalID) &&
+            (identical(other.subjectOnlineTableID, subjectOnlineTableID) ||
+                other.subjectOnlineTableID == subjectOnlineTableID) &&
+            const DeepCollectionEquality().equals(other._recList, _recList));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, name, localID, onlineTableID, startTime, endTime);
+      runtimeType,
+      name,
+      startTime,
+      endTime,
+      subjectLocalID,
+      subjectOnlineTableID,
+      const DeepCollectionEquality().hash(_recList));
 
   @JsonKey(ignore: true)
   @override
@@ -193,24 +222,28 @@ class _$NewLessonImpl implements _NewLesson {
       __$$NewLessonImplCopyWithImpl<_$NewLessonImpl>(this, _$identity);
 }
 
-abstract class _NewLesson implements NewLesson {
+abstract class _NewLesson extends Lesson {
   const factory _NewLesson(
       {required final String name,
-      required final int localID,
-      required final String onlineTableID,
       required final DateTime startTime,
-      required final DateTime endTime}) = _$NewLessonImpl;
+      required final DateTime endTime,
+      required final int subjectLocalID,
+      required final String subjectOnlineTableID,
+      required final List<NewQueueRecord> recList}) = _$NewLessonImpl;
+  const _NewLesson._() : super._();
 
   @override
   String get name;
   @override
-  int get localID;
-  @override
-  String get onlineTableID;
-  @override
   DateTime get startTime;
   @override
   DateTime get endTime;
+  @override
+  int get subjectLocalID;
+  @override
+  String get subjectOnlineTableID;
+  @override
+  List<NewQueueRecord> get recList;
   @override
   @JsonKey(ignore: true)
   _$$NewLessonImplCopyWith<_$NewLessonImpl> get copyWith =>

@@ -18,14 +18,18 @@ void main() async {
   } catch (e) {
     log(e.toString());
   }
-  NewLocalDatabase localDatabase = NewLocalDatabase();
-  NewOnlineDataBase onlineDatabase = NewOnlineDataBase();
-  NewDatabaseService databaseService = NewDatabaseService(localDatabase: localDatabase, onlineDataBase: onlineDatabase);
-  UserCubit userDataBase = UserCubit(localDatabase);
+  LocalDatabase localDatabase = LocalDatabase();
+  OnlineDataBase onlineDatabase = OnlineDataBase();
+  KeyValueStorage keyValueStorage = KeyValueStorage(localDatabase);
+  DatabaseService databaseService = DatabaseService(localDatabase: localDatabase, onlineDataBase: onlineDatabase);
+  UserCubit userDataBase = UserCubit(keyValueStorage);
 
   // final userDataBase = await UserDataBase.getConfiguredUserDataBase(databaseService.localDatabase);
-  runApp(MultiProvider(
-      providers: [Provider.value(value: databaseService), Provider.value(value: userDataBase)], child: const MyApp()));
+  runApp(MultiProvider(providers: [
+    Provider.value(value: databaseService),
+    Provider.value(value: userDataBase),
+    Provider.value(value: keyValueStorage)
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -51,6 +55,7 @@ class MyApp extends StatelessWidget {
               child: child ?? Container(),
             ),
         routerConfig: router,
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
             fontFamily: 'Roboto',
             colorScheme: _colorTheme,

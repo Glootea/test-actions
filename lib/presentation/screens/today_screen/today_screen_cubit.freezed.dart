@@ -15,35 +15,35 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$MainScreenState {
-  List<NewLesson> get newLessonList => throw _privateConstructorUsedError;
+mixin _$TodayScreenState {
+  List<Lesson> get newLessonList => throw _privateConstructorUsedError;
   Map<String, List<NewQueueRecord>> get recList =>
       throw _privateConstructorUsedError;
   LoadingState get isLoading => throw _privateConstructorUsedError;
   DialogData? get dialogData => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $MainScreenStateCopyWith<MainScreenState> get copyWith =>
+  $TodayScreenStateCopyWith<TodayScreenState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $MainScreenStateCopyWith<$Res> {
-  factory $MainScreenStateCopyWith(
-          MainScreenState value, $Res Function(MainScreenState) then) =
-      _$MainScreenStateCopyWithImpl<$Res, MainScreenState>;
+abstract class $TodayScreenStateCopyWith<$Res> {
+  factory $TodayScreenStateCopyWith(
+          TodayScreenState value, $Res Function(TodayScreenState) then) =
+      _$TodayScreenStateCopyWithImpl<$Res, TodayScreenState>;
   @useResult
   $Res call(
-      {List<NewLesson> newLessonList,
+      {List<Lesson> newLessonList,
       Map<String, List<NewQueueRecord>> recList,
       LoadingState isLoading,
       DialogData? dialogData});
 }
 
 /// @nodoc
-class _$MainScreenStateCopyWithImpl<$Res, $Val extends MainScreenState>
-    implements $MainScreenStateCopyWith<$Res> {
-  _$MainScreenStateCopyWithImpl(this._value, this._then);
+class _$TodayScreenStateCopyWithImpl<$Res, $Val extends TodayScreenState>
+    implements $TodayScreenStateCopyWith<$Res> {
+  _$TodayScreenStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -62,7 +62,7 @@ class _$MainScreenStateCopyWithImpl<$Res, $Val extends MainScreenState>
       newLessonList: null == newLessonList
           ? _value.newLessonList
           : newLessonList // ignore: cast_nullable_to_non_nullable
-              as List<NewLesson>,
+              as List<Lesson>,
       recList: null == recList
           ? _value.recList
           : recList // ignore: cast_nullable_to_non_nullable
@@ -81,14 +81,14 @@ class _$MainScreenStateCopyWithImpl<$Res, $Val extends MainScreenState>
 
 /// @nodoc
 abstract class _$$MainScreenStateImplCopyWith<$Res>
-    implements $MainScreenStateCopyWith<$Res> {
+    implements $TodayScreenStateCopyWith<$Res> {
   factory _$$MainScreenStateImplCopyWith(_$MainScreenStateImpl value,
           $Res Function(_$MainScreenStateImpl) then) =
       __$$MainScreenStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
-      {List<NewLesson> newLessonList,
+      {List<Lesson> newLessonList,
       Map<String, List<NewQueueRecord>> recList,
       LoadingState isLoading,
       DialogData? dialogData});
@@ -96,7 +96,7 @@ abstract class _$$MainScreenStateImplCopyWith<$Res>
 
 /// @nodoc
 class __$$MainScreenStateImplCopyWithImpl<$Res>
-    extends _$MainScreenStateCopyWithImpl<$Res, _$MainScreenStateImpl>
+    extends _$TodayScreenStateCopyWithImpl<$Res, _$MainScreenStateImpl>
     implements _$$MainScreenStateImplCopyWith<$Res> {
   __$$MainScreenStateImplCopyWithImpl(
       _$MainScreenStateImpl _value, $Res Function(_$MainScreenStateImpl) _then)
@@ -114,7 +114,7 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
       newLessonList: null == newLessonList
           ? _value._newLessonList
           : newLessonList // ignore: cast_nullable_to_non_nullable
-              as List<NewLesson>,
+              as List<Lesson>,
       recList: null == recList
           ? _value._recList
           : recList // ignore: cast_nullable_to_non_nullable
@@ -133,18 +133,19 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$MainScreenStateImpl implements _MainScreenState {
+class _$MainScreenStateImpl extends _MainScreenState {
   const _$MainScreenStateImpl(
-      {required final List<NewLesson> newLessonList,
+      {required final List<Lesson> newLessonList,
       required final Map<String, List<NewQueueRecord>> recList,
       this.isLoading = LoadingState.loaded,
       this.dialogData})
       : _newLessonList = newLessonList,
-        _recList = recList;
+        _recList = recList,
+        super._();
 
-  final List<NewLesson> _newLessonList;
+  final List<Lesson> _newLessonList;
   @override
-  List<NewLesson> get newLessonList {
+  List<Lesson> get newLessonList {
     if (_newLessonList is EqualUnmodifiableListView) return _newLessonList;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_newLessonList);
@@ -166,7 +167,7 @@ class _$MainScreenStateImpl implements _MainScreenState {
 
   @override
   String toString() {
-    return 'MainScreenState(newLessonList: $newLessonList, recList: $recList, isLoading: $isLoading, dialogData: $dialogData)';
+    return 'TodayScreenState(newLessonList: $newLessonList, recList: $recList, isLoading: $isLoading, dialogData: $dialogData)';
   }
 
   @override
@@ -199,15 +200,16 @@ class _$MainScreenStateImpl implements _MainScreenState {
           this, _$identity);
 }
 
-abstract class _MainScreenState implements MainScreenState {
+abstract class _MainScreenState extends TodayScreenState {
   const factory _MainScreenState(
-      {required final List<NewLesson> newLessonList,
+      {required final List<Lesson> newLessonList,
       required final Map<String, List<NewQueueRecord>> recList,
       final LoadingState isLoading,
       final DialogData? dialogData}) = _$MainScreenStateImpl;
+  const _MainScreenState._() : super._();
 
   @override
-  List<NewLesson> get newLessonList;
+  List<Lesson> get newLessonList;
   @override
   Map<String, List<NewQueueRecord>> get recList;
   @override

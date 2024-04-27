@@ -8,7 +8,7 @@ import 'package:queue/entities/src/subject.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/secret/table_credentials.dart';
 
-class NewOnlineDataBase {
+class OnlineDataBase {
   final GSheets _gsheets = GSheets(CREDENTIALS);
 
   /// {SpreadsheetID: Spreadsheet}

@@ -46,6 +46,8 @@ extension DateToString on DateTime {
   String get toRecTime {
     return '$year-$month-$day-$hour-$minute-$second-$millisecond';
   }
+
+  String get toDisplayTime => '$hour:${minute < 10 ? '0$minute' : minute}';
 }
 
 extension DateStringToDate on String {
