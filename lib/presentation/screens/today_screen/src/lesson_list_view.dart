@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/entities/src/new_lesson.dart';
-import 'package:queue/presentation/screens/today_screen/src/lesson_card.dart';
+import 'package:queue/presentation/screens/today_screen/src/lesson_card/lesson_card.dart';
 import 'package:queue/presentation/screens/today_screen/today_screen_cubit.dart';
 
 class LessonListView extends StatelessWidget {

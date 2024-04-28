@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/new_domain/user_cubit.dart';
+import 'package:queue/presentation/screens/today_screen/src/lesson_card/src/simple_clock.dart';
 
 class LessonCard extends StatelessWidget {
   final Lesson lesson;
@@ -19,13 +20,14 @@ class LessonCard extends StatelessWidget {
     final isQueueStartSoon = now.subtract(const Duration(minutes: 5)).isAfter(queueStart);
     final isUserInQueue = lesson.userInQueue(userCubit.rowNumber);
     return Card(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
         color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: switch ((isQueueNow, isQueueStartSoon, isUserInQueue)) {
           (true, _, false) => const _QueueStarted(),
           (_, true, false) => const _WaitingQueueStart(),
-          (false, false, false) => _NoQueue(lesson.name, startTime, endTime),
+          (false, false, false) => _NoQueue(lesson),
           (_, _, true) => const _UserInQueue(),
         });
   }
@@ -46,24 +48,32 @@ class _WaitingQueueStartState extends State<_WaitingQueueStart> {
 }
 
 class _NoQueue extends StatelessWidget {
-  final String name;
-  final DateTime startTime;
-  final DateTime endTime;
+  final Lesson lesson;
 
-  const _NoQueue(this.name, this.startTime, this.endTime);
+  const _NoQueue(this.lesson);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(children: [
-        Text(name, style: Theme.of(context).textTheme.headlineLarge),
-        const SizedBox(width: 16),
-        Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [Text("${startTime.toDisplayTime} - ${endTime.toDisplayTime}")]),
-      ]),
-    );
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Stack(children: [
+          Positioned.fill(
+              child: Align(
+            alignment: Alignment.centerRight,
+            child: SimpleClock(startTime: lesson.startTime, size: 64),
+          )),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(lesson.name,
+                  style: Theme.of(context).textTheme.headlineLarge,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start),
+              Text("${lesson.startTime.toDisplayTime} - ${lesson.endTime.toDisplayTime}",
+                  overflow: TextOverflow.ellipsis, textAlign: TextAlign.start),
+            ],
+          )
+        ]));
   }
 }
 

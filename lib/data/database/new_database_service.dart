@@ -19,9 +19,9 @@ class DatabaseService {
         const Duration(milliseconds: 100),
         () => [
               Lesson(
-                  name: "АКМС",
-                  startTime: DateTime(2024, 4, 28, 17, 0),
-                  endTime: DateTime(2024, 4, 28, 18, 30),
+                  name: "АКМС (Академическое моделирование систем)",
+                  startTime: DateTime(2024, 4, 28, 14, 20),
+                  endTime: DateTime(2024, 4, 28, 10, 50),
                   subjectLocalID: 0,
                   subjectOnlineTableID: '4566',
                   recList: [])
