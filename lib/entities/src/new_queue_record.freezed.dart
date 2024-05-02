@@ -164,7 +164,7 @@ class _$NewQueueRecordImpl extends _NewQueueRecord {
       required this.onlineTableID,
       required this.studentRowNumber,
       required this.time,
-      required this.workCount,
+      this.workCount,
       required this.status})
       : super._();
 
@@ -221,7 +221,7 @@ abstract class _NewQueueRecord extends NewQueueRecord {
       required final String onlineTableID,
       required final int studentRowNumber,
       required final DateTime time,
-      required final int? workCount,
+      final int? workCount,
       required final NewQueueRecordStatus status}) = _$NewQueueRecordImpl;
   const _NewQueueRecord._() : super._();
 

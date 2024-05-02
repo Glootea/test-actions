@@ -44,7 +44,7 @@
   <script src="https://unpkg.com/@zxing/library@0.19.1" type="application/javascript"></script>
   <link rel="preload" href="https://queueminder.web.app/main.dart.js" as="script">
   <link rel="preload" href="https://queueminder.web.app/sqlite3.wasm" as="fetch" crossorigin>
-  <link rel="preload" href="https://queueminder.web.app/assets/assets/panda.png" as="fetch" crossorigin>
+  <!-- <link rel="preload" href="https://queueminder.web.app/assets/assets/queue.riv" as="fetch" crossorigin> -->
   <link rel="preload" href="https://queueminder.web.app/assets/AssetManifest.bin.json" as="fetch" crossorigin>
   <link rel="preload" href="
   https://lottie.host/79fd9127-2397-42fe-9577-5258d616c7fa/3ElWD7CA3C.json" as="fetch" crossorigin>
@@ -54,27 +54,45 @@
 </head>
 
 
-<body>
-  <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
-  <div id="loading">
-    <dotlottie-player src="https://lottie.host/79fd9127-2397-42fe-9577-5258d616c7fa/3ElWD7CA3C.json"
-      background="transparent" speed="1" autoplay loop></dotlottie-player>
-  </div>
+<body style="background-color:black">
 
+  <script src="https://unpkg.com/@rive-app/canvas@2.9.1"></script>
+  <canvas id="canvas" width=300 height=300></canvas>
   <script>
+    let inputs = null;
+    const r = new rive.Rive({
+      src: "/assets/queue.riv",
+      // OR the path to a discoverable and public Rive asset
+      // src: '/public/example.riv',
+      canvas: document.getElementById("canvas"),
+      autoplay: true,
+      stateMachines: "main",
+      // animations: 'Idle',
+      onLoop: (event) => {
+        console.log("loop");
+      },
+      onLoad: () => {
+        inputs = r.stateMachineInputs('main');
+      },
+      onStateChange: (event) => {
+        console.log(event.data);
+      },
+    });
     window.addEventListener('load', function (ev) {
-      var loading = document.querySelector('#loading');
+      // var loading = document.querySelector('#loading');
       _flutter.loader.loadEntrypoint({
 
         onEntrypointLoaded: async function (engineInitializer) {
-          loading.classList.add('main_done');
-          let appRunner = await engineInitializer.initializeEngine();
-          loading.classList.add('init_done');
+          // loading.classList.add('main_done');
+          let appRunner = await engineInitializer.initializeEngine().then(async function (appRunner) {
+            const bumpTrigger = inputs.find(i => i.name === 'to end');
+            bumpTrigger.value = true;
+            window.setTimeout(async function () {
+              console.log(bumpTrigger.value);
+              await appRunner.runApp();
+              r.cleanup();
+            }, 1000);
 
-          appRunner.runApp().then(function (app) {
-            window.setTimeout(function () {
-              loading.remove();
-            }, 100);
           });
 
         }

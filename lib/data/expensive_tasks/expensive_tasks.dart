@@ -1,5 +1,4 @@
 import 'package:gsheets/gsheets.dart';
-import 'package:queue/secret/table_credentials.dart';
 import 'package:squadron/squadron.dart';
 import 'package:queue/data/expensive_tasks/expensive_tasks.activator.g.dart';
 import 'package:squadron/squadron_annotations.dart';
@@ -12,7 +11,7 @@ part 'expensive_tasks.worker.g.dart';
 
 @SquadronService(web: true)
 class ExpensiveTasks {
-  static final gsheets = GSheets(CREDENTIALS);
+  static final gsheets = GSheets(const String.fromEnvironment("CREDENTIALS"));
   @SquadronMethod()
   Future<bool> createRec(String lessonTableID, String queueSheetName, int onlineTableRowNumber, String time) async {
     try {

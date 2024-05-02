@@ -23,17 +23,21 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
   void _onRiveInit(Artboard artboard) {
     final controller = StateMachineController.fromArtboard(
       artboard,
-      'queue',
+      'main',
       onStateChange: _onRiveStateChange,
     )!;
+
     artboard.addController(controller);
-    endTrigger = controller.findInput<bool>('To end') as SMIBool;
+
+    controller.findInput<bool>('to background')?.value = false;
+
+    endTrigger = controller.findInput<bool>('to end') as SMIBool;
   }
 
   void _onRiveStateChange(String stateMachineName, String stateName) {
     switch (stateName) {
-      case 'ExitState':
-        widget.afterAnimationEnd();
+      case 'End':
+        Future.delayed(const Duration(milliseconds: 1500 ~/ 1.8), () => widget.afterAnimationEnd());
     }
   }
 
@@ -65,7 +69,7 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
     handleLoadingState(widget.state);
     return RiveAnimation.asset(
       'assets/queue.riv', //TODO: change exit animation speed to 1.5
-      stateMachines: const ['queue'],
+      stateMachines: const ['main'],
       onInit: (artboard) => _onRiveInit(artboard),
     );
   }

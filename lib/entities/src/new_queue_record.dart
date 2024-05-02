@@ -24,7 +24,7 @@ class NewQueueRecord with _$NewQueueRecord {
     required String onlineTableID,
     required int studentRowNumber,
     required DateTime time,
-    required int? workCount,
+    int? workCount,
     required NewQueueRecordStatus status,
   }) = _NewQueueRecord;
 

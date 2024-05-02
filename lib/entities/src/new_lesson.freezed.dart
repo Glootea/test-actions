@@ -21,7 +21,6 @@ mixin _$Lesson {
   DateTime get endTime => throw _privateConstructorUsedError;
   int get subjectLocalID => throw _privateConstructorUsedError;
   String get subjectOnlineTableID => throw _privateConstructorUsedError;
-  List<NewQueueRecord> get recList => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LessonCopyWith<Lesson> get copyWith => throw _privateConstructorUsedError;
@@ -37,8 +36,7 @@ abstract class $LessonCopyWith<$Res> {
       DateTime startTime,
       DateTime endTime,
       int subjectLocalID,
-      String subjectOnlineTableID,
-      List<NewQueueRecord> recList});
+      String subjectOnlineTableID});
 }
 
 /// @nodoc
@@ -59,7 +57,6 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
     Object? endTime = null,
     Object? subjectLocalID = null,
     Object? subjectOnlineTableID = null,
-    Object? recList = null,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -82,10 +79,6 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
           ? _value.subjectOnlineTableID
           : subjectOnlineTableID // ignore: cast_nullable_to_non_nullable
               as String,
-      recList: null == recList
-          ? _value.recList
-          : recList // ignore: cast_nullable_to_non_nullable
-              as List<NewQueueRecord>,
     ) as $Val);
   }
 }
@@ -102,8 +95,7 @@ abstract class _$$NewLessonImplCopyWith<$Res> implements $LessonCopyWith<$Res> {
       DateTime startTime,
       DateTime endTime,
       int subjectLocalID,
-      String subjectOnlineTableID,
-      List<NewQueueRecord> recList});
+      String subjectOnlineTableID});
 }
 
 /// @nodoc
@@ -122,7 +114,6 @@ class __$$NewLessonImplCopyWithImpl<$Res>
     Object? endTime = null,
     Object? subjectLocalID = null,
     Object? subjectOnlineTableID = null,
-    Object? recList = null,
   }) {
     return _then(_$NewLessonImpl(
       name: null == name
@@ -145,10 +136,6 @@ class __$$NewLessonImplCopyWithImpl<$Res>
           ? _value.subjectOnlineTableID
           : subjectOnlineTableID // ignore: cast_nullable_to_non_nullable
               as String,
-      recList: null == recList
-          ? _value._recList
-          : recList // ignore: cast_nullable_to_non_nullable
-              as List<NewQueueRecord>,
     ));
   }
 }
@@ -161,10 +148,8 @@ class _$NewLessonImpl extends _NewLesson {
       required this.startTime,
       required this.endTime,
       required this.subjectLocalID,
-      required this.subjectOnlineTableID,
-      required final List<NewQueueRecord> recList})
-      : _recList = recList,
-        super._();
+      required this.subjectOnlineTableID})
+      : super._();
 
   @override
   final String name;
@@ -176,17 +161,10 @@ class _$NewLessonImpl extends _NewLesson {
   final int subjectLocalID;
   @override
   final String subjectOnlineTableID;
-  final List<NewQueueRecord> _recList;
-  @override
-  List<NewQueueRecord> get recList {
-    if (_recList is EqualUnmodifiableListView) return _recList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_recList);
-  }
 
   @override
   String toString() {
-    return 'Lesson(name: $name, startTime: $startTime, endTime: $endTime, subjectLocalID: $subjectLocalID, subjectOnlineTableID: $subjectOnlineTableID, recList: $recList)';
+    return 'Lesson(name: $name, startTime: $startTime, endTime: $endTime, subjectLocalID: $subjectLocalID, subjectOnlineTableID: $subjectOnlineTableID)';
   }
 
   @override
@@ -201,19 +179,12 @@ class _$NewLessonImpl extends _NewLesson {
             (identical(other.subjectLocalID, subjectLocalID) ||
                 other.subjectLocalID == subjectLocalID) &&
             (identical(other.subjectOnlineTableID, subjectOnlineTableID) ||
-                other.subjectOnlineTableID == subjectOnlineTableID) &&
-            const DeepCollectionEquality().equals(other._recList, _recList));
+                other.subjectOnlineTableID == subjectOnlineTableID));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      name,
-      startTime,
-      endTime,
-      subjectLocalID,
-      subjectOnlineTableID,
-      const DeepCollectionEquality().hash(_recList));
+  int get hashCode => Object.hash(runtimeType, name, startTime, endTime,
+      subjectLocalID, subjectOnlineTableID);
 
   @JsonKey(ignore: true)
   @override
@@ -228,8 +199,7 @@ abstract class _NewLesson extends Lesson {
       required final DateTime startTime,
       required final DateTime endTime,
       required final int subjectLocalID,
-      required final String subjectOnlineTableID,
-      required final List<NewQueueRecord> recList}) = _$NewLessonImpl;
+      required final String subjectOnlineTableID}) = _$NewLessonImpl;
   const _NewLesson._() : super._();
 
   @override
@@ -242,8 +212,6 @@ abstract class _NewLesson extends Lesson {
   int get subjectLocalID;
   @override
   String get subjectOnlineTableID;
-  @override
-  List<NewQueueRecord> get recList;
   @override
   @JsonKey(ignore: true)
   _$$NewLessonImplCopyWith<_$NewLessonImpl> get copyWith =>

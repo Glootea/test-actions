@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:queue/entities/src/new_queue_record.dart';
 part 'new_lesson.freezed.dart';
 
 // @freezed
@@ -21,8 +20,5 @@ class Lesson with _$Lesson {
     required DateTime endTime,
     required int subjectLocalID,
     required String subjectOnlineTableID,
-    required List<NewQueueRecord> recList,
   }) = _NewLesson;
-
-  bool userInQueue(int rowNumber) => recList.any((rec) => rec.studentRowNumber == rowNumber);
 }

@@ -47,6 +47,8 @@ extension DateToString on DateTime {
     return '$year-$month-$day-$hour-$minute-$second-$millisecond';
   }
 
+  String get toFullDisplayTime =>
+      '$month/$day $hour:${minute < 10 ? '0$minute' : minute}:${second < 10 ? '0$second' : second}:${millisecond < 10 ? '0$millisecond' : millisecond}';
   String get toDisplayTime => '$hour:${minute < 10 ? '0$minute' : minute}';
 }
 

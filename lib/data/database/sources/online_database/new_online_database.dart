@@ -6,10 +6,9 @@ import 'package:queue/entities/src/new_lesson_time.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
 import 'package:queue/entities/src/subject.dart';
 import 'package:queue/extension.dart';
-import 'package:queue/secret/table_credentials.dart';
 
 class OnlineDataBase {
-  final GSheets _gsheets = GSheets(CREDENTIALS);
+  final GSheets _gsheets = GSheets(const String.fromEnvironment("CREDENTIALS"));
 
   /// {SpreadsheetID: Spreadsheet}
   final Map<String, Spreadsheet?> _spreadsheets = {};
