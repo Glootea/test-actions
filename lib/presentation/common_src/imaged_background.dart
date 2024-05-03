@@ -10,6 +10,7 @@ class ImagedBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       repeat: ImageRepeat.repeat,
+      errorWidget: (context, url, error) => ColoredBox(color: Theme.of(context).colorScheme.surface),
       imageUrl:
           "https://firebasestorage.googleapis.com/v0/b/queueminder.appspot.com/o/themes%2Fblack%2Fpanda.png?alt=media&token=5300bcff-1e05-4175-83a8-731fcda7ce19",
     );

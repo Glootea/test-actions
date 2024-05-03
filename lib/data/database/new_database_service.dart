@@ -20,8 +20,8 @@ class DatabaseService {
         () => [
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime(2024, 5, 2, 15, 30),
-                endTime: DateTime(2024, 5, 2, 17, 30),
+                startTime: DateTime(2024, 5, 3, 16, 30),
+                endTime: DateTime(2024, 5, 3, 19, 30),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               )
@@ -33,17 +33,17 @@ class DatabaseService {
   /// {"SubjectName": [List]<[NewQueueRecord]>}
   Future<Map<String, List<NewQueueRecord>>> getQueueRecords(List<String> onlineTableID) // TODO: implement
   async {
-    return {
-      "АКМС (Анализ и концептуальное моделирование систем)": [
-        NewQueueRecord(
-            localSubjectID: 0,
-            onlineTableID: '4566',
-            status: NewQueueRecordStatus.uploaded,
-            studentRowNumber: 1,
-            workCount: 3,
-            time: DateTime(2024, 4, 28, 14, 16))
-      ]
-    };
+    // return {
+    //   "АКМС (Анализ и концептуальное моделирование систем)": [
+    //     NewQueueRecord(
+    //         localSubjectID: 0,
+    //         onlineTableID: '4566',
+    //         status: NewQueueRecordStatus.uploaded,
+    //         studentRowNumber: 1,
+    //         workCount: 3,
+    //         time: DateTime(2024, 4, 28, 14, 16))
+    //   ]
+    // };
     return {};
     throw UnimplementedError();
   }

@@ -4,20 +4,24 @@ import 'package:flutter/material.dart';
 class RoundedSquareButton extends StatelessWidget {
   final Widget child;
   final VoidCallback onPressed;
+  final double size;
   final double borderRadius;
   const RoundedSquareButton({
     super.key,
     required this.child,
     required this.onPressed,
+    required this.size,
     this.borderRadius = 16,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
+    return SizedBox(
+      height: size,
+      width: size,
       child: OutlinedButton(
           style: ButtonStyle(
+            padding: MaterialStateProperty.all(EdgeInsets.zero),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
           ),
           onPressed: onPressed,

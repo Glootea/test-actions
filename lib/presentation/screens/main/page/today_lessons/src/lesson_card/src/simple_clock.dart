@@ -76,7 +76,7 @@ class _SimpleClockPainter extends CustomPainter {
   final double radius;
   final Color color;
   const _SimpleClockPainter(
-      {required this.outerValue, required this.innerValue, required this.radius, required this.color, super.repaint});
+      {required this.outerValue, required this.innerValue, required this.radius, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {

@@ -1,12 +1,33 @@
 import 'dart:async';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:queue/data/database/new_database_service.dart';
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
-import 'package:queue/new_domain/user_cubit.dart';
+import 'package:queue/domain/user_cubit.dart';
 import 'package:queue/navigation.dart';
-part 'today_screen_cubit.freezed.dart';
+
+part 'main_screen_cubit.freezed.dart';
+
+class AuthGuard extends AutoRouteGuard {
+  final UserCubit _userCubit;
+  AuthGuard(this._userCubit);
+  @override
+  void onNavigation(NavigationResolver resolver, StackRouter router) {
+    // the navigation is paused until resolver.next() is called with either
+    // true to resume/continue navigation or false to abort navigation
+    if (_userCubit.isLoggedIn) {
+      // if user is authenticated we continue
+      resolver.next(true);
+    } else {
+      // we redirect the user to our login page
+      // tip: use resolver.redirect to have the redirected route
+      // automatically removed from the stack when the resolver is completed
+      resolver.redirect(const TodayRoute());
+    }
+  }
+}
 
 abstract class LoadableCubit<T> extends Cubit<T> {
   LoadableCubit(super.initialState);
@@ -22,9 +43,7 @@ class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
       : _databaseService = databaseService,
         _userCubit = userCubit,
         super(TodayScreenState.loading()) {
-    _userCubitSubscription = _userCubit.stream.listen((state) {
-      if (state == null) router.push('/login');
-    });
+    init();
   }
 
   late final StreamSubscription _userCubitSubscription;

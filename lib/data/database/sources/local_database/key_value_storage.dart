@@ -1,6 +1,16 @@
 part of 'new_local_database.dart';
 
-enum StoredValues { infoTableID, backgroundImage, userName, shouldUpdate, userIsAdmin, userRowNumber, isUpdatingQueue }
+enum StoredValues {
+  infoTableID,
+  backgroundImage,
+  userName,
+  shouldUpdate,
+  userIsAdmin,
+  userRowNumber,
+  isUpdatingQueue,
+  colorTheme,
+  brightness,
+}
 
 class KeyValueStorage {
   final LocalDatabase _database;

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/sources/local_database/new_local_database.dart';
-import 'package:queue/new_domain/user.dart';
+import 'package:queue/domain/user.dart';
 
 class UserCubit extends Cubit<User?> {
   final KeyValueStorage _storage;
@@ -38,6 +38,8 @@ class UserCubit extends Cubit<User?> {
       _storage.clean(StoredValues.userIsAdmin),
     ).wait;
   }
+
+  bool get isLoggedIn => state != null;
 
   String get name => state?.name ?? '';
   bool get isAdmin => state?.isAdmin ?? false;

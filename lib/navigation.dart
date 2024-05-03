@@ -1,26 +1,24 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:queue/data/database/new_database_service.dart';
-import 'package:queue/new_domain/user_cubit.dart';
-import 'package:queue/presentation/screens/today_screen/today_screen.dart';
-import 'package:queue/presentation/screens/today_screen/today_screen_cubit.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:queue/presentation/screens/main/main_screen.dart';
+import 'package:queue/presentation/screens/main/page/today_lessons/page/admin_page.dart';
+import 'package:queue/presentation/screens/main/page/today_lessons/page/scanner_page.dart';
+import 'package:queue/presentation/screens/main/page/today_lessons/page/today_page.dart';
+part 'navigation.gr.dart';
 
-part 'navigation.g.dart';
-
-final router = GoRouter(routes: $appRoutes);
-
-@TypedGoRoute<TodayScreenRoute>(path: '/', routes: [])
-@immutable
-class TodayScreenRoute extends GoRouteData {
+@AutoRouterConfig(replaceInRouteName: 'Screen|Page,Route')
+class AppRouter extends _$AppRouter {
   @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return Provider(
-      create: (context) => TodayScreenCubit(
-        databaseService: context.read<DatabaseService>(),
-        userCubit: context.read<UserCubit>(),
-      )..init(),
-      child: const TodayScreen(),
-    );
-  }
+  List<AutoRoute> get routes => [
+        /// Основной, корневой маршрут
+        AutoRoute(
+          page: MainRoute.page,
+          path: '/',
+          initial: true,
+          children: [
+            AutoRoute(page: AdminRoute.page, path: 'admin'),
+            AutoRoute(page: ScannerRoute.page, path: 'QRScanner'),
+            AutoRoute(page: TodayRoute.page, path: 'todayLessons', initial: true),
+          ],
+        ),
+      ];
 }

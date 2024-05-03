@@ -13,4 +13,5 @@ void main() {
   run($ExpensiveTasksInitializer, null, null);
 }
 
-EntryPoint $getExpensiveTasksActivator() => 'expensive_tasks.web.g.dart.js';
+EntryPoint $getExpensiveTasksActivator() =>
+    'lib/data/expensive_tasks/expensive_tasks.web.g.dart.js';
