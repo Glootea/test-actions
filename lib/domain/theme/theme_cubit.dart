@@ -6,11 +6,21 @@ import 'package:queue/data/database/sources/local_database/new_local_database.da
 part 'theme_cubit.freezed.dart';
 
 enum ThemePreset {
-  defaultPreset,
-  white,
-  green,
-  blue;
+  defaultPreset(Colors.transparent),
+  white(Colors.white),
+  green(Colors.green),
+  blue(Colors.blue),
+  red(Colors.red),
+  paleBlue(Color(0xFF86E3CE)),
+  paleGreen(Color(0xFFD0E6A5)),
+  paleRed(Color(0xFFFA897B)),
+  palePurple(Color(0xFFCCABD8)),
+  // #D0E6A5 #FFDD94 #FA897B #CCABD8
+  ;
 
+  final Color color;
+
+  const ThemePreset(this.color);
   @override
   String toString() => name;
 
@@ -28,13 +38,6 @@ enum ThemePreset {
         throw Exception('Unknown color theme $name');
     }
   }
-
-  Color get color => switch (this) {
-        ThemePreset.defaultPreset => Colors.transparent,
-        ThemePreset.white => Colors.white,
-        ThemePreset.green => Colors.green,
-        ThemePreset.blue => Colors.blue,
-      };
 }
 
 @freezed
@@ -51,7 +54,12 @@ class ThemeState with _$ThemeState {
         ThemePreset.defaultPreset => null,
         _ => null,
       };
-  ColorScheme? get getScheme => _getScheme(themePreset, brightness);
+  ColorScheme? get getScheme => switch (themePreset) {
+        ThemePreset.white => ColorScheme.fromSeed(seedColor: Colors.white, brightness: brightness),
+        ThemePreset.green => ColorScheme.fromSeed(seedColor: Colors.green, brightness: brightness),
+        ThemePreset.blue => ColorScheme.fromSeed(seedColor: Colors.blue, brightness: brightness),
+        _ => null
+      };
 }
 
 class ThemeCubit extends Cubit<ThemeState> {
@@ -87,12 +95,8 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   void setTheme({ThemePreset? themePreset, Brightness? brightness}) async {
-    brightness = switch ((brightness, themePreset)) {
-      (Brightness.light, ThemePreset.defaultPreset) => Brightness.dark,
-      (Brightness.dark, ThemePreset.defaultPreset) => Brightness.light,
-      (_, _) => state.brightness
-    };
-    themePreset = ((ThemePreset.defaultPreset == themePreset) ? state.themePreset : themePreset);
+    brightness ??= state.brightness;
+    // themePreset = ((ThemePreset.defaultPreset == themePreset) ? state.themePreset : themePreset);
     emit(state.copyWith(
       themePreset: themePreset ?? state.themePreset,
       brightness: brightness,
@@ -117,10 +121,3 @@ class ThemeCubit extends Cubit<ThemeState> {
   //     primaryContainer: Colors.black,
   //     onPrimaryContainer: Colors.white);
 }
-
-ColorScheme? _getScheme(ThemePreset preset, Brightness brightness) => {
-      ThemePreset.defaultPreset: null,
-      ThemePreset.white: ColorScheme.fromSeed(seedColor: Colors.white, brightness: brightness),
-      ThemePreset.green: ColorScheme.fromSeed(seedColor: Colors.green, brightness: brightness),
-      ThemePreset.blue: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: brightness),
-    }[preset];

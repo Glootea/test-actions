@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/new_database_service.dart';
-import 'package:queue/domain/user_cubit.dart';
+import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
 import 'package:queue/presentation/screens/main/main_screen_cubit.dart';

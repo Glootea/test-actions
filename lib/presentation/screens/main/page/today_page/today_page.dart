@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/sources/local_database/new_local_database.dart';
 import 'package:queue/presentation/common_src/imaged_background.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/src/circular_update_timer.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/src/lesson_list_view.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/src/today_lessons_end_drawer.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/circular_update_timer.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_list_view.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/today_lessons_end_drawer.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -20,6 +20,7 @@ class TodayPage extends StatelessWidget {
       child: Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
+            elevation: 16,
             title: const Text("Занятия на сегодня"),
             actions: [
               IconButton(

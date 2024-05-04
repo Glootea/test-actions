@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/sources/local_database/new_local_database.dart';
-import 'package:queue/domain/user.dart';
+import 'package:queue/domain/user/user.dart';
 
 class UserCubit extends Cubit<User?> {
   final KeyValueStorage _storage;

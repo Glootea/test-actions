@@ -26,15 +26,13 @@ mixin _$User {
 
 /// @nodoc
 abstract class $UserCopyWith<$Res> {
-  factory $UserCopyWith(User value, $Res Function(User) then) =
-      _$UserCopyWithImpl<$Res, User>;
+  factory $UserCopyWith(User value, $Res Function(User) then) = _$UserCopyWithImpl<$Res, User>;
   @useResult
   $Res call({String name, int rowNumber, bool isAdmin});
 }
 
 /// @nodoc
-class _$UserCopyWithImpl<$Res, $Val extends User>
-    implements $UserCopyWith<$Res> {
+class _$UserCopyWithImpl<$Res, $Val extends User> implements $UserCopyWith<$Res> {
   _$UserCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
@@ -68,20 +66,15 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
 
 /// @nodoc
 abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
-  factory _$$UserImplCopyWith(
-          _$UserImpl value, $Res Function(_$UserImpl) then) =
-      __$$UserImplCopyWithImpl<$Res>;
+  factory _$$UserImplCopyWith(_$UserImpl value, $Res Function(_$UserImpl) then) = __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, int rowNumber, bool isAdmin});
 }
 
 /// @nodoc
-class __$$UserImplCopyWithImpl<$Res>
-    extends _$UserCopyWithImpl<$Res, _$UserImpl>
-    implements _$$UserImplCopyWith<$Res> {
-  __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then)
-      : super(_value, _then);
+class __$$UserImplCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res, _$UserImpl> implements _$$UserImplCopyWith<$Res> {
+  __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -110,8 +103,7 @@ class __$$UserImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$UserImpl implements _User {
-  const _$UserImpl(
-      {required this.name, required this.rowNumber, required this.isAdmin});
+  const _$UserImpl({required this.name, required this.rowNumber, required this.isAdmin});
 
   @override
   final String name;
@@ -131,8 +123,7 @@ class _$UserImpl implements _User {
         (other.runtimeType == runtimeType &&
             other is _$UserImpl &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.rowNumber, rowNumber) ||
-                other.rowNumber == rowNumber) &&
+            (identical(other.rowNumber, rowNumber) || other.rowNumber == rowNumber) &&
             (identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
   }
 
@@ -142,15 +133,12 @@ class _$UserImpl implements _User {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
-      __$$UserImplCopyWithImpl<_$UserImpl>(this, _$identity);
+  _$$UserImplCopyWith<_$UserImpl> get copyWith => __$$UserImplCopyWithImpl<_$UserImpl>(this, _$identity);
 }
 
 abstract class _User implements User {
-  const factory _User(
-      {required final String name,
-      required final int rowNumber,
-      required final bool isAdmin}) = _$UserImpl;
+  const factory _User({required final String name, required final int rowNumber, required final bool isAdmin}) =
+      _$UserImpl;
 
   @override
   String get name;
@@ -160,6 +148,5 @@ abstract class _User implements User {
   bool get isAdmin;
   @override
   @JsonKey(ignore: true)
-  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$UserImplCopyWith<_$UserImpl> get copyWith => throw _privateConstructorUsedError;
 }

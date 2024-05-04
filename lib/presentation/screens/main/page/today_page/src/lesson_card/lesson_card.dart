@@ -4,9 +4,9 @@ import 'package:gap/gap.dart';
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
 import 'package:queue/extension.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/src/lesson_card/src/queue_static_background_rive.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/src/lesson_card/src/simple_clock.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/src/lesson_card/src/rounded_square_button.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/src/queue_static_background_rive.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/src/simple_clock.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/src/rounded_square_button.dart';
 
 part 'state_layout/no_queue.dart';
 part 'state_layout/waiting_queue_start.dart';

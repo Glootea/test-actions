@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/src/lesson_card/lesson_card.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/lesson_card.dart';
 import 'package:queue/presentation/screens/main/main_screen_cubit.dart';
 
 class LessonListView extends StatelessWidget {

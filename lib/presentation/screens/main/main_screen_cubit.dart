@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:queue/data/database/new_database_service.dart';
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
-import 'package:queue/domain/user_cubit.dart';
+import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 
 part 'main_screen_cubit.freezed.dart';

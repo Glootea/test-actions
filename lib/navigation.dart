@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:queue/presentation/screens/main/main_screen.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/page/admin_page.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/page/scanner_page.dart';
-import 'package:queue/presentation/screens/main/page/today_lessons/page/today_page.dart';
+import 'package:queue/presentation/screens/main/page/admin/admin_page.dart';
+import 'package:queue/presentation/screens/main/page/qr_scanner/scanner_page.dart';
+import 'package:queue/presentation/screens/main/page/today_page/today_page.dart';
 part 'navigation.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Screen|Page,Route')

@@ -6,11 +6,11 @@ import 'package:provider/provider.dart';
 import 'package:queue/data/database/new_database_service.dart';
 import 'package:queue/data/database/sources/local_database/new_local_database.dart';
 import 'package:queue/data/database/sources/online_database/new_online_database.dart';
-import 'package:queue/domain/theme_cubit.dart';
+import 'package:queue/domain/theme/theme_cubit.dart';
 import 'package:queue/firebase_options.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:queue/domain/user_cubit.dart';
+import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 
 void main() async {
@@ -45,6 +45,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
       return DynamicColorBuilder(builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        final colorScheme = state.getScheme ??
+            (((state.brightness) == Brightness.dark) ? darkDynamic : lightDynamic) ??
+            const ColorScheme.dark();
         return MaterialApp.router(
             key: const ValueKey("QueueMinder"),
             title: "QueueMinder",
@@ -56,9 +59,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
                 fontFamily: 'Roboto',
-                colorScheme: state.getScheme ??
-                    (((state.brightness) == Brightness.dark) ? darkDynamic : lightDynamic) ??
-                    const ColorScheme.dark(),
+                colorScheme: colorScheme,
                 timePickerTheme: TimePickerThemeData(dayPeriodColor: Theme.of(context).colorScheme.primaryContainer)));
       });
     });

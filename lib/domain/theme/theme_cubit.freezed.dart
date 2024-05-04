@@ -20,22 +20,19 @@ mixin _$ThemeState {
   Brightness get brightness => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $ThemeStateCopyWith<ThemeState> get copyWith =>
-      throw _privateConstructorUsedError;
+  $ThemeStateCopyWith<ThemeState> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ThemeStateCopyWith<$Res> {
-  factory $ThemeStateCopyWith(
-          ThemeState value, $Res Function(ThemeState) then) =
+  factory $ThemeStateCopyWith(ThemeState value, $Res Function(ThemeState) then) =
       _$ThemeStateCopyWithImpl<$Res, ThemeState>;
   @useResult
   $Res call({ThemePreset themePreset, Brightness brightness});
 }
 
 /// @nodoc
-class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState>
-    implements $ThemeStateCopyWith<$Res> {
+class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState> implements $ThemeStateCopyWith<$Res> {
   _$ThemeStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
@@ -63,10 +60,8 @@ class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState>
 }
 
 /// @nodoc
-abstract class _$$ThemeStateImplCopyWith<$Res>
-    implements $ThemeStateCopyWith<$Res> {
-  factory _$$ThemeStateImplCopyWith(
-          _$ThemeStateImpl value, $Res Function(_$ThemeStateImpl) then) =
+abstract class _$$ThemeStateImplCopyWith<$Res> implements $ThemeStateCopyWith<$Res> {
+  factory _$$ThemeStateImplCopyWith(_$ThemeStateImpl value, $Res Function(_$ThemeStateImpl) then) =
       __$$ThemeStateImplCopyWithImpl<$Res>;
   @override
   @useResult
@@ -74,12 +69,9 @@ abstract class _$$ThemeStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ThemeStateImplCopyWithImpl<$Res>
-    extends _$ThemeStateCopyWithImpl<$Res, _$ThemeStateImpl>
+class __$$ThemeStateImplCopyWithImpl<$Res> extends _$ThemeStateCopyWithImpl<$Res, _$ThemeStateImpl>
     implements _$$ThemeStateImplCopyWith<$Res> {
-  __$$ThemeStateImplCopyWithImpl(
-      _$ThemeStateImpl _value, $Res Function(_$ThemeStateImpl) _then)
-      : super(_value, _then);
+  __$$ThemeStateImplCopyWithImpl(_$ThemeStateImpl _value, $Res Function(_$ThemeStateImpl) _then) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -103,8 +95,7 @@ class __$$ThemeStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
-  const _$ThemeStateImpl({required this.themePreset, required this.brightness})
-      : super._();
+  const _$ThemeStateImpl({required this.themePreset, required this.brightness}) : super._();
 
   @override
   final ThemePreset themePreset;
@@ -130,10 +121,8 @@ class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ThemeStateImpl &&
-            (identical(other.themePreset, themePreset) ||
-                other.themePreset == themePreset) &&
-            (identical(other.brightness, brightness) ||
-                other.brightness == brightness));
+            (identical(other.themePreset, themePreset) || other.themePreset == themePreset) &&
+            (identical(other.brightness, brightness) || other.brightness == brightness));
   }
 
   @override
@@ -147,9 +136,8 @@ class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
 }
 
 abstract class _ThemeState extends ThemeState {
-  const factory _ThemeState(
-      {required final ThemePreset themePreset,
-      required final Brightness brightness}) = _$ThemeStateImpl;
+  const factory _ThemeState({required final ThemePreset themePreset, required final Brightness brightness}) =
+      _$ThemeStateImpl;
   const _ThemeState._() : super._();
 
   @override
@@ -158,6 +146,5 @@ abstract class _ThemeState extends ThemeState {
   Brightness get brightness;
   @override
   @JsonKey(ignore: true)
-  _$$ThemeStateImplCopyWith<_$ThemeStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$ThemeStateImplCopyWith<_$ThemeStateImpl> get copyWith => throw _privateConstructorUsedError;
 }
