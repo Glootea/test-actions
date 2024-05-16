@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:queue/presentation/screens/main/main_screen_cubit.dart';
+import 'package:queue/presentation/screens/main/today_screen_cubit.dart';
 import 'package:rive/rive.dart';
 
 class LoadingAnimation extends StatefulWidget {

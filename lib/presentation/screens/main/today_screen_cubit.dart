@@ -7,8 +7,10 @@ import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/lesson_card_data.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/lesson_card_queue_data.dart';
 
-part 'main_screen_cubit.freezed.dart';
+part 'today_screen_cubit.freezed.dart';
 
 class AuthGuard extends AutoRouteGuard {
   final UserCubit _userCubit;
@@ -50,54 +52,54 @@ class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
 
   Future<void> init() async {
     final todayLessons = await _databaseService.todayLessons();
-    final onlineTableIDs = todayLessons.map((e) => e.subjectOnlineTableID).toList();
-    final queueRecordList = await _databaseService.getQueueRecords(onlineTableIDs);
-    emit(TodayScreenState(newLessonList: todayLessons, recList: queueRecordList, isLoading: LoadingState.loaded));
+    // final onlineTableIDs = todayLessons.map((e) => e.lesson.subjectOnlineTableID).toList();
+    // final queueRecordList = await _databaseService.getQueueRecords(onlineTableIDs);
+    emit(TodayScreenState(newLessonList: todayLessons, isLoading: LoadingState.loaded));
   }
 
   Future<void> addNewQueueRecord({required int index}) async {
-    final lesson = state.newLessonList[index];
-    var queueRec = _getNewQueueRecord(lesson);
-    state.recList[lesson.name]!.add(queueRec);
-    emit(state);
-    final uploaded = await _databaseService.addNewQueueRecord(queueRec, _userCubit.rowNumber);
-    if (uploaded) {
-      _setLastQueueRecordToUploaded(queueRec, lesson.name);
-      emit(state);
-    }
+    // final lesson = state.newLessonList[index];
+    // var queueRec = _getNewQueueRecord(lesson);
+    // state.recList[lesson.name]!.add(queueRec);
+    // emit(state);
+    // final uploaded = await _databaseService.addNewQueueRecord(queueRec, _userCubit.rowNumber);
+    // if (uploaded) {
+    //   _setLastQueueRecordToUploaded(queueRec, lesson.name);
+    //   emit(state);
+    // }
   }
 
   NewQueueRecord _getNewQueueRecord(Lesson lesson) => NewQueueRecord(
-        localSubjectID: lesson.subjectLocalID,
+        localSubjectID: lesson.id,
         onlineTableID: lesson.subjectOnlineTableID,
         studentRowNumber: _userCubit.rowNumber,
         time: DateTime.now(),
         workCount: _getWorkCount(lesson.name),
-        status: NewQueueRecordStatus.shouldBeUploaded,
+        status: QueueRecordStatus.shouldBeUploaded,
       );
 
   int? _getWorkCount(String lessonName) {
-    final queueRecords = state.recList[lessonName];
-    if (queueRecords == null) return null;
-    for (final record in queueRecords) {
-      if (record.studentRowNumber == _userCubit.rowNumber) {
-        return record.workCount;
-      }
-    }
+    // final queueRecords = state.recList[lessonName];
+    // if (queueRecords == null) return null;
+    // for (final record in queueRecords) {
+    //   if (record.studentRowNumber == _userCubit.rowNumber) {
+    //     return record.workCount;
+    //   }
+    // }
     return null;
   }
 
   void _setLastQueueRecordToUploaded(NewQueueRecord queueRec, String lessonName) {
-    queueRec = queueRec.copyWith(status: NewQueueRecordStatus.uploaded);
-    state.recList[lessonName]!.removeLast();
-    state.recList[lessonName]!.add(queueRec);
+    // queueRec = queueRec.copyWith(status: QueueRecordStatus.uploaded);
+    // state.recList[lessonName]!.removeLast();
+    // state.recList[lessonName]!.add(queueRec);
   }
 
   Future<void> deleteQueueRecord({required NewQueueRecord queueRecord}) async {
-    final lessons = state.newLessonList.where((element) => element.subjectLocalID == queueRecord.localSubjectID);
-    lessons.map((lesson) => state.recList[lesson.name]!.remove(queueRecord));
-    emit(state);
-    await _databaseService.deleteQueueRecord(queueRecord);
+    // final lessons = state.newLessonList.where((element) => element.id == queueRecord.localSubjectID);
+    // lessons.map((lesson) => state.recList[lesson.name]!.remove(queueRecord));
+    // emit(state);
+    // await _databaseService.deleteQueueRecord(queueRecord);
   }
 
   @override
@@ -108,6 +110,24 @@ class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
 
   @override
   void endLoading() => emit(state.copyWith(isLoading: LoadingState.ended));
+
+  final Map<int, Timer> _timers = {};
+  final Map<int, StreamController> _streams = {};
+  Stream<LessonCardQueueData> getQueueDataStream(int lessonID) {
+    StreamController<LessonCardQueueData> controller = StreamController();
+    final timer = Timer.periodic(const Duration(minutes: 5), (timer) {
+      controller.add(const LessonCardQueueData(
+          queueLength: 20, queuePosition: 10, message: 'test')); // TODO: get actual data from online
+    });
+    _timers[lessonID] = timer;
+    _streams[lessonID] = controller;
+    return controller.stream;
+  }
+
+  void disposeStream(int lessonID) {
+    _timers[lessonID]?.cancel();
+    _streams[lessonID]?.close();
+  }
 }
 
 enum LoadingState { started, loaded, ended, error }
@@ -121,13 +141,11 @@ abstract interface class LoadableState {
 class TodayScreenState with _$TodayScreenState implements LoadableState {
   const TodayScreenState._();
   const factory TodayScreenState({
-    required List<Lesson> newLessonList,
-    required Map<String, List<NewQueueRecord>> recList,
+    required List<LessonCardData> newLessonList,
     @Default(LoadingState.loaded) LoadingState isLoading,
     DialogData? dialogData,
   }) = _MainScreenState;
-  factory TodayScreenState.loading() =>
-      const TodayScreenState(newLessonList: [], recList: {}, isLoading: LoadingState.started);
+  factory TodayScreenState.loading() => const TodayScreenState(newLessonList: [], isLoading: LoadingState.started);
 
   @override
   LoadingState get isStateLoading => isLoading;

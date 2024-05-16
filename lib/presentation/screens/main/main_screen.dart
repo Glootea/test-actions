@@ -5,7 +5,7 @@ import 'package:queue/data/database/new_database_service.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
-import 'package:queue/presentation/screens/main/main_screen_cubit.dart';
+import 'package:queue/presentation/screens/main/today_screen_cubit.dart';
 
 @RoutePage()
 class MainScreen extends StatefulWidget {

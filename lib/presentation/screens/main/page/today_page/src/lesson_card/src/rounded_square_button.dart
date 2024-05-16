@@ -21,8 +21,8 @@ class RoundedSquareButton extends StatelessWidget {
       width: size,
       child: OutlinedButton(
           style: ButtonStyle(
-            padding: MaterialStateProperty.all(EdgeInsets.zero),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+            padding: WidgetStateProperty.all(EdgeInsets.zero),
+            shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
           ),
           onPressed: onPressed,
           child: child),

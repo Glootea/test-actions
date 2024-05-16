@@ -30,7 +30,7 @@ class LocalDatabase extends _$LocalDatabase {
         .go();
   }
 
-  Future<void> updateQueueRecordUploadStatus(NewQueueRecord queueRecord, NewQueueRecordStatus status) async {
+  Future<void> updateQueueRecordUploadStatus(NewQueueRecord queueRecord, QueueRecordStatus status) async {
     await into(queueRecs).insert(
         QueueRecsCompanion.insert(
             studentRowNumber: queueRecord.studentRowNumber,

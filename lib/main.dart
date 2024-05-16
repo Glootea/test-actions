@@ -7,10 +7,10 @@ import 'package:queue/data/database/new_database_service.dart';
 import 'package:queue/data/database/sources/local_database/new_local_database.dart';
 import 'package:queue/data/database/sources/online_database/new_online_database.dart';
 import 'package:queue/domain/theme/theme_cubit.dart';
-import 'package:queue/firebase_options.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:queue/domain/user/user_cubit.dart';
+import 'package:queue/secret/firebase_options.dart';
 import 'package:queue/navigation.dart';
 
 void main() async {

@@ -19,8 +19,9 @@ mixin _$Lesson {
   String get name => throw _privateConstructorUsedError;
   DateTime get startTime => throw _privateConstructorUsedError;
   DateTime get endTime => throw _privateConstructorUsedError;
-  int get subjectLocalID => throw _privateConstructorUsedError;
+  int get id => throw _privateConstructorUsedError; // subjectLocalID
   String get subjectOnlineTableID => throw _privateConstructorUsedError;
+  String get room => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LessonCopyWith<Lesson> get copyWith => throw _privateConstructorUsedError;
@@ -35,8 +36,9 @@ abstract class $LessonCopyWith<$Res> {
       {String name,
       DateTime startTime,
       DateTime endTime,
-      int subjectLocalID,
-      String subjectOnlineTableID});
+      int id,
+      String subjectOnlineTableID,
+      String room});
 }
 
 /// @nodoc
@@ -55,8 +57,9 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
     Object? name = null,
     Object? startTime = null,
     Object? endTime = null,
-    Object? subjectLocalID = null,
+    Object? id = null,
     Object? subjectOnlineTableID = null,
+    Object? room = null,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -71,13 +74,17 @@ class _$LessonCopyWithImpl<$Res, $Val extends Lesson>
           ? _value.endTime
           : endTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      subjectLocalID: null == subjectLocalID
-          ? _value.subjectLocalID
-          : subjectLocalID // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as int,
       subjectOnlineTableID: null == subjectOnlineTableID
           ? _value.subjectOnlineTableID
           : subjectOnlineTableID // ignore: cast_nullable_to_non_nullable
+              as String,
+      room: null == room
+          ? _value.room
+          : room // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -94,8 +101,9 @@ abstract class _$$NewLessonImplCopyWith<$Res> implements $LessonCopyWith<$Res> {
       {String name,
       DateTime startTime,
       DateTime endTime,
-      int subjectLocalID,
-      String subjectOnlineTableID});
+      int id,
+      String subjectOnlineTableID,
+      String room});
 }
 
 /// @nodoc
@@ -112,8 +120,9 @@ class __$$NewLessonImplCopyWithImpl<$Res>
     Object? name = null,
     Object? startTime = null,
     Object? endTime = null,
-    Object? subjectLocalID = null,
+    Object? id = null,
     Object? subjectOnlineTableID = null,
+    Object? room = null,
   }) {
     return _then(_$NewLessonImpl(
       name: null == name
@@ -128,13 +137,17 @@ class __$$NewLessonImplCopyWithImpl<$Res>
           ? _value.endTime
           : endTime // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      subjectLocalID: null == subjectLocalID
-          ? _value.subjectLocalID
-          : subjectLocalID // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as int,
       subjectOnlineTableID: null == subjectOnlineTableID
           ? _value.subjectOnlineTableID
           : subjectOnlineTableID // ignore: cast_nullable_to_non_nullable
+              as String,
+      room: null == room
+          ? _value.room
+          : room // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -147,8 +160,9 @@ class _$NewLessonImpl extends _NewLesson {
       {required this.name,
       required this.startTime,
       required this.endTime,
-      required this.subjectLocalID,
-      required this.subjectOnlineTableID})
+      required this.id,
+      required this.subjectOnlineTableID,
+      required this.room})
       : super._();
 
   @override
@@ -158,13 +172,16 @@ class _$NewLessonImpl extends _NewLesson {
   @override
   final DateTime endTime;
   @override
-  final int subjectLocalID;
+  final int id;
+// subjectLocalID
   @override
   final String subjectOnlineTableID;
+  @override
+  final String room;
 
   @override
   String toString() {
-    return 'Lesson(name: $name, startTime: $startTime, endTime: $endTime, subjectLocalID: $subjectLocalID, subjectOnlineTableID: $subjectOnlineTableID)';
+    return 'Lesson(name: $name, startTime: $startTime, endTime: $endTime, id: $id, subjectOnlineTableID: $subjectOnlineTableID, room: $room)';
   }
 
   @override
@@ -176,15 +193,15 @@ class _$NewLessonImpl extends _NewLesson {
             (identical(other.startTime, startTime) ||
                 other.startTime == startTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
-            (identical(other.subjectLocalID, subjectLocalID) ||
-                other.subjectLocalID == subjectLocalID) &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.subjectOnlineTableID, subjectOnlineTableID) ||
-                other.subjectOnlineTableID == subjectOnlineTableID));
+                other.subjectOnlineTableID == subjectOnlineTableID) &&
+            (identical(other.room, room) || other.room == room));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, name, startTime, endTime,
-      subjectLocalID, subjectOnlineTableID);
+  int get hashCode => Object.hash(
+      runtimeType, name, startTime, endTime, id, subjectOnlineTableID, room);
 
   @JsonKey(ignore: true)
   @override
@@ -198,8 +215,9 @@ abstract class _NewLesson extends Lesson {
       {required final String name,
       required final DateTime startTime,
       required final DateTime endTime,
-      required final int subjectLocalID,
-      required final String subjectOnlineTableID}) = _$NewLessonImpl;
+      required final int id,
+      required final String subjectOnlineTableID,
+      required final String room}) = _$NewLessonImpl;
   const _NewLesson._() : super._();
 
   @override
@@ -209,9 +227,11 @@ abstract class _NewLesson extends Lesson {
   @override
   DateTime get endTime;
   @override
-  int get subjectLocalID;
-  @override
+  int get id;
+  @override // subjectLocalID
   String get subjectOnlineTableID;
+  @override
+  String get room;
   @override
   @JsonKey(ignore: true)
   _$$NewLessonImplCopyWith<_$NewLessonImpl> get copyWith =>

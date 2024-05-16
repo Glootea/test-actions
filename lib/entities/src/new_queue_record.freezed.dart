@@ -21,7 +21,7 @@ mixin _$NewQueueRecord {
   int get studentRowNumber => throw _privateConstructorUsedError;
   DateTime get time => throw _privateConstructorUsedError;
   int? get workCount => throw _privateConstructorUsedError;
-  NewQueueRecordStatus get status => throw _privateConstructorUsedError;
+  QueueRecordStatus get status => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $NewQueueRecordCopyWith<NewQueueRecord> get copyWith =>
@@ -40,7 +40,7 @@ abstract class $NewQueueRecordCopyWith<$Res> {
       int studentRowNumber,
       DateTime time,
       int? workCount,
-      NewQueueRecordStatus status});
+      QueueRecordStatus status});
 }
 
 /// @nodoc
@@ -87,7 +87,7 @@ class _$NewQueueRecordCopyWithImpl<$Res, $Val extends NewQueueRecord>
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as NewQueueRecordStatus,
+              as QueueRecordStatus,
     ) as $Val);
   }
 }
@@ -106,7 +106,7 @@ abstract class _$$NewQueueRecordImplCopyWith<$Res>
       int studentRowNumber,
       DateTime time,
       int? workCount,
-      NewQueueRecordStatus status});
+      QueueRecordStatus status});
 }
 
 /// @nodoc
@@ -151,7 +151,7 @@ class __$$NewQueueRecordImplCopyWithImpl<$Res>
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as NewQueueRecordStatus,
+              as QueueRecordStatus,
     ));
   }
 }
@@ -179,7 +179,7 @@ class _$NewQueueRecordImpl extends _NewQueueRecord {
   @override
   final int? workCount;
   @override
-  final NewQueueRecordStatus status;
+  final QueueRecordStatus status;
 
   @override
   String toString() {
@@ -222,7 +222,7 @@ abstract class _NewQueueRecord extends NewQueueRecord {
       required final int studentRowNumber,
       required final DateTime time,
       final int? workCount,
-      required final NewQueueRecordStatus status}) = _$NewQueueRecordImpl;
+      required final QueueRecordStatus status}) = _$NewQueueRecordImpl;
   const _NewQueueRecord._() : super._();
 
   @override
@@ -236,7 +236,7 @@ abstract class _NewQueueRecord extends NewQueueRecord {
   @override
   int? get workCount;
   @override
-  NewQueueRecordStatus get status;
+  QueueRecordStatus get status;
   @override
   @JsonKey(ignore: true)
   _$$NewQueueRecordImplCopyWith<_$NewQueueRecordImpl> get copyWith =>

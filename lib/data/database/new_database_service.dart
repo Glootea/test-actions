@@ -2,6 +2,7 @@ import 'package:queue/data/database/sources/local_database/new_local_database.da
 import 'package:queue/data/database/sources/online_database/new_online_database.dart';
 import 'package:queue/entities/src/new_lesson.dart';
 import 'package:queue/entities/src/new_queue_record.dart';
+import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/lesson_card_data.dart';
 
 class DatabaseService {
   final LocalDatabase _localDatabase;
@@ -13,18 +14,21 @@ class DatabaseService {
   })  : _localDatabase = localDatabase,
         _onlineDataBase = onlineDataBase;
 
-  Future<List<Lesson>> todayLessons() async {
+  Future<List<LessonCardData>> todayLessons() async {
     // final date = DateTime.now();
     return Future.delayed(
         const Duration(milliseconds: 100),
         () => [
-              Lesson(
-                name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime(2024, 5, 3, 16, 30),
-                endTime: DateTime(2024, 5, 3, 19, 30),
-                subjectLocalID: 0,
-                subjectOnlineTableID: '4566',
-              )
+              LessonCardData(
+                  userRecordStatus: null,
+                  lesson: Lesson(
+                    name: "АКМС (Анализ и концептуальное моделирование систем)",
+                    startTime: DateTime(2024, 5, 16, 16, 30),
+                    endTime: DateTime(2024, 5, 16, 22, 30),
+                    id: 0,
+                    subjectOnlineTableID: '4566',
+                    room: 'Г-107',
+                  ))
             ]);
     // TODO: implement
     throw UnimplementedError();
@@ -52,7 +56,7 @@ class DatabaseService {
   async {
     final uploaded = await _onlineDataBase.addNewQueueRecord(queueRecord);
     if (uploaded) {
-      queueRecord = queueRecord.copyWith(status: NewQueueRecordStatus.uploaded);
+      queueRecord = queueRecord.copyWith(status: QueueRecordStatus.uploaded);
       await _localDatabase.addNewQueueRecord(queueRecord);
       return true;
     }
@@ -64,7 +68,7 @@ class DatabaseService {
     if (deleted) {
       _localDatabase.deleteQueueRecord(queueRecord);
     } else {
-      await _localDatabase.updateQueueRecordUploadStatus(queueRecord, NewQueueRecordStatus.shouldBeDeleted);
+      await _localDatabase.updateQueueRecordUploadStatus(queueRecord, QueueRecordStatus.shouldBeDeleted);
     }
   }
 }

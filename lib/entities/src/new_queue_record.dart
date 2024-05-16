@@ -3,17 +3,16 @@ import 'package:queue/extension.dart';
 
 part 'new_queue_record.freezed.dart';
 
-enum NewQueueRecordStatus {
+enum QueueRecordStatus {
   uploaded('Uploaded'),
   shouldBeUploaded('Should be uploaded'),
-  shouldBeDeleted('Should be deleted'),
-  ;
+  shouldBeDeleted('Should be deleted');
 
   final String name;
   @override
   String toString() => name;
 
-  const NewQueueRecordStatus(this.name);
+  const QueueRecordStatus(this.name);
 }
 
 @freezed
@@ -25,7 +24,7 @@ class NewQueueRecord with _$NewQueueRecord {
     required int studentRowNumber,
     required DateTime time,
     int? workCount,
-    required NewQueueRecordStatus status,
+    required QueueRecordStatus status,
   }) = _NewQueueRecord;
 
   List<String> get toOnlineRow => [time.toRecTime, workCount.toString()].toOnline;
