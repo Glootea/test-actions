@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:queue/domain/theme/theme_cubit.dart';
+import 'package:queue/domain/user/user_cubit.dart';
 
 class TodayLessonsEndDrawer extends StatelessWidget {
   const TodayLessonsEndDrawer({super.key});
@@ -11,7 +12,14 @@ class TodayLessonsEndDrawer extends StatelessWidget {
     final children = [
       Text("Тема", style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
       const Gap(16),
-      ThemePicker()
+      const ThemePicker(),
+      OutlinedButton(
+          onPressed: () => context.read<UserCubit>().login(name: "Sasha", isAdmin: false, rowNumber: 1),
+          child: const Text("Войти")),
+      OutlinedButton(
+          onPressed: () => context.read<UserCubit>().login(name: "Sasha", isAdmin: true, rowNumber: 1),
+          child: const Text("Войти админ")),
+      OutlinedButton(onPressed: () => context.read<UserCubit>().logout(), child: const Text("Выйти"))
     ];
     return SafeArea(
         child: Drawer(
@@ -26,32 +34,13 @@ class ThemePicker extends StatelessWidget {
   const ThemePicker({
     super.key,
   });
-  bool isModeToggle(ThemePreset e) => e.name == ThemePreset.defaultPreset.name;
   List<Widget> _getChildren(BuildContext context, ThemeState state) =>
-      [
-        _ColorPickerItem(
-            onTap: () => context
-                .read<ThemeCubit>()
-                .setTheme(brightness: (state.brightness == Brightness.dark) ? Brightness.light : Brightness.dark),
-            selected: false,
-            child: switch (state.brightness) {
-              Brightness.light => const Icon(Icons.light_mode_outlined),
-              Brightness.dark => const Icon(Icons.dark_mode_outlined)
-            })
-      ] +
-      ThemePreset.values.map((e) {
-        final color = e.color;
-        final selected = e.name == state.themePreset.name;
-        return _ColorPickerItem(
-            onTap: () => context.read<ThemeCubit>().setTheme(themePreset: e, brightness: state.brightness),
-            selected: selected,
-            child: (color == Colors.transparent) ? const Center(child: Text("D")) : Container(color: color));
-      }).toList();
+      <Widget>[_BrightnessToggleItem(state)] +
+      ThemePreset.values.map((preset) => _ColorPickerItem(preset, state)).toList();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
       final children = _getChildren(context, state);
-      print(state);
       return GridView.builder(
         itemCount: children.length,
         shrinkWrap: true,
@@ -63,7 +52,41 @@ class ThemePicker extends StatelessWidget {
 }
 
 class _ColorPickerItem extends StatelessWidget {
-  const _ColorPickerItem({required this.child, required this.selected, required this.onTap});
+  final ThemePreset preset;
+  final ThemeState state;
+  const _ColorPickerItem(this.preset, this.state);
+
+  @override
+  Widget build(BuildContext context) {
+    final color = preset.color;
+    final selected = preset.name == state.themePreset.name;
+    return _ThemePickerItem(
+        onTap: () => context.read<ThemeCubit>().setTheme(themePreset: preset, brightness: state.brightness),
+        selected: selected,
+        child: (color == Colors.transparent) ? const Center(child: Text("D")) : Container(color: color));
+  }
+}
+
+class _BrightnessToggleItem extends StatelessWidget {
+  final ThemeState state;
+  const _BrightnessToggleItem(this.state);
+
+  @override
+  Widget build(BuildContext context) {
+    return _ThemePickerItem(
+        onTap: () => context
+            .read<ThemeCubit>()
+            .setTheme(brightness: (state.brightness == Brightness.dark) ? Brightness.light : Brightness.dark),
+        selected: false,
+        child: switch (state.brightness) {
+          Brightness.light => const Icon(Icons.light_mode_outlined),
+          Brightness.dark => const Icon(Icons.dark_mode_outlined)
+        });
+  }
+}
+
+class _ThemePickerItem extends StatelessWidget {
+  const _ThemePickerItem({required this.child, required this.selected, required this.onTap});
 
   final bool selected;
   final Widget child;

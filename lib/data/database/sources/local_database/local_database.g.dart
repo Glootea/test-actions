@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'new_local_database.dart';
+part of 'local_database.dart';
 
 // ignore_for_file: type=lint
 class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
@@ -1659,6 +1659,7 @@ class KeyValueStorageTableCompanion
 
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
+  _$LocalDatabaseManager get managers => _$LocalDatabaseManager(this);
   late final $StudentsTable students = $StudentsTable(this);
   late final $SubjectTable subject = $SubjectTable(this);
   late final $QueueRecsTable queueRecs = $QueueRecsTable(this);
@@ -1681,4 +1682,905 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);
+}
+
+typedef $$StudentsTableInsertCompanionBuilder = StudentsCompanion Function({
+  Value<int> rowNumber,
+  required String name,
+  Value<bool?> isAdmin,
+});
+typedef $$StudentsTableUpdateCompanionBuilder = StudentsCompanion Function({
+  Value<int> rowNumber,
+  Value<String> name,
+  Value<bool?> isAdmin,
+});
+
+class $$StudentsTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $StudentsTable,
+    Student,
+    $$StudentsTableFilterComposer,
+    $$StudentsTableOrderingComposer,
+    $$StudentsTableProcessedTableManager,
+    $$StudentsTableInsertCompanionBuilder,
+    $$StudentsTableUpdateCompanionBuilder> {
+  $$StudentsTableTableManager(_$LocalDatabase db, $StudentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$StudentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$StudentsTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$StudentsTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<int> rowNumber = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<bool?> isAdmin = const Value.absent(),
+          }) =>
+              StudentsCompanion(
+            rowNumber: rowNumber,
+            name: name,
+            isAdmin: isAdmin,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<int> rowNumber = const Value.absent(),
+            required String name,
+            Value<bool?> isAdmin = const Value.absent(),
+          }) =>
+              StudentsCompanion.insert(
+            rowNumber: rowNumber,
+            name: name,
+            isAdmin: isAdmin,
+          ),
+        ));
+}
+
+class $$StudentsTableProcessedTableManager extends ProcessedTableManager<
+    _$LocalDatabase,
+    $StudentsTable,
+    Student,
+    $$StudentsTableFilterComposer,
+    $$StudentsTableOrderingComposer,
+    $$StudentsTableProcessedTableManager,
+    $$StudentsTableInsertCompanionBuilder,
+    $$StudentsTableUpdateCompanionBuilder> {
+  $$StudentsTableProcessedTableManager(super.$state);
+}
+
+class $$StudentsTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $StudentsTable> {
+  $$StudentsTableFilterComposer(super.$state);
+  ColumnFilters<int> get rowNumber => $state.composableBuilder(
+      column: $state.table.rowNumber,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isAdmin => $state.composableBuilder(
+      column: $state.table.isAdmin,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ComposableFilter queueRecsRefs(
+      ComposableFilter Function($$QueueRecsTableFilterComposer f) f) {
+    final $$QueueRecsTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.rowNumber,
+        referencedTable: $state.db.queueRecs,
+        getReferencedColumn: (t) => t.studentRowNumber,
+        builder: (joinBuilder, parentComposers) =>
+            $$QueueRecsTableFilterComposer(ComposerState(
+                $state.db, $state.db.queueRecs, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$StudentsTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $StudentsTable> {
+  $$StudentsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get rowNumber => $state.composableBuilder(
+      column: $state.table.rowNumber,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isAdmin => $state.composableBuilder(
+      column: $state.table.isAdmin,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$SubjectTableInsertCompanionBuilder = SubjectCompanion Function({
+  Value<int> id,
+  required String name,
+  required String onlineID,
+  required bool autoDelete,
+  required bool useWorkCount,
+  Value<DateTime?> lastDelete,
+});
+typedef $$SubjectTableUpdateCompanionBuilder = SubjectCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<String> onlineID,
+  Value<bool> autoDelete,
+  Value<bool> useWorkCount,
+  Value<DateTime?> lastDelete,
+});
+
+class $$SubjectTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $SubjectTable,
+    SubjectData,
+    $$SubjectTableFilterComposer,
+    $$SubjectTableOrderingComposer,
+    $$SubjectTableProcessedTableManager,
+    $$SubjectTableInsertCompanionBuilder,
+    $$SubjectTableUpdateCompanionBuilder> {
+  $$SubjectTableTableManager(_$LocalDatabase db, $SubjectTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$SubjectTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$SubjectTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) => $$SubjectTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> onlineID = const Value.absent(),
+            Value<bool> autoDelete = const Value.absent(),
+            Value<bool> useWorkCount = const Value.absent(),
+            Value<DateTime?> lastDelete = const Value.absent(),
+          }) =>
+              SubjectCompanion(
+            id: id,
+            name: name,
+            onlineID: onlineID,
+            autoDelete: autoDelete,
+            useWorkCount: useWorkCount,
+            lastDelete: lastDelete,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            required String onlineID,
+            required bool autoDelete,
+            required bool useWorkCount,
+            Value<DateTime?> lastDelete = const Value.absent(),
+          }) =>
+              SubjectCompanion.insert(
+            id: id,
+            name: name,
+            onlineID: onlineID,
+            autoDelete: autoDelete,
+            useWorkCount: useWorkCount,
+            lastDelete: lastDelete,
+          ),
+        ));
+}
+
+class $$SubjectTableProcessedTableManager extends ProcessedTableManager<
+    _$LocalDatabase,
+    $SubjectTable,
+    SubjectData,
+    $$SubjectTableFilterComposer,
+    $$SubjectTableOrderingComposer,
+    $$SubjectTableProcessedTableManager,
+    $$SubjectTableInsertCompanionBuilder,
+    $$SubjectTableUpdateCompanionBuilder> {
+  $$SubjectTableProcessedTableManager(super.$state);
+}
+
+class $$SubjectTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $SubjectTable> {
+  $$SubjectTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get onlineID => $state.composableBuilder(
+      column: $state.table.onlineID,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get autoDelete => $state.composableBuilder(
+      column: $state.table.autoDelete,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get useWorkCount => $state.composableBuilder(
+      column: $state.table.useWorkCount,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get lastDelete => $state.composableBuilder(
+      column: $state.table.lastDelete,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ComposableFilter queueRecsRefs(
+      ComposableFilter Function($$QueueRecsTableFilterComposer f) f) {
+    final $$QueueRecsTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.queueRecs,
+        getReferencedColumn: (t) => t.subjectID,
+        builder: (joinBuilder, parentComposers) =>
+            $$QueueRecsTableFilterComposer(ComposerState(
+                $state.db, $state.db.queueRecs, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+
+  ComposableFilter weeklyLessonsRefs(
+      ComposableFilter Function($$WeeklyLessonsTableFilterComposer f) f) {
+    final $$WeeklyLessonsTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.weeklyLessons,
+        getReferencedColumn: (t) => t.lessonID,
+        builder: (joinBuilder, parentComposers) =>
+            $$WeeklyLessonsTableFilterComposer(ComposerState($state.db,
+                $state.db.weeklyLessons, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+
+  ComposableFilter datedLessonsRefs(
+      ComposableFilter Function($$DatedLessonsTableFilterComposer f) f) {
+    final $$DatedLessonsTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.datedLessons,
+        getReferencedColumn: (t) => t.lessonID,
+        builder: (joinBuilder, parentComposers) =>
+            $$DatedLessonsTableFilterComposer(ComposerState($state.db,
+                $state.db.datedLessons, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$SubjectTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $SubjectTable> {
+  $$SubjectTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get onlineID => $state.composableBuilder(
+      column: $state.table.onlineID,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get autoDelete => $state.composableBuilder(
+      column: $state.table.autoDelete,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get useWorkCount => $state.composableBuilder(
+      column: $state.table.useWorkCount,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get lastDelete => $state.composableBuilder(
+      column: $state.table.lastDelete,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$QueueRecsTableInsertCompanionBuilder = QueueRecsCompanion Function({
+  Value<int> id,
+  required int studentRowNumber,
+  required int subjectID,
+  required DateTime time,
+  required String status,
+  Value<int?> workCount,
+});
+typedef $$QueueRecsTableUpdateCompanionBuilder = QueueRecsCompanion Function({
+  Value<int> id,
+  Value<int> studentRowNumber,
+  Value<int> subjectID,
+  Value<DateTime> time,
+  Value<String> status,
+  Value<int?> workCount,
+});
+
+class $$QueueRecsTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $QueueRecsTable,
+    QueueRec,
+    $$QueueRecsTableFilterComposer,
+    $$QueueRecsTableOrderingComposer,
+    $$QueueRecsTableProcessedTableManager,
+    $$QueueRecsTableInsertCompanionBuilder,
+    $$QueueRecsTableUpdateCompanionBuilder> {
+  $$QueueRecsTableTableManager(_$LocalDatabase db, $QueueRecsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$QueueRecsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$QueueRecsTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$QueueRecsTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            Value<int> studentRowNumber = const Value.absent(),
+            Value<int> subjectID = const Value.absent(),
+            Value<DateTime> time = const Value.absent(),
+            Value<String> status = const Value.absent(),
+            Value<int?> workCount = const Value.absent(),
+          }) =>
+              QueueRecsCompanion(
+            id: id,
+            studentRowNumber: studentRowNumber,
+            subjectID: subjectID,
+            time: time,
+            status: status,
+            workCount: workCount,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            required int studentRowNumber,
+            required int subjectID,
+            required DateTime time,
+            required String status,
+            Value<int?> workCount = const Value.absent(),
+          }) =>
+              QueueRecsCompanion.insert(
+            id: id,
+            studentRowNumber: studentRowNumber,
+            subjectID: subjectID,
+            time: time,
+            status: status,
+            workCount: workCount,
+          ),
+        ));
+}
+
+class $$QueueRecsTableProcessedTableManager extends ProcessedTableManager<
+    _$LocalDatabase,
+    $QueueRecsTable,
+    QueueRec,
+    $$QueueRecsTableFilterComposer,
+    $$QueueRecsTableOrderingComposer,
+    $$QueueRecsTableProcessedTableManager,
+    $$QueueRecsTableInsertCompanionBuilder,
+    $$QueueRecsTableUpdateCompanionBuilder> {
+  $$QueueRecsTableProcessedTableManager(super.$state);
+}
+
+class $$QueueRecsTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $QueueRecsTable> {
+  $$QueueRecsTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get time => $state.composableBuilder(
+      column: $state.table.time,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get status => $state.composableBuilder(
+      column: $state.table.status,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get workCount => $state.composableBuilder(
+      column: $state.table.workCount,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$StudentsTableFilterComposer get studentRowNumber {
+    final $$StudentsTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.studentRowNumber,
+        referencedTable: $state.db.students,
+        getReferencedColumn: (t) => t.rowNumber,
+        builder: (joinBuilder, parentComposers) =>
+            $$StudentsTableFilterComposer(ComposerState(
+                $state.db, $state.db.students, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$SubjectTableFilterComposer get subjectID {
+    final $$SubjectTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.subjectID,
+        referencedTable: $state.db.subject,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$SubjectTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.subject, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$QueueRecsTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $QueueRecsTable> {
+  $$QueueRecsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get time => $state.composableBuilder(
+      column: $state.table.time,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get status => $state.composableBuilder(
+      column: $state.table.status,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get workCount => $state.composableBuilder(
+      column: $state.table.workCount,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$StudentsTableOrderingComposer get studentRowNumber {
+    final $$StudentsTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.studentRowNumber,
+        referencedTable: $state.db.students,
+        getReferencedColumn: (t) => t.rowNumber,
+        builder: (joinBuilder, parentComposers) =>
+            $$StudentsTableOrderingComposer(ComposerState(
+                $state.db, $state.db.students, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$SubjectTableOrderingComposer get subjectID {
+    final $$SubjectTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.subjectID,
+        referencedTable: $state.db.subject,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$SubjectTableOrderingComposer(ComposerState(
+                $state.db, $state.db.subject, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$WeeklyLessonsTableInsertCompanionBuilder = WeeklyLessonsCompanion
+    Function({
+  Value<int> id,
+  required int lessonID,
+  required String startTime,
+  required String endTime,
+  required int weekDay,
+});
+typedef $$WeeklyLessonsTableUpdateCompanionBuilder = WeeklyLessonsCompanion
+    Function({
+  Value<int> id,
+  Value<int> lessonID,
+  Value<String> startTime,
+  Value<String> endTime,
+  Value<int> weekDay,
+});
+
+class $$WeeklyLessonsTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $WeeklyLessonsTable,
+    WeeklyLesson,
+    $$WeeklyLessonsTableFilterComposer,
+    $$WeeklyLessonsTableOrderingComposer,
+    $$WeeklyLessonsTableProcessedTableManager,
+    $$WeeklyLessonsTableInsertCompanionBuilder,
+    $$WeeklyLessonsTableUpdateCompanionBuilder> {
+  $$WeeklyLessonsTableTableManager(
+      _$LocalDatabase db, $WeeklyLessonsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$WeeklyLessonsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$WeeklyLessonsTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$WeeklyLessonsTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            Value<int> lessonID = const Value.absent(),
+            Value<String> startTime = const Value.absent(),
+            Value<String> endTime = const Value.absent(),
+            Value<int> weekDay = const Value.absent(),
+          }) =>
+              WeeklyLessonsCompanion(
+            id: id,
+            lessonID: lessonID,
+            startTime: startTime,
+            endTime: endTime,
+            weekDay: weekDay,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            required int lessonID,
+            required String startTime,
+            required String endTime,
+            required int weekDay,
+          }) =>
+              WeeklyLessonsCompanion.insert(
+            id: id,
+            lessonID: lessonID,
+            startTime: startTime,
+            endTime: endTime,
+            weekDay: weekDay,
+          ),
+        ));
+}
+
+class $$WeeklyLessonsTableProcessedTableManager extends ProcessedTableManager<
+    _$LocalDatabase,
+    $WeeklyLessonsTable,
+    WeeklyLesson,
+    $$WeeklyLessonsTableFilterComposer,
+    $$WeeklyLessonsTableOrderingComposer,
+    $$WeeklyLessonsTableProcessedTableManager,
+    $$WeeklyLessonsTableInsertCompanionBuilder,
+    $$WeeklyLessonsTableUpdateCompanionBuilder> {
+  $$WeeklyLessonsTableProcessedTableManager(super.$state);
+}
+
+class $$WeeklyLessonsTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $WeeklyLessonsTable> {
+  $$WeeklyLessonsTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get startTime => $state.composableBuilder(
+      column: $state.table.startTime,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get endTime => $state.composableBuilder(
+      column: $state.table.endTime,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get weekDay => $state.composableBuilder(
+      column: $state.table.weekDay,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$SubjectTableFilterComposer get lessonID {
+    final $$SubjectTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lessonID,
+        referencedTable: $state.db.subject,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$SubjectTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.subject, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$WeeklyLessonsTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $WeeklyLessonsTable> {
+  $$WeeklyLessonsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get startTime => $state.composableBuilder(
+      column: $state.table.startTime,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get endTime => $state.composableBuilder(
+      column: $state.table.endTime,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get weekDay => $state.composableBuilder(
+      column: $state.table.weekDay,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$SubjectTableOrderingComposer get lessonID {
+    final $$SubjectTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lessonID,
+        referencedTable: $state.db.subject,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$SubjectTableOrderingComposer(ComposerState(
+                $state.db, $state.db.subject, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$DatedLessonsTableInsertCompanionBuilder = DatedLessonsCompanion
+    Function({
+  Value<int> id,
+  required int lessonID,
+  required DateTime date,
+  required String startTime,
+  required String endTime,
+});
+typedef $$DatedLessonsTableUpdateCompanionBuilder = DatedLessonsCompanion
+    Function({
+  Value<int> id,
+  Value<int> lessonID,
+  Value<DateTime> date,
+  Value<String> startTime,
+  Value<String> endTime,
+});
+
+class $$DatedLessonsTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $DatedLessonsTable,
+    DatedLesson,
+    $$DatedLessonsTableFilterComposer,
+    $$DatedLessonsTableOrderingComposer,
+    $$DatedLessonsTableProcessedTableManager,
+    $$DatedLessonsTableInsertCompanionBuilder,
+    $$DatedLessonsTableUpdateCompanionBuilder> {
+  $$DatedLessonsTableTableManager(_$LocalDatabase db, $DatedLessonsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DatedLessonsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$DatedLessonsTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$DatedLessonsTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            Value<int> lessonID = const Value.absent(),
+            Value<DateTime> date = const Value.absent(),
+            Value<String> startTime = const Value.absent(),
+            Value<String> endTime = const Value.absent(),
+          }) =>
+              DatedLessonsCompanion(
+            id: id,
+            lessonID: lessonID,
+            date: date,
+            startTime: startTime,
+            endTime: endTime,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            required int lessonID,
+            required DateTime date,
+            required String startTime,
+            required String endTime,
+          }) =>
+              DatedLessonsCompanion.insert(
+            id: id,
+            lessonID: lessonID,
+            date: date,
+            startTime: startTime,
+            endTime: endTime,
+          ),
+        ));
+}
+
+class $$DatedLessonsTableProcessedTableManager extends ProcessedTableManager<
+    _$LocalDatabase,
+    $DatedLessonsTable,
+    DatedLesson,
+    $$DatedLessonsTableFilterComposer,
+    $$DatedLessonsTableOrderingComposer,
+    $$DatedLessonsTableProcessedTableManager,
+    $$DatedLessonsTableInsertCompanionBuilder,
+    $$DatedLessonsTableUpdateCompanionBuilder> {
+  $$DatedLessonsTableProcessedTableManager(super.$state);
+}
+
+class $$DatedLessonsTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $DatedLessonsTable> {
+  $$DatedLessonsTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get date => $state.composableBuilder(
+      column: $state.table.date,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get startTime => $state.composableBuilder(
+      column: $state.table.startTime,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get endTime => $state.composableBuilder(
+      column: $state.table.endTime,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$SubjectTableFilterComposer get lessonID {
+    final $$SubjectTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lessonID,
+        referencedTable: $state.db.subject,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$SubjectTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.subject, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$DatedLessonsTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $DatedLessonsTable> {
+  $$DatedLessonsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get date => $state.composableBuilder(
+      column: $state.table.date,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get startTime => $state.composableBuilder(
+      column: $state.table.startTime,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get endTime => $state.composableBuilder(
+      column: $state.table.endTime,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$SubjectTableOrderingComposer get lessonID {
+    final $$SubjectTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.lessonID,
+        referencedTable: $state.db.subject,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$SubjectTableOrderingComposer(ComposerState(
+                $state.db, $state.db.subject, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$KeyValueStorageTableTableInsertCompanionBuilder
+    = KeyValueStorageTableCompanion Function({
+  required String key,
+  required String value,
+  Value<int> rowid,
+});
+typedef $$KeyValueStorageTableTableUpdateCompanionBuilder
+    = KeyValueStorageTableCompanion Function({
+  Value<String> key,
+  Value<String> value,
+  Value<int> rowid,
+});
+
+class $$KeyValueStorageTableTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $KeyValueStorageTableTable,
+    KeyValueStorageTableData,
+    $$KeyValueStorageTableTableFilterComposer,
+    $$KeyValueStorageTableTableOrderingComposer,
+    $$KeyValueStorageTableTableProcessedTableManager,
+    $$KeyValueStorageTableTableInsertCompanionBuilder,
+    $$KeyValueStorageTableTableUpdateCompanionBuilder> {
+  $$KeyValueStorageTableTableTableManager(
+      _$LocalDatabase db, $KeyValueStorageTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$KeyValueStorageTableTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$KeyValueStorageTableTableOrderingComposer(
+              ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$KeyValueStorageTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> key = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              KeyValueStorageTableCompanion(
+            key: key,
+            value: value,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            required String key,
+            required String value,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              KeyValueStorageTableCompanion.insert(
+            key: key,
+            value: value,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$KeyValueStorageTableTableProcessedTableManager
+    extends ProcessedTableManager<
+        _$LocalDatabase,
+        $KeyValueStorageTableTable,
+        KeyValueStorageTableData,
+        $$KeyValueStorageTableTableFilterComposer,
+        $$KeyValueStorageTableTableOrderingComposer,
+        $$KeyValueStorageTableTableProcessedTableManager,
+        $$KeyValueStorageTableTableInsertCompanionBuilder,
+        $$KeyValueStorageTableTableUpdateCompanionBuilder> {
+  $$KeyValueStorageTableTableProcessedTableManager(super.$state);
+}
+
+class $$KeyValueStorageTableTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $KeyValueStorageTableTable> {
+  $$KeyValueStorageTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get key => $state.composableBuilder(
+      column: $state.table.key,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$KeyValueStorageTableTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $KeyValueStorageTableTable> {
+  $$KeyValueStorageTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get key => $state.composableBuilder(
+      column: $state.table.key,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+class _$LocalDatabaseManager {
+  final _$LocalDatabase _db;
+  _$LocalDatabaseManager(this._db);
+  $$StudentsTableTableManager get students =>
+      $$StudentsTableTableManager(_db, _db.students);
+  $$SubjectTableTableManager get subject =>
+      $$SubjectTableTableManager(_db, _db.subject);
+  $$QueueRecsTableTableManager get queueRecs =>
+      $$QueueRecsTableTableManager(_db, _db.queueRecs);
+  $$WeeklyLessonsTableTableManager get weeklyLessons =>
+      $$WeeklyLessonsTableTableManager(_db, _db.weeklyLessons);
+  $$DatedLessonsTableTableManager get datedLessons =>
+      $$DatedLessonsTableTableManager(_db, _db.datedLessons);
+  $$KeyValueStorageTableTableTableManager get keyValueStorageTable =>
+      $$KeyValueStorageTableTableTableManager(_db, _db.keyValueStorageTable);
 }

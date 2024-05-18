@@ -1,9 +1,7 @@
 import 'dart:developer';
-
 import 'package:gsheets/gsheets.dart';
-import 'package:queue/entities/src/lesson.dart';
-import 'package:queue/entities/src/new_lesson_time.dart';
-import 'package:queue/entities/src/new_queue_record.dart';
+import 'package:queue/entities/src/lesson_time.dart';
+import 'package:queue/entities/src/queue_record.dart';
 import 'package:queue/entities/src/subject.dart';
 import 'package:queue/extension.dart';
 
@@ -119,13 +117,13 @@ class OnlineDataBase {
     return times;
   }
 
-  Future<SubjectInfo> getSubjectInfo(String tableID) async {
+  Future<SubjectOnlineInfo> getSubjectInfo(String tableID) async {
     final spreadsheet = await _getSpreadsheet(tableID);
     final info = spreadsheet.worksheetByTitle(_infoSheetName);
     final keys = await info!.values.column(1, fromRow: 2);
     final values = await info.values.column(2, fromRow: 2);
     final map = Map.fromIterables(keys.removeBlanks, values.getHandledBlanks);
-    final result = SubjectInfo.fromMap(map);
+    final result = SubjectOnlineInfo.fromMap(map);
     return result;
   }
 
@@ -137,7 +135,7 @@ class OnlineDataBase {
     return subjectList;
   }
 
-  Future<List<NewLessonTime>> getLessonTimeList() async {
+  Future<List<LessonTime>> getLessonTimeList() async {
     final spreadsheet = await _getSpreadsheet(_getInfoTableID);
     final worksheet = spreadsheet.worksheetByTitle(_lessonTimesSheetName);
     final data = await worksheet!.values.allRows(fromRow: 2);
@@ -145,8 +143,8 @@ class OnlineDataBase {
     return lessonTimeList;
   }
 
-  NewLessonTime _parseLessonTime(List<String> row) {
-    return _isWeeklyLesson(row) ? NewWeeklyLessonEntity.fromRow(row) : NewDatedLessonEntity.fromRow(row);
+  LessonTime _parseLessonTime(List<String> row) {
+    return _isWeeklyLesson(row) ? WeeklyLessonEntity.fromRow(row) : DatedLessonEntity.fromRow(row);
   }
 
   bool _isWeeklyLesson(List<String> row) => row[1] == '-';
@@ -173,7 +171,7 @@ class OnlineDataBase {
     await worksheet!.values.insertRow(rowNumber, row);
   }
 
-  Future<void> writeLessonTime(NewLessonTime lessonTime, int rowNumber) async {
+  Future<void> writeLessonTime(LessonTime lessonTime, int rowNumber) async {
     final spreadsheet = await _getSpreadsheet(_getInfoTableID);
     final worksheet = spreadsheet.worksheetByTitle(_lessonTimesSheetName);
     final row = lessonTime.toRow;
@@ -186,7 +184,7 @@ class OnlineDataBase {
     await worksheet!.values.insertValue(name, row: rowNumber, column: 1);
   }
 
-  Future<bool> addNewQueueRecord(NewQueueRecord queueRecord) async {
+  Future<bool> addNewQueueRecord(QueueRecord queueRecord) async {
     try {
       final spreadsheet = await _getSpreadsheet(queueRecord.onlineTableID);
       final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
@@ -198,7 +196,7 @@ class OnlineDataBase {
     }
   }
 
-  Future<bool> deleteQueueRecord(NewQueueRecord queueRecord) async {
+  Future<bool> deleteQueueRecord(QueueRecord queueRecord) async {
     try {
       final spreadsheet = await _getSpreadsheet(queueRecord.onlineTableID);
       final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);

@@ -217,3 +217,122 @@ abstract class _Subject extends Subject {
   _$$SubjectImplCopyWith<_$SubjectImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$SubjectOnlineInfo {
+  DateTime get lastDelete => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $SubjectOnlineInfoCopyWith<SubjectOnlineInfo> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SubjectOnlineInfoCopyWith<$Res> {
+  factory $SubjectOnlineInfoCopyWith(
+          SubjectOnlineInfo value, $Res Function(SubjectOnlineInfo) then) =
+      _$SubjectOnlineInfoCopyWithImpl<$Res, SubjectOnlineInfo>;
+  @useResult
+  $Res call({DateTime lastDelete});
+}
+
+/// @nodoc
+class _$SubjectOnlineInfoCopyWithImpl<$Res, $Val extends SubjectOnlineInfo>
+    implements $SubjectOnlineInfoCopyWith<$Res> {
+  _$SubjectOnlineInfoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? lastDelete = null,
+  }) {
+    return _then(_value.copyWith(
+      lastDelete: null == lastDelete
+          ? _value.lastDelete
+          : lastDelete // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SubjectInfoImplCopyWith<$Res>
+    implements $SubjectOnlineInfoCopyWith<$Res> {
+  factory _$$SubjectInfoImplCopyWith(
+          _$SubjectInfoImpl value, $Res Function(_$SubjectInfoImpl) then) =
+      __$$SubjectInfoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime lastDelete});
+}
+
+/// @nodoc
+class __$$SubjectInfoImplCopyWithImpl<$Res>
+    extends _$SubjectOnlineInfoCopyWithImpl<$Res, _$SubjectInfoImpl>
+    implements _$$SubjectInfoImplCopyWith<$Res> {
+  __$$SubjectInfoImplCopyWithImpl(
+      _$SubjectInfoImpl _value, $Res Function(_$SubjectInfoImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? lastDelete = null,
+  }) {
+    return _then(_$SubjectInfoImpl(
+      lastDelete: null == lastDelete
+          ? _value.lastDelete
+          : lastDelete // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$SubjectInfoImpl implements _SubjectInfo {
+  const _$SubjectInfoImpl({required this.lastDelete});
+
+  @override
+  final DateTime lastDelete;
+
+  @override
+  String toString() {
+    return 'SubjectOnlineInfo(lastDelete: $lastDelete)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SubjectInfoImpl &&
+            (identical(other.lastDelete, lastDelete) ||
+                other.lastDelete == lastDelete));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, lastDelete);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SubjectInfoImplCopyWith<_$SubjectInfoImpl> get copyWith =>
+      __$$SubjectInfoImplCopyWithImpl<_$SubjectInfoImpl>(this, _$identity);
+}
+
+abstract class _SubjectInfo implements SubjectOnlineInfo {
+  const factory _SubjectInfo({required final DateTime lastDelete}) =
+      _$SubjectInfoImpl;
+
+  @override
+  DateTime get lastDelete;
+  @override
+  @JsonKey(ignore: true)
+  _$$SubjectInfoImplCopyWith<_$SubjectInfoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

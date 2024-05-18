@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:queue/data/database/sources/local_database/src/tables.dart';
 import 'package:queue/data/database/sources/local_database/src/connection.dart' as impl;
-import 'package:queue/entities/src/new_queue_record.dart';
+import 'package:queue/entities/src/queue_record.dart';
 
-part 'new_local_database.g.dart';
+part 'local_database.g.dart';
 part 'package:queue/data/database/sources/local_database/key_value_storage.dart';
 
 @DriftDatabase(tables: [QueueRecs, Subject, Students, WeeklyLessons, DatedLessons, KeyValueStorageTable])
@@ -13,7 +13,7 @@ class LocalDatabase extends _$LocalDatabase {
   @override
   int get schemaVersion => 1;
 
-  Future<void> addNewQueueRecord(NewQueueRecord queueRecord) async {
+  Future<void> addQueueRecord(QueueRecord queueRecord) async {
     await into(queueRecs).insert(QueueRecsCompanion.insert(
       subjectID: queueRecord.localSubjectID,
       studentRowNumber: queueRecord.studentRowNumber,
@@ -22,7 +22,7 @@ class LocalDatabase extends _$LocalDatabase {
     ));
   }
 
-  Future<void> deleteQueueRecord(NewQueueRecord queueRecord) async {
+  Future<void> deleteQueueRecord(QueueRecord queueRecord) async {
     await (delete(queueRecs)
           ..where((tbl) =>
               tbl.subjectID.equals(queueRecord.localSubjectID) &
@@ -30,7 +30,7 @@ class LocalDatabase extends _$LocalDatabase {
         .go();
   }
 
-  Future<void> updateQueueRecordUploadStatus(NewQueueRecord queueRecord, NewQueueRecordStatus status) async {
+  Future<void> updateQueueRecordUploadStatus(QueueRecord queueRecord, QueueRecordStatus status) async {
     await into(queueRecs).insert(
         QueueRecsCompanion.insert(
             studentRowNumber: queueRecord.studentRowNumber,

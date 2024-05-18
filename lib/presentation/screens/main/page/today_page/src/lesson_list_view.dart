@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/entities/src/new_lesson.dart';
-import 'package:queue/entities/src/new_queue_record.dart';
+import 'package:queue/entities/src/lesson.dart';
+import 'package:queue/entities/src/queue_record.dart';
 import 'package:queue/presentation/screens/main/page/today_page/src/lesson_card/lesson_card.dart';
 import 'package:queue/presentation/screens/main/main_screen_cubit.dart';
 
@@ -10,8 +10,8 @@ class LessonListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<TodayScreenCubit, TodayScreenState, (List<Lesson>, Map<String, List<NewQueueRecord>>)>(
-        selector: (state) => (state.newLessonList, state.recList),
+    return BlocSelector<TodayScreenCubit, TodayScreenState, (List<Lesson>, Map<String, List<QueueRecord>>)>(
+        selector: (state) => (state.lessonList, state.recList),
         builder: (context, state) {
           print(state);
           final lessonList = state.$1;
@@ -21,8 +21,7 @@ class LessonListView extends StatelessWidget {
                   ? const _EmptyLessonListCard()
                   : ListView.builder(
                       itemCount: state.$1.length,
-                      itemBuilder: (context, index) =>
-                          LessonCard(lessonList[index], state.$2[lessonList[index].name] ?? []),
+                      itemBuilder: (context, index) => LessonCard(lessonList[index]),
                     ));
         });
   }

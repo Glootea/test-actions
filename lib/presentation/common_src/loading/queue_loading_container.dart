@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/presentation/common_src/loading/loading_animation.dart';
@@ -18,10 +20,13 @@ class LoadingContainer<B extends StateStreamable<S>, S extends LoadableState> ex
     return BlocSelector<B, S, LoadingState>(
         selector: (state) => state.isStateLoading,
         builder: (context, state) {
+          log(state.toString());
           return AnimatedCrossFade(
             alignment: Alignment.center,
             duration: const Duration(milliseconds: 500),
-            crossFadeState: state != LoadingState.ended ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            crossFadeState: state == LoadingState.started || state == LoadingState.loaded
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
             layoutBuilder: (topChild, topChildKey, bottomChild, bottomChildKey) => topChild,
             firstChild: Center(
               child: SizedBox(

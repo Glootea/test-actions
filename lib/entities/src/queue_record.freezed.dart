@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'new_queue_record.dart';
+part of 'queue_record.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,24 +15,24 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$NewQueueRecord {
+mixin _$QueueRecord {
   int get localSubjectID => throw _privateConstructorUsedError;
   String get onlineTableID => throw _privateConstructorUsedError;
   int get studentRowNumber => throw _privateConstructorUsedError;
   DateTime get time => throw _privateConstructorUsedError;
   int? get workCount => throw _privateConstructorUsedError;
-  NewQueueRecordStatus get status => throw _privateConstructorUsedError;
+  QueueRecordStatus get status => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $NewQueueRecordCopyWith<NewQueueRecord> get copyWith =>
+  $QueueRecordCopyWith<QueueRecord> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NewQueueRecordCopyWith<$Res> {
-  factory $NewQueueRecordCopyWith(
-          NewQueueRecord value, $Res Function(NewQueueRecord) then) =
-      _$NewQueueRecordCopyWithImpl<$Res, NewQueueRecord>;
+abstract class $QueueRecordCopyWith<$Res> {
+  factory $QueueRecordCopyWith(
+          QueueRecord value, $Res Function(QueueRecord) then) =
+      _$QueueRecordCopyWithImpl<$Res, QueueRecord>;
   @useResult
   $Res call(
       {int localSubjectID,
@@ -40,13 +40,13 @@ abstract class $NewQueueRecordCopyWith<$Res> {
       int studentRowNumber,
       DateTime time,
       int? workCount,
-      NewQueueRecordStatus status});
+      QueueRecordStatus status});
 }
 
 /// @nodoc
-class _$NewQueueRecordCopyWithImpl<$Res, $Val extends NewQueueRecord>
-    implements $NewQueueRecordCopyWith<$Res> {
-  _$NewQueueRecordCopyWithImpl(this._value, this._then);
+class _$QueueRecordCopyWithImpl<$Res, $Val extends QueueRecord>
+    implements $QueueRecordCopyWith<$Res> {
+  _$QueueRecordCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -87,17 +87,17 @@ class _$NewQueueRecordCopyWithImpl<$Res, $Val extends NewQueueRecord>
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as NewQueueRecordStatus,
+              as QueueRecordStatus,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$NewQueueRecordImplCopyWith<$Res>
-    implements $NewQueueRecordCopyWith<$Res> {
-  factory _$$NewQueueRecordImplCopyWith(_$NewQueueRecordImpl value,
-          $Res Function(_$NewQueueRecordImpl) then) =
-      __$$NewQueueRecordImplCopyWithImpl<$Res>;
+abstract class _$$QueueRecordImplCopyWith<$Res>
+    implements $QueueRecordCopyWith<$Res> {
+  factory _$$QueueRecordImplCopyWith(
+          _$QueueRecordImpl value, $Res Function(_$QueueRecordImpl) then) =
+      __$$QueueRecordImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -106,15 +106,15 @@ abstract class _$$NewQueueRecordImplCopyWith<$Res>
       int studentRowNumber,
       DateTime time,
       int? workCount,
-      NewQueueRecordStatus status});
+      QueueRecordStatus status});
 }
 
 /// @nodoc
-class __$$NewQueueRecordImplCopyWithImpl<$Res>
-    extends _$NewQueueRecordCopyWithImpl<$Res, _$NewQueueRecordImpl>
-    implements _$$NewQueueRecordImplCopyWith<$Res> {
-  __$$NewQueueRecordImplCopyWithImpl(
-      _$NewQueueRecordImpl _value, $Res Function(_$NewQueueRecordImpl) _then)
+class __$$QueueRecordImplCopyWithImpl<$Res>
+    extends _$QueueRecordCopyWithImpl<$Res, _$QueueRecordImpl>
+    implements _$$QueueRecordImplCopyWith<$Res> {
+  __$$QueueRecordImplCopyWithImpl(
+      _$QueueRecordImpl _value, $Res Function(_$QueueRecordImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -127,7 +127,7 @@ class __$$NewQueueRecordImplCopyWithImpl<$Res>
     Object? workCount = freezed,
     Object? status = null,
   }) {
-    return _then(_$NewQueueRecordImpl(
+    return _then(_$QueueRecordImpl(
       localSubjectID: null == localSubjectID
           ? _value.localSubjectID
           : localSubjectID // ignore: cast_nullable_to_non_nullable
@@ -151,15 +151,15 @@ class __$$NewQueueRecordImplCopyWithImpl<$Res>
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as NewQueueRecordStatus,
+              as QueueRecordStatus,
     ));
   }
 }
 
 /// @nodoc
 
-class _$NewQueueRecordImpl extends _NewQueueRecord {
-  const _$NewQueueRecordImpl(
+class _$QueueRecordImpl extends _QueueRecord {
+  const _$QueueRecordImpl(
       {required this.localSubjectID,
       required this.onlineTableID,
       required this.studentRowNumber,
@@ -179,18 +179,18 @@ class _$NewQueueRecordImpl extends _NewQueueRecord {
   @override
   final int? workCount;
   @override
-  final NewQueueRecordStatus status;
+  final QueueRecordStatus status;
 
   @override
   String toString() {
-    return 'NewQueueRecord(localSubjectID: $localSubjectID, onlineTableID: $onlineTableID, studentRowNumber: $studentRowNumber, time: $time, workCount: $workCount, status: $status)';
+    return 'QueueRecord(localSubjectID: $localSubjectID, onlineTableID: $onlineTableID, studentRowNumber: $studentRowNumber, time: $time, workCount: $workCount, status: $status)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NewQueueRecordImpl &&
+            other is _$QueueRecordImpl &&
             (identical(other.localSubjectID, localSubjectID) ||
                 other.localSubjectID == localSubjectID) &&
             (identical(other.onlineTableID, onlineTableID) ||
@@ -210,20 +210,19 @@ class _$NewQueueRecordImpl extends _NewQueueRecord {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$NewQueueRecordImplCopyWith<_$NewQueueRecordImpl> get copyWith =>
-      __$$NewQueueRecordImplCopyWithImpl<_$NewQueueRecordImpl>(
-          this, _$identity);
+  _$$QueueRecordImplCopyWith<_$QueueRecordImpl> get copyWith =>
+      __$$QueueRecordImplCopyWithImpl<_$QueueRecordImpl>(this, _$identity);
 }
 
-abstract class _NewQueueRecord extends NewQueueRecord {
-  const factory _NewQueueRecord(
+abstract class _QueueRecord extends QueueRecord {
+  const factory _QueueRecord(
       {required final int localSubjectID,
       required final String onlineTableID,
       required final int studentRowNumber,
       required final DateTime time,
       final int? workCount,
-      required final NewQueueRecordStatus status}) = _$NewQueueRecordImpl;
-  const _NewQueueRecord._() : super._();
+      required final QueueRecordStatus status}) = _$QueueRecordImpl;
+  const _QueueRecord._() : super._();
 
   @override
   int get localSubjectID;
@@ -236,9 +235,9 @@ abstract class _NewQueueRecord extends NewQueueRecord {
   @override
   int? get workCount;
   @override
-  NewQueueRecordStatus get status;
+  QueueRecordStatus get status;
   @override
   @JsonKey(ignore: true)
-  _$$NewQueueRecordImplCopyWith<_$NewQueueRecordImpl> get copyWith =>
+  _$$QueueRecordImplCopyWith<_$QueueRecordImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

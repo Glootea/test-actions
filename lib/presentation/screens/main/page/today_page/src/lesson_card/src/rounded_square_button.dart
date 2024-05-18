@@ -1,31 +1,38 @@
 import 'package:flutter/material.dart';
 
-/// If used in [Row] set crossAxisAlignment: [CrossAxisAlignment.stretch] it wrap [Row] with [IntrinsicHeight]
-class RoundedSquareButton extends StatelessWidget {
-  final Widget child;
-  final VoidCallback onPressed;
-  final double size;
-  final double borderRadius;
-  const RoundedSquareButton({
+class LessonCardButton extends StatelessWidget {
+  const LessonCardButton({
     super.key,
-    required this.child,
-    required this.onPressed,
-    required this.size,
-    this.borderRadius = 16,
+    required this.icon,
+    required this.onTap,
   });
+  final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: size,
-      width: size,
-      child: OutlinedButton(
-          style: ButtonStyle(
-            padding: MaterialStateProperty.all(EdgeInsets.zero),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+        height: 64,
+        width: 64,
+        child: IconButton(
+          style: IconButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                width: 2,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
           ),
-          onPressed: onPressed,
-          child: child),
-    );
+          icon: Icon(
+            icon,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+            size: 24,
+          ),
+          onPressed: onTap,
+          // onPressed: () {
+
+          // }),
+        ));
   }
 }

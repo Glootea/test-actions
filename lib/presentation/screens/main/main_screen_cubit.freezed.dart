@@ -16,8 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$TodayScreenState {
-  List<Lesson> get newLessonList => throw _privateConstructorUsedError;
-  Map<String, List<NewQueueRecord>> get recList =>
+  List<Lesson> get lessonList => throw _privateConstructorUsedError;
+  Map<String, List<QueueRecord>> get recList =>
       throw _privateConstructorUsedError;
   LoadingState get isLoading => throw _privateConstructorUsedError;
   DialogData? get dialogData => throw _privateConstructorUsedError;
@@ -34,8 +34,8 @@ abstract class $TodayScreenStateCopyWith<$Res> {
       _$TodayScreenStateCopyWithImpl<$Res, TodayScreenState>;
   @useResult
   $Res call(
-      {List<Lesson> newLessonList,
-      Map<String, List<NewQueueRecord>> recList,
+      {List<Lesson> lessonList,
+      Map<String, List<QueueRecord>> recList,
       LoadingState isLoading,
       DialogData? dialogData});
 }
@@ -53,20 +53,20 @@ class _$TodayScreenStateCopyWithImpl<$Res, $Val extends TodayScreenState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? newLessonList = null,
+    Object? lessonList = null,
     Object? recList = null,
     Object? isLoading = null,
     Object? dialogData = freezed,
   }) {
     return _then(_value.copyWith(
-      newLessonList: null == newLessonList
-          ? _value.newLessonList
-          : newLessonList // ignore: cast_nullable_to_non_nullable
+      lessonList: null == lessonList
+          ? _value.lessonList
+          : lessonList // ignore: cast_nullable_to_non_nullable
               as List<Lesson>,
       recList: null == recList
           ? _value.recList
           : recList // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<NewQueueRecord>>,
+              as Map<String, List<QueueRecord>>,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -88,8 +88,8 @@ abstract class _$$MainScreenStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<Lesson> newLessonList,
-      Map<String, List<NewQueueRecord>> recList,
+      {List<Lesson> lessonList,
+      Map<String, List<QueueRecord>> recList,
       LoadingState isLoading,
       DialogData? dialogData});
 }
@@ -105,20 +105,20 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? newLessonList = null,
+    Object? lessonList = null,
     Object? recList = null,
     Object? isLoading = null,
     Object? dialogData = freezed,
   }) {
     return _then(_$MainScreenStateImpl(
-      newLessonList: null == newLessonList
-          ? _value._newLessonList
-          : newLessonList // ignore: cast_nullable_to_non_nullable
+      lessonList: null == lessonList
+          ? _value._lessonList
+          : lessonList // ignore: cast_nullable_to_non_nullable
               as List<Lesson>,
       recList: null == recList
           ? _value._recList
           : recList // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<NewQueueRecord>>,
+              as Map<String, List<QueueRecord>>,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -135,25 +135,25 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
 
 class _$MainScreenStateImpl extends _MainScreenState {
   const _$MainScreenStateImpl(
-      {required final List<Lesson> newLessonList,
-      required final Map<String, List<NewQueueRecord>> recList,
+      {required final List<Lesson> lessonList,
+      required final Map<String, List<QueueRecord>> recList,
       this.isLoading = LoadingState.loaded,
       this.dialogData})
-      : _newLessonList = newLessonList,
+      : _lessonList = lessonList,
         _recList = recList,
         super._();
 
-  final List<Lesson> _newLessonList;
+  final List<Lesson> _lessonList;
   @override
-  List<Lesson> get newLessonList {
-    if (_newLessonList is EqualUnmodifiableListView) return _newLessonList;
+  List<Lesson> get lessonList {
+    if (_lessonList is EqualUnmodifiableListView) return _lessonList;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_newLessonList);
+    return EqualUnmodifiableListView(_lessonList);
   }
 
-  final Map<String, List<NewQueueRecord>> _recList;
+  final Map<String, List<QueueRecord>> _recList;
   @override
-  Map<String, List<NewQueueRecord>> get recList {
+  Map<String, List<QueueRecord>> get recList {
     if (_recList is EqualUnmodifiableMapView) return _recList;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_recList);
@@ -167,7 +167,7 @@ class _$MainScreenStateImpl extends _MainScreenState {
 
   @override
   String toString() {
-    return 'TodayScreenState(newLessonList: $newLessonList, recList: $recList, isLoading: $isLoading, dialogData: $dialogData)';
+    return 'TodayScreenState(lessonList: $lessonList, recList: $recList, isLoading: $isLoading, dialogData: $dialogData)';
   }
 
   @override
@@ -176,7 +176,7 @@ class _$MainScreenStateImpl extends _MainScreenState {
         (other.runtimeType == runtimeType &&
             other is _$MainScreenStateImpl &&
             const DeepCollectionEquality()
-                .equals(other._newLessonList, _newLessonList) &&
+                .equals(other._lessonList, _lessonList) &&
             const DeepCollectionEquality().equals(other._recList, _recList) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
@@ -187,7 +187,7 @@ class _$MainScreenStateImpl extends _MainScreenState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(_newLessonList),
+      const DeepCollectionEquality().hash(_lessonList),
       const DeepCollectionEquality().hash(_recList),
       isLoading,
       dialogData);
@@ -202,16 +202,16 @@ class _$MainScreenStateImpl extends _MainScreenState {
 
 abstract class _MainScreenState extends TodayScreenState {
   const factory _MainScreenState(
-      {required final List<Lesson> newLessonList,
-      required final Map<String, List<NewQueueRecord>> recList,
+      {required final List<Lesson> lessonList,
+      required final Map<String, List<QueueRecord>> recList,
       final LoadingState isLoading,
       final DialogData? dialogData}) = _$MainScreenStateImpl;
   const _MainScreenState._() : super._();
 
   @override
-  List<Lesson> get newLessonList;
+  List<Lesson> get lessonList;
   @override
-  Map<String, List<NewQueueRecord>> get recList;
+  Map<String, List<QueueRecord>> get recList;
   @override
   LoadingState get isLoading;
   @override

@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/data/database/sources/local_database/new_local_database.dart';
+import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/presentation/common_src/imaged_background.dart';
 import 'package:queue/presentation/screens/main/page/today_page/src/circular_update_timer.dart';
 import 'package:queue/presentation/screens/main/page/today_page/src/lesson_list_view.dart';
@@ -30,7 +30,7 @@ class TodayPage extends StatelessWidget {
             centerTitle: true,
             leading: CircularUpdateTimer(
               durationInSeconds: 30,
-              isUpdatingQueue: storage.get(StoredValues.isUpdatingQueue),
+              isUpdatingQueueRequest: storage.get(StoredValues.isUpdatingQueue),
               onTimeExpired: () {},
             ),
           ),

@@ -35,3 +35,14 @@ class Subject with _$Subject {
     return row.toOnline;
   }
 }
+
+@freezed
+class SubjectOnlineInfo with _$SubjectOnlineInfo {
+  const factory SubjectOnlineInfo({required DateTime lastDelete}) = _SubjectInfo;
+
+  factory SubjectOnlineInfo.fromMap(Map<String, dynamic> json) {
+    return SubjectOnlineInfo(
+      lastDelete: DateTime.parse(json['lastDelete'] as String), //TODO: now: 17.11.2022 -> accepted: 18-11-2022
+    );
+  }
+}

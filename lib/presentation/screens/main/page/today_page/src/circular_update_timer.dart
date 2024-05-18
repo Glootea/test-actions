@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:queue/data/database/sources/local_database/new_local_database.dart';
+import 'package:queue/data/database/sources/local_database/local_database.dart';
 
 class CircularUpdateTimer extends StatefulWidget {
   final int durationInSeconds;
   final VoidCallback onTimeExpired;
-  final Future<String?>? isUpdatingQueue;
+  final Future<String?>? isUpdatingQueueRequest;
   const CircularUpdateTimer(
-      {super.key, required this.durationInSeconds, required this.onTimeExpired, this.isUpdatingQueue});
+      {super.key, required this.durationInSeconds, required this.onTimeExpired, this.isUpdatingQueueRequest});
 
   @override
   State<CircularUpdateTimer> createState() => _CircularUpdateTimerState();
@@ -22,7 +22,7 @@ class _CircularUpdateTimerState extends State<CircularUpdateTimer> {
   @override
   void initState() {
     super.initState();
-    final future = widget.isUpdatingQueue;
+    final future = widget.isUpdatingQueueRequest;
     if (future == null) {
       createTimer();
     } else {

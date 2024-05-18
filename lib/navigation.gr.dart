@@ -27,10 +27,34 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const MainScreen(),
       );
     },
-    ScannerRoute.name: (routeData) {
+    QueueAdminRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const QueueAdminPage(),
+      );
+    },
+    QrScannerRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const ScannerPage(),
+      );
+    },
+    StudentAdminRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const StudentAdminPage(),
+      );
+    },
+    SubjectAdminRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const SubjectAdminPage(),
+      );
+    },
+    TelegramBotAdminRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const TelegramBotAdminPage(),
       );
     },
     TodayRoute.name: (routeData) {
@@ -71,15 +95,71 @@ class MainRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [ScannerPage]
-class ScannerRoute extends PageRouteInfo<void> {
-  const ScannerRoute({List<PageRouteInfo>? children})
+/// [QueueAdminPage]
+class QueueAdminRoute extends PageRouteInfo<void> {
+  const QueueAdminRoute({List<PageRouteInfo>? children})
       : super(
-          ScannerRoute.name,
+          QueueAdminRoute.name,
           initialChildren: children,
         );
 
-  static const String name = 'ScannerRoute';
+  static const String name = 'QueueAdminRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ScannerPage]
+class QrScannerRoute extends PageRouteInfo<void> {
+  const QrScannerRoute({List<PageRouteInfo>? children})
+      : super(
+          QrScannerRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'QrScannerRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [StudentAdminPage]
+class StudentAdminRoute extends PageRouteInfo<void> {
+  const StudentAdminRoute({List<PageRouteInfo>? children})
+      : super(
+          StudentAdminRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'StudentAdminRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [SubjectAdminPage]
+class SubjectAdminRoute extends PageRouteInfo<void> {
+  const SubjectAdminRoute({List<PageRouteInfo>? children})
+      : super(
+          SubjectAdminRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'SubjectAdminRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [TelegramBotAdminPage]
+class TelegramBotAdminRoute extends PageRouteInfo<void> {
+  const TelegramBotAdminRoute({List<PageRouteInfo>? children})
+      : super(
+          TelegramBotAdminRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'TelegramBotAdminRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }

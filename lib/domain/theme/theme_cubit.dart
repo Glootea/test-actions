@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:queue/data/database/sources/local_database/new_local_database.dart';
+import 'package:queue/data/database/sources/local_database/local_database.dart';
 part 'theme_cubit.freezed.dart';
 
 enum ThemePreset {

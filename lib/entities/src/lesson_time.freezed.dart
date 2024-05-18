@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'new_lesson_time.dart';
+part of 'lesson_time.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,32 +15,31 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$NewWeeklyLessonEntity {
+mixin _$WeeklyLessonEntity {
   int get id => throw _privateConstructorUsedError;
   List<int> get weekdays => throw _privateConstructorUsedError;
   TimeOfDay get startTime => throw _privateConstructorUsedError;
   TimeOfDay get endTime => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $NewWeeklyLessonEntityCopyWith<NewWeeklyLessonEntity> get copyWith =>
+  $WeeklyLessonEntityCopyWith<WeeklyLessonEntity> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NewWeeklyLessonEntityCopyWith<$Res> {
-  factory $NewWeeklyLessonEntityCopyWith(NewWeeklyLessonEntity value,
-          $Res Function(NewWeeklyLessonEntity) then) =
-      _$NewWeeklyLessonEntityCopyWithImpl<$Res, NewWeeklyLessonEntity>;
+abstract class $WeeklyLessonEntityCopyWith<$Res> {
+  factory $WeeklyLessonEntityCopyWith(
+          WeeklyLessonEntity value, $Res Function(WeeklyLessonEntity) then) =
+      _$WeeklyLessonEntityCopyWithImpl<$Res, WeeklyLessonEntity>;
   @useResult
   $Res call(
       {int id, List<int> weekdays, TimeOfDay startTime, TimeOfDay endTime});
 }
 
 /// @nodoc
-class _$NewWeeklyLessonEntityCopyWithImpl<$Res,
-        $Val extends NewWeeklyLessonEntity>
-    implements $NewWeeklyLessonEntityCopyWith<$Res> {
-  _$NewWeeklyLessonEntityCopyWithImpl(this._value, this._then);
+class _$WeeklyLessonEntityCopyWithImpl<$Res, $Val extends WeeklyLessonEntity>
+    implements $WeeklyLessonEntityCopyWith<$Res> {
+  _$WeeklyLessonEntityCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -77,12 +76,11 @@ class _$NewWeeklyLessonEntityCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$NewWeeklyLessonEntityImplCopyWith<$Res>
-    implements $NewWeeklyLessonEntityCopyWith<$Res> {
-  factory _$$NewWeeklyLessonEntityImplCopyWith(
-          _$NewWeeklyLessonEntityImpl value,
-          $Res Function(_$NewWeeklyLessonEntityImpl) then) =
-      __$$NewWeeklyLessonEntityImplCopyWithImpl<$Res>;
+abstract class _$$WeeklyLessonEntityImplCopyWith<$Res>
+    implements $WeeklyLessonEntityCopyWith<$Res> {
+  factory _$$WeeklyLessonEntityImplCopyWith(_$WeeklyLessonEntityImpl value,
+          $Res Function(_$WeeklyLessonEntityImpl) then) =
+      __$$WeeklyLessonEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -90,12 +88,11 @@ abstract class _$$NewWeeklyLessonEntityImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$NewWeeklyLessonEntityImplCopyWithImpl<$Res>
-    extends _$NewWeeklyLessonEntityCopyWithImpl<$Res,
-        _$NewWeeklyLessonEntityImpl>
-    implements _$$NewWeeklyLessonEntityImplCopyWith<$Res> {
-  __$$NewWeeklyLessonEntityImplCopyWithImpl(_$NewWeeklyLessonEntityImpl _value,
-      $Res Function(_$NewWeeklyLessonEntityImpl) _then)
+class __$$WeeklyLessonEntityImplCopyWithImpl<$Res>
+    extends _$WeeklyLessonEntityCopyWithImpl<$Res, _$WeeklyLessonEntityImpl>
+    implements _$$WeeklyLessonEntityImplCopyWith<$Res> {
+  __$$WeeklyLessonEntityImplCopyWithImpl(_$WeeklyLessonEntityImpl _value,
+      $Res Function(_$WeeklyLessonEntityImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -106,7 +103,7 @@ class __$$NewWeeklyLessonEntityImplCopyWithImpl<$Res>
     Object? startTime = null,
     Object? endTime = null,
   }) {
-    return _then(_$NewWeeklyLessonEntityImpl(
+    return _then(_$WeeklyLessonEntityImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -129,8 +126,8 @@ class __$$NewWeeklyLessonEntityImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$NewWeeklyLessonEntityImpl extends _NewWeeklyLessonEntity {
-  const _$NewWeeklyLessonEntityImpl(
+class _$WeeklyLessonEntityImpl extends _WeeklyLessonEntity {
+  const _$WeeklyLessonEntityImpl(
       {required this.id,
       required final List<int> weekdays,
       required this.startTime,
@@ -155,14 +152,14 @@ class _$NewWeeklyLessonEntityImpl extends _NewWeeklyLessonEntity {
 
   @override
   String toString() {
-    return 'NewWeeklyLessonEntity(id: $id, weekdays: $weekdays, startTime: $startTime, endTime: $endTime)';
+    return 'WeeklyLessonEntity(id: $id, weekdays: $weekdays, startTime: $startTime, endTime: $endTime)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NewWeeklyLessonEntityImpl &&
+            other is _$WeeklyLessonEntityImpl &&
             (identical(other.id, id) || other.id == id) &&
             const DeepCollectionEquality().equals(other._weekdays, _weekdays) &&
             (identical(other.startTime, startTime) ||
@@ -177,18 +174,18 @@ class _$NewWeeklyLessonEntityImpl extends _NewWeeklyLessonEntity {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$NewWeeklyLessonEntityImplCopyWith<_$NewWeeklyLessonEntityImpl>
-      get copyWith => __$$NewWeeklyLessonEntityImplCopyWithImpl<
-          _$NewWeeklyLessonEntityImpl>(this, _$identity);
+  _$$WeeklyLessonEntityImplCopyWith<_$WeeklyLessonEntityImpl> get copyWith =>
+      __$$WeeklyLessonEntityImplCopyWithImpl<_$WeeklyLessonEntityImpl>(
+          this, _$identity);
 }
 
-abstract class _NewWeeklyLessonEntity extends NewWeeklyLessonEntity {
-  const factory _NewWeeklyLessonEntity(
+abstract class _WeeklyLessonEntity extends WeeklyLessonEntity {
+  const factory _WeeklyLessonEntity(
       {required final int id,
       required final List<int> weekdays,
       required final TimeOfDay startTime,
-      required final TimeOfDay endTime}) = _$NewWeeklyLessonEntityImpl;
-  const _NewWeeklyLessonEntity._() : super._();
+      required final TimeOfDay endTime}) = _$WeeklyLessonEntityImpl;
+  const _WeeklyLessonEntity._() : super._();
 
   @override
   int get id;
@@ -200,37 +197,36 @@ abstract class _NewWeeklyLessonEntity extends NewWeeklyLessonEntity {
   TimeOfDay get endTime;
   @override
   @JsonKey(ignore: true)
-  _$$NewWeeklyLessonEntityImplCopyWith<_$NewWeeklyLessonEntityImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$WeeklyLessonEntityImplCopyWith<_$WeeklyLessonEntityImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-mixin _$NewDatedLessonEntity {
+mixin _$DatedLessonEntity {
   int get id => throw _privateConstructorUsedError;
   List<DateTime> get dates => throw _privateConstructorUsedError;
   TimeOfDay get startTime => throw _privateConstructorUsedError;
   TimeOfDay get endTime => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $NewDatedLessonEntityCopyWith<NewDatedLessonEntity> get copyWith =>
+  $DatedLessonEntityCopyWith<DatedLessonEntity> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NewDatedLessonEntityCopyWith<$Res> {
-  factory $NewDatedLessonEntityCopyWith(NewDatedLessonEntity value,
-          $Res Function(NewDatedLessonEntity) then) =
-      _$NewDatedLessonEntityCopyWithImpl<$Res, NewDatedLessonEntity>;
+abstract class $DatedLessonEntityCopyWith<$Res> {
+  factory $DatedLessonEntityCopyWith(
+          DatedLessonEntity value, $Res Function(DatedLessonEntity) then) =
+      _$DatedLessonEntityCopyWithImpl<$Res, DatedLessonEntity>;
   @useResult
   $Res call(
       {int id, List<DateTime> dates, TimeOfDay startTime, TimeOfDay endTime});
 }
 
 /// @nodoc
-class _$NewDatedLessonEntityCopyWithImpl<$Res,
-        $Val extends NewDatedLessonEntity>
-    implements $NewDatedLessonEntityCopyWith<$Res> {
-  _$NewDatedLessonEntityCopyWithImpl(this._value, this._then);
+class _$DatedLessonEntityCopyWithImpl<$Res, $Val extends DatedLessonEntity>
+    implements $DatedLessonEntityCopyWith<$Res> {
+  _$DatedLessonEntityCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -268,7 +264,7 @@ class _$NewDatedLessonEntityCopyWithImpl<$Res,
 
 /// @nodoc
 abstract class _$$NewDatedLessonEntityImplCopyWith<$Res>
-    implements $NewDatedLessonEntityCopyWith<$Res> {
+    implements $DatedLessonEntityCopyWith<$Res> {
   factory _$$NewDatedLessonEntityImplCopyWith(_$NewDatedLessonEntityImpl value,
           $Res Function(_$NewDatedLessonEntityImpl) then) =
       __$$NewDatedLessonEntityImplCopyWithImpl<$Res>;
@@ -280,7 +276,7 @@ abstract class _$$NewDatedLessonEntityImplCopyWith<$Res>
 
 /// @nodoc
 class __$$NewDatedLessonEntityImplCopyWithImpl<$Res>
-    extends _$NewDatedLessonEntityCopyWithImpl<$Res, _$NewDatedLessonEntityImpl>
+    extends _$DatedLessonEntityCopyWithImpl<$Res, _$NewDatedLessonEntityImpl>
     implements _$$NewDatedLessonEntityImplCopyWith<$Res> {
   __$$NewDatedLessonEntityImplCopyWithImpl(_$NewDatedLessonEntityImpl _value,
       $Res Function(_$NewDatedLessonEntityImpl) _then)
@@ -343,7 +339,7 @@ class _$NewDatedLessonEntityImpl extends _NewDatedLessonEntity {
 
   @override
   String toString() {
-    return 'NewDatedLessonEntity(id: $id, dates: $dates, startTime: $startTime, endTime: $endTime)';
+    return 'DatedLessonEntity(id: $id, dates: $dates, startTime: $startTime, endTime: $endTime)';
   }
 
   @override
@@ -371,7 +367,7 @@ class _$NewDatedLessonEntityImpl extends _NewDatedLessonEntity {
               this, _$identity);
 }
 
-abstract class _NewDatedLessonEntity extends NewDatedLessonEntity {
+abstract class _NewDatedLessonEntity extends DatedLessonEntity {
   const factory _NewDatedLessonEntity(
       {required final int id,
       required final List<DateTime> dates,

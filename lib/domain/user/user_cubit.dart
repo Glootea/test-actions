@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/data/database/sources/local_database/new_local_database.dart';
+import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/domain/user/user.dart';
 
 class UserCubit extends Cubit<User?> {
   final KeyValueStorage _storage;
-  UserCubit(this._storage) : super(null);
+  UserCubit(this._storage) : super(null) {
+    init();
+  }
 
   Future<void> init() async {
     final (userName, rowNumberString, isAdmin) = await (
@@ -15,6 +19,7 @@ class UserCubit extends Cubit<User?> {
     if (rowNumberString == null || userName == null) return;
     final rowNumber = int.parse(rowNumberString);
     emit(User(name: userName, rowNumber: rowNumber, isAdmin: isAdmin == 'true'));
+    log("User cubit initialized: $state");
   }
 
   Future<void> login({
@@ -28,6 +33,7 @@ class UserCubit extends Cubit<User?> {
       _storage.set(StoredValues.userRowNumber, rowNumber.toString()),
       _storage.set(StoredValues.userIsAdmin, isAdmin.toString())
     ).wait;
+    log("User cubit state changed: $state");
   }
 
   Future<void> logout() async {

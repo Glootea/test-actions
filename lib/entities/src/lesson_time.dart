@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:queue/extension.dart';
 
-part 'new_lesson_time.freezed.dart';
+part 'lesson_time.freezed.dart';
 
-abstract class NewLessonTime {
+abstract class LessonTime {
   final int id;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
-  const NewLessonTime(this.id, this.startTime, this.endTime);
+  const LessonTime(this.id, this.startTime, this.endTime);
 
   List<String> get toRow;
 }
 
 @freezed
-class NewWeeklyLessonEntity extends NewLessonTime with _$NewWeeklyLessonEntity {
-  const factory NewWeeklyLessonEntity({
+class WeeklyLessonEntity extends LessonTime with _$WeeklyLessonEntity {
+  const factory WeeklyLessonEntity({
     required int id,
     required List<int> weekdays,
     required TimeOfDay startTime,
     required TimeOfDay endTime,
-  }) = _NewWeeklyLessonEntity;
+  }) = _WeeklyLessonEntity;
 
-  const NewWeeklyLessonEntity._() : super(0, const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0));
-  factory NewWeeklyLessonEntity.fromRow(List<String> row) {
+  const WeeklyLessonEntity._() : super(0, const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0));
+  factory WeeklyLessonEntity.fromRow(List<String> row) {
     row = row.fromOnline;
-    return NewWeeklyLessonEntity(
+    return WeeklyLessonEntity(
       id: int.parse(row[0]),
       weekdays: row[2].toWeekDays,
       startTime: row[2].toTimeOfDay,
@@ -47,18 +47,18 @@ class NewWeeklyLessonEntity extends NewLessonTime with _$NewWeeklyLessonEntity {
 }
 
 @freezed
-class NewDatedLessonEntity extends NewLessonTime with _$NewDatedLessonEntity {
-  const factory NewDatedLessonEntity({
+class DatedLessonEntity extends LessonTime with _$DatedLessonEntity {
+  const factory DatedLessonEntity({
     required int id,
     required List<DateTime> dates,
     required TimeOfDay startTime,
     required TimeOfDay endTime,
   }) = _NewDatedLessonEntity;
 
-  const NewDatedLessonEntity._() : super(0, const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0));
-  factory NewDatedLessonEntity.fromRow(List<String> row) {
+  const DatedLessonEntity._() : super(0, const TimeOfDay(hour: 0, minute: 0), const TimeOfDay(hour: 0, minute: 0));
+  factory DatedLessonEntity.fromRow(List<String> row) {
     row = row.fromOnline;
-    return NewDatedLessonEntity(
+    return DatedLessonEntity(
       id: int.parse(row[0]),
       dates: row[2].toDatesList,
       startTime: row[2].toTimeOfDay,
