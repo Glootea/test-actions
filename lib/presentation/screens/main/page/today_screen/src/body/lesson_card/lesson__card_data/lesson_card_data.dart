@@ -23,6 +23,7 @@ class LessonCardData with _$LessonCardData {
             when status == QueueRecordStatus.shouldBeUploaded || status == QueueRecordStatus.shouldBeDeleted =>
           'Ошибка сети',
         (_, LessonStatus.soon) => 'Очередь начнется в ${lesson.queueStartTime.toDisplayTime}',
+        (_, LessonStatus.active) => 'Очередь началась!',
         (_, _) => throw UnimplementedError(
             '${queueData?.userRecord?.status}, ${lesson.status} is unknown status to get LessonCardData\'s message')
       };

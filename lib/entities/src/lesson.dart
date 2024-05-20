@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'lesson.freezed.dart';
 
@@ -18,7 +16,6 @@ class Lesson with _$Lesson {
 
   LessonStatus get status {
     final now = DateTime.now();
-    log("now: $now, start: $startTime, end: $endTime");
     if (startTime.subtract(const Duration(minutes: 5)).isBefore(now) && endTime.isAfter(now)) {
       return LessonStatus.active;
     }

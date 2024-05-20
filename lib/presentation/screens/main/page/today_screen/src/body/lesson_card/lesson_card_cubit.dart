@@ -11,7 +11,9 @@ class LessonCardCubit extends Cubit<LessonCardData> {
   final DatabaseService _databaseService;
   final UserCubit _userCubit;
   LessonCardCubit(this._lesson, this._databaseService, this._userCubit)
-      : super(LessonCardData(lesson: _lesson, queueData: null));
+      : super(LessonCardData(lesson: _lesson, queueData: null)) {
+    fetchQueue();
+  }
 
   Future<void> fetchQueue() async {
     final queue = await _databaseService.getLocalQueueRecordList(_lesson);

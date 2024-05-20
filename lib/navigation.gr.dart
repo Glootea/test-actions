@@ -21,6 +21,16 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const AdminPage(),
       );
     },
+    DetailedQueueRoute.name: (routeData) {
+      final args = routeData.argsAs<DetailedQueueRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DetailedQueueScreen(
+          args.cubit,
+          key: args.key,
+        ),
+      );
+    },
     QueueAdminRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -72,6 +82,44 @@ class AdminRoute extends PageRouteInfo<void> {
   static const String name = 'AdminRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DetailedQueueScreen]
+class DetailedQueueRoute extends PageRouteInfo<DetailedQueueRouteArgs> {
+  DetailedQueueRoute({
+    required LessonCardCubit cubit,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DetailedQueueRoute.name,
+          args: DetailedQueueRouteArgs(
+            cubit: cubit,
+            key: key,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DetailedQueueRoute';
+
+  static const PageInfo<DetailedQueueRouteArgs> page =
+      PageInfo<DetailedQueueRouteArgs>(name);
+}
+
+class DetailedQueueRouteArgs {
+  const DetailedQueueRouteArgs({
+    required this.cubit,
+    this.key,
+  });
+
+  final LessonCardCubit cubit;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'DetailedQueueRouteArgs{cubit: $cubit, key: $key}';
+  }
 }
 
 /// generated route for

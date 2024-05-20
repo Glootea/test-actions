@@ -20,29 +20,29 @@ class DatabaseService {
         () => [
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime(2024, 5, 9, 12, 30),
-                endTime: DateTime(2024, 5, 9, 12, 40),
+                startTime: DateTime.now().copyWith(hour: 10, minute: 30),
+                endTime: DateTime.now().copyWith(hour: 11, minute: 40),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime(2024, 5, 9, 12, 30),
-                endTime: DateTime(2024, 5, 9, 12, 40),
+                startTime: DateTime.now().copyWith(hour: 12, minute: 30),
+                endTime: DateTime.now().copyWith(hour: 13, minute: 40),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime(2024, 5, 9, 15, 30),
-                endTime: DateTime(2024, 5, 9, 16, 40),
+                startTime: DateTime.now().copyWith(hour: 15, minute: 30),
+                endTime: DateTime.now().copyWith(hour: 16, minute: 40),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime(2024, 5, 9, 18, 30),
-                endTime: DateTime(2024, 5, 9, 19, 40),
+                startTime: DateTime.now().copyWith(hour: 18, minute: 30),
+                endTime: DateTime.now().copyWith(hour: 22, minute: 40),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
@@ -57,7 +57,28 @@ class DatabaseService {
   }
 
   Future<List<QueueRecord>> getLocalQueueRecordList(Lesson lesson) async {
-    return [];
+    return Future.delayed(
+        const Duration(seconds: 2),
+        () => [
+              QueueRecord(
+                  lesson: lesson,
+                  studentName: "Рыбкин Александр",
+                  studentID: 1,
+                  time: DateTime.now().subtract(const Duration(days: 1)),
+                  status: QueueRecordStatus.uploaded),
+              QueueRecord(
+                  lesson: lesson,
+                  studentName: "Лянной Артем",
+                  studentID: 1,
+                  time: DateTime.now().subtract(const Duration(days: 2)),
+                  status: QueueRecordStatus.uploaded),
+              QueueRecord(
+                  lesson: lesson,
+                  studentName: "Софья Бобылева",
+                  studentID: 1,
+                  time: DateTime.now().subtract(const Duration(hours: 2)),
+                  status: QueueRecordStatus.uploaded),
+            ]);
   }
 
   Future<bool> addNewQueueRecord(QueueRecord queueRecord) // TODO: implement
