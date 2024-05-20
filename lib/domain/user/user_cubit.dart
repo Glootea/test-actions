@@ -6,6 +6,7 @@ import 'package:queue/domain/user/user.dart';
 
 class UserCubit extends Cubit<User?> {
   final KeyValueStorage _storage;
+  bool _inited = false;
   UserCubit(this._storage) : super(null) {
     init();
   }
@@ -18,8 +19,9 @@ class UserCubit extends Cubit<User?> {
     ).wait;
     if (rowNumberString == null || userName == null) return;
     final rowNumber = int.parse(rowNumberString);
-    emit(User(name: userName, rowNumber: rowNumber, isAdmin: isAdmin == 'true'));
+    emit(User(name: userName, id: rowNumber, isAdmin: isAdmin == 'true'));
     log("User cubit initialized: $state");
+    _inited = true;
   }
 
   Future<void> login({
@@ -27,7 +29,8 @@ class UserCubit extends Cubit<User?> {
     required int rowNumber,
     required bool isAdmin,
   }) async {
-    emit(User(name: name, rowNumber: rowNumber, isAdmin: isAdmin));
+    assert(_inited == true, "User cubit hasn't been initialized");
+    emit(User(name: name, id: rowNumber, isAdmin: isAdmin));
     await (
       _storage.set(StoredValues.userName, name),
       _storage.set(StoredValues.userRowNumber, rowNumber.toString()),
@@ -37,6 +40,7 @@ class UserCubit extends Cubit<User?> {
   }
 
   Future<void> logout() async {
+    assert(_inited == true, "User cubit hasn't been initialized");
     emit(null);
     await (
       _storage.clean(StoredValues.userName),
@@ -46,8 +50,7 @@ class UserCubit extends Cubit<User?> {
   }
 
   bool get isLoggedIn => state != null;
-
   String get name => state?.name ?? '';
   bool get isAdmin => state?.isAdmin ?? false;
-  int get rowNumber => state?.rowNumber ?? 0;
+  int get rowNumber => state?.id ?? 0;
 }

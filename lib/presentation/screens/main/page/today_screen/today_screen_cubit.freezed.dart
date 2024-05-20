@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'main_screen_cubit.dart';
+part of 'today_screen_cubit.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -16,9 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$TodayScreenState {
-  List<Lesson> get lessonList => throw _privateConstructorUsedError;
-  Map<String, List<QueueRecord>> get recList =>
-      throw _privateConstructorUsedError;
+// required List<Lesson> lessonList,
+  SeparatedLessons get separatedLessons => throw _privateConstructorUsedError;
   LoadingState get isLoading => throw _privateConstructorUsedError;
   DialogData? get dialogData => throw _privateConstructorUsedError;
 
@@ -34,8 +33,7 @@ abstract class $TodayScreenStateCopyWith<$Res> {
       _$TodayScreenStateCopyWithImpl<$Res, TodayScreenState>;
   @useResult
   $Res call(
-      {List<Lesson> lessonList,
-      Map<String, List<QueueRecord>> recList,
+      {SeparatedLessons separatedLessons,
       LoadingState isLoading,
       DialogData? dialogData});
 }
@@ -53,20 +51,15 @@ class _$TodayScreenStateCopyWithImpl<$Res, $Val extends TodayScreenState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? lessonList = null,
-    Object? recList = null,
+    Object? separatedLessons = null,
     Object? isLoading = null,
     Object? dialogData = freezed,
   }) {
     return _then(_value.copyWith(
-      lessonList: null == lessonList
-          ? _value.lessonList
-          : lessonList // ignore: cast_nullable_to_non_nullable
-              as List<Lesson>,
-      recList: null == recList
-          ? _value.recList
-          : recList // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<QueueRecord>>,
+      separatedLessons: null == separatedLessons
+          ? _value.separatedLessons
+          : separatedLessons // ignore: cast_nullable_to_non_nullable
+              as SeparatedLessons,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -88,8 +81,7 @@ abstract class _$$MainScreenStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<Lesson> lessonList,
-      Map<String, List<QueueRecord>> recList,
+      {SeparatedLessons separatedLessons,
       LoadingState isLoading,
       DialogData? dialogData});
 }
@@ -105,20 +97,15 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? lessonList = null,
-    Object? recList = null,
+    Object? separatedLessons = null,
     Object? isLoading = null,
     Object? dialogData = freezed,
   }) {
     return _then(_$MainScreenStateImpl(
-      lessonList: null == lessonList
-          ? _value._lessonList
-          : lessonList // ignore: cast_nullable_to_non_nullable
-              as List<Lesson>,
-      recList: null == recList
-          ? _value._recList
-          : recList // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<QueueRecord>>,
+      separatedLessons: null == separatedLessons
+          ? _value.separatedLessons
+          : separatedLessons // ignore: cast_nullable_to_non_nullable
+              as SeparatedLessons,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -135,30 +122,14 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
 
 class _$MainScreenStateImpl extends _MainScreenState {
   const _$MainScreenStateImpl(
-      {required final List<Lesson> lessonList,
-      required final Map<String, List<QueueRecord>> recList,
+      {required this.separatedLessons,
       this.isLoading = LoadingState.loaded,
       this.dialogData})
-      : _lessonList = lessonList,
-        _recList = recList,
-        super._();
+      : super._();
 
-  final List<Lesson> _lessonList;
+// required List<Lesson> lessonList,
   @override
-  List<Lesson> get lessonList {
-    if (_lessonList is EqualUnmodifiableListView) return _lessonList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_lessonList);
-  }
-
-  final Map<String, List<QueueRecord>> _recList;
-  @override
-  Map<String, List<QueueRecord>> get recList {
-    if (_recList is EqualUnmodifiableMapView) return _recList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_recList);
-  }
-
+  final SeparatedLessons separatedLessons;
   @override
   @JsonKey()
   final LoadingState isLoading;
@@ -167,7 +138,7 @@ class _$MainScreenStateImpl extends _MainScreenState {
 
   @override
   String toString() {
-    return 'TodayScreenState(lessonList: $lessonList, recList: $recList, isLoading: $isLoading, dialogData: $dialogData)';
+    return 'TodayScreenState(separatedLessons: $separatedLessons, isLoading: $isLoading, dialogData: $dialogData)';
   }
 
   @override
@@ -175,9 +146,8 @@ class _$MainScreenStateImpl extends _MainScreenState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MainScreenStateImpl &&
-            const DeepCollectionEquality()
-                .equals(other._lessonList, _lessonList) &&
-            const DeepCollectionEquality().equals(other._recList, _recList) &&
+            (identical(other.separatedLessons, separatedLessons) ||
+                other.separatedLessons == separatedLessons) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.dialogData, dialogData) ||
@@ -185,12 +155,8 @@ class _$MainScreenStateImpl extends _MainScreenState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_lessonList),
-      const DeepCollectionEquality().hash(_recList),
-      isLoading,
-      dialogData);
+  int get hashCode =>
+      Object.hash(runtimeType, separatedLessons, isLoading, dialogData);
 
   @JsonKey(ignore: true)
   @override
@@ -202,16 +168,13 @@ class _$MainScreenStateImpl extends _MainScreenState {
 
 abstract class _MainScreenState extends TodayScreenState {
   const factory _MainScreenState(
-      {required final List<Lesson> lessonList,
-      required final Map<String, List<QueueRecord>> recList,
+      {required final SeparatedLessons separatedLessons,
       final LoadingState isLoading,
       final DialogData? dialogData}) = _$MainScreenStateImpl;
   const _MainScreenState._() : super._();
 
-  @override
-  List<Lesson> get lessonList;
-  @override
-  Map<String, List<QueueRecord>> get recList;
+  @override // required List<Lesson> lessonList,
+  SeparatedLessons get separatedLessons;
   @override
   LoadingState get isLoading;
   @override

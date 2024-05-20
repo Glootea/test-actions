@@ -1,4 +1,4 @@
-import 'package:queue/presentation/screens/main/main_screen_cubit.dart';
+import 'package:queue/presentation/screens/main/page/today_screen/today_screen_cubit.dart';
 
 sealed class ScannerPageState implements LoadableState {}
 

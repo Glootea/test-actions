@@ -7,10 +7,10 @@ import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/data/database/sources/online_database/online_database.dart';
 import 'package:queue/domain/theme/theme_cubit.dart';
-import 'package:queue/firebase_options.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:queue/domain/user/user_cubit.dart';
+import 'package:queue/firebase_options.dart';
 import 'package:queue/navigation.dart';
 
 void main() async {
@@ -36,13 +36,12 @@ void main() async {
   ], child: BlocProvider.value(value: themeCubit, child: const MyApp())));
 }
 
-final _appRouter = AppRouter();
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final _appRouter = AppRouter();
     return BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
       return DynamicColorBuilder(builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         final colorScheme = state.getScheme ??

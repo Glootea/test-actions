@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/presentation/common_src/loading/loading_animation.dart';
-import 'package:queue/presentation/screens/main/main_screen_cubit.dart';
+import 'package:queue/presentation/screens/main/page/today_screen/today_screen_cubit.dart';
 
 /// Creates loading animation while cubit state's [LoadingState] != [LoadingState.ended], then displays child widget
 class LoadingContainer<B extends StateStreamable<S>, S extends LoadableState> extends StatelessWidget {

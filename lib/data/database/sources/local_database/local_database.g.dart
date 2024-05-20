@@ -3,217 +3,6 @@
 part of 'local_database.dart';
 
 // ignore_for_file: type=lint
-class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $StudentsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _rowNumberMeta =
-      const VerificationMeta('rowNumber');
-  @override
-  late final GeneratedColumn<int> rowNumber = GeneratedColumn<int>(
-      'row_number', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: false);
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _isAdminMeta =
-      const VerificationMeta('isAdmin');
-  @override
-  late final GeneratedColumn<bool> isAdmin = GeneratedColumn<bool>(
-      'is_admin', aliasedName, true,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_admin" IN (0, 1))'));
-  @override
-  List<GeneratedColumn> get $columns => [rowNumber, name, isAdmin];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'students';
-  @override
-  VerificationContext validateIntegrity(Insertable<Student> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('row_number')) {
-      context.handle(_rowNumberMeta,
-          rowNumber.isAcceptableOrUnknown(data['row_number']!, _rowNumberMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('is_admin')) {
-      context.handle(_isAdminMeta,
-          isAdmin.isAcceptableOrUnknown(data['is_admin']!, _isAdminMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {rowNumber};
-  @override
-  Student map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Student(
-      rowNumber: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}row_number'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      isAdmin: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_admin']),
-    );
-  }
-
-  @override
-  $StudentsTable createAlias(String alias) {
-    return $StudentsTable(attachedDatabase, alias);
-  }
-}
-
-class Student extends DataClass implements Insertable<Student> {
-  final int rowNumber;
-  final String name;
-  final bool? isAdmin;
-  const Student({required this.rowNumber, required this.name, this.isAdmin});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['row_number'] = Variable<int>(rowNumber);
-    map['name'] = Variable<String>(name);
-    if (!nullToAbsent || isAdmin != null) {
-      map['is_admin'] = Variable<bool>(isAdmin);
-    }
-    return map;
-  }
-
-  StudentsCompanion toCompanion(bool nullToAbsent) {
-    return StudentsCompanion(
-      rowNumber: Value(rowNumber),
-      name: Value(name),
-      isAdmin: isAdmin == null && nullToAbsent
-          ? const Value.absent()
-          : Value(isAdmin),
-    );
-  }
-
-  factory Student.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Student(
-      rowNumber: serializer.fromJson<int>(json['rowNumber']),
-      name: serializer.fromJson<String>(json['name']),
-      isAdmin: serializer.fromJson<bool?>(json['isAdmin']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'rowNumber': serializer.toJson<int>(rowNumber),
-      'name': serializer.toJson<String>(name),
-      'isAdmin': serializer.toJson<bool?>(isAdmin),
-    };
-  }
-
-  Student copyWith(
-          {int? rowNumber,
-          String? name,
-          Value<bool?> isAdmin = const Value.absent()}) =>
-      Student(
-        rowNumber: rowNumber ?? this.rowNumber,
-        name: name ?? this.name,
-        isAdmin: isAdmin.present ? isAdmin.value : this.isAdmin,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('Student(')
-          ..write('rowNumber: $rowNumber, ')
-          ..write('name: $name, ')
-          ..write('isAdmin: $isAdmin')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(rowNumber, name, isAdmin);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Student &&
-          other.rowNumber == this.rowNumber &&
-          other.name == this.name &&
-          other.isAdmin == this.isAdmin);
-}
-
-class StudentsCompanion extends UpdateCompanion<Student> {
-  final Value<int> rowNumber;
-  final Value<String> name;
-  final Value<bool?> isAdmin;
-  const StudentsCompanion({
-    this.rowNumber = const Value.absent(),
-    this.name = const Value.absent(),
-    this.isAdmin = const Value.absent(),
-  });
-  StudentsCompanion.insert({
-    this.rowNumber = const Value.absent(),
-    required String name,
-    this.isAdmin = const Value.absent(),
-  }) : name = Value(name);
-  static Insertable<Student> custom({
-    Expression<int>? rowNumber,
-    Expression<String>? name,
-    Expression<bool>? isAdmin,
-  }) {
-    return RawValuesInsertable({
-      if (rowNumber != null) 'row_number': rowNumber,
-      if (name != null) 'name': name,
-      if (isAdmin != null) 'is_admin': isAdmin,
-    });
-  }
-
-  StudentsCompanion copyWith(
-      {Value<int>? rowNumber, Value<String>? name, Value<bool?>? isAdmin}) {
-    return StudentsCompanion(
-      rowNumber: rowNumber ?? this.rowNumber,
-      name: name ?? this.name,
-      isAdmin: isAdmin ?? this.isAdmin,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (rowNumber.present) {
-      map['row_number'] = Variable<int>(rowNumber.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (isAdmin.present) {
-      map['is_admin'] = Variable<bool>(isAdmin.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('StudentsCompanion(')
-          ..write('rowNumber: $rowNumber, ')
-          ..write('name: $name, ')
-          ..write('isAdmin: $isAdmin')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $SubjectTable extends Subject with TableInfo<$SubjectTable, SubjectData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -571,10 +360,7 @@ class $QueueRecsTable extends QueueRecs
   @override
   late final GeneratedColumn<int> studentRowNumber = GeneratedColumn<int>(
       'student_row_number', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES students (row_number)'));
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _subjectIDMeta =
       const VerificationMeta('subjectID');
   @override
@@ -881,6 +667,215 @@ class QueueRecsCompanion extends UpdateCompanion<QueueRec> {
           ..write('time: $time, ')
           ..write('status: $status, ')
           ..write('workCount: $workCount')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StudentsTable extends Students with TableInfo<$StudentsTable, Student> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StudentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isAdminMeta =
+      const VerificationMeta('isAdmin');
+  @override
+  late final GeneratedColumn<bool> isAdmin = GeneratedColumn<bool>(
+      'is_admin', aliasedName, true,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_admin" IN (0, 1))'));
+  @override
+  List<GeneratedColumn> get $columns => [id, name, isAdmin];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'students';
+  @override
+  VerificationContext validateIntegrity(Insertable<Student> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('is_admin')) {
+      context.handle(_isAdminMeta,
+          isAdmin.isAcceptableOrUnknown(data['is_admin']!, _isAdminMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Student map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Student(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      isAdmin: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_admin']),
+    );
+  }
+
+  @override
+  $StudentsTable createAlias(String alias) {
+    return $StudentsTable(attachedDatabase, alias);
+  }
+}
+
+class Student extends DataClass implements Insertable<Student> {
+  final int id;
+  final String name;
+  final bool? isAdmin;
+  const Student({required this.id, required this.name, this.isAdmin});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || isAdmin != null) {
+      map['is_admin'] = Variable<bool>(isAdmin);
+    }
+    return map;
+  }
+
+  StudentsCompanion toCompanion(bool nullToAbsent) {
+    return StudentsCompanion(
+      id: Value(id),
+      name: Value(name),
+      isAdmin: isAdmin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isAdmin),
+    );
+  }
+
+  factory Student.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Student(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      isAdmin: serializer.fromJson<bool?>(json['isAdmin']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'isAdmin': serializer.toJson<bool?>(isAdmin),
+    };
+  }
+
+  Student copyWith(
+          {int? id,
+          String? name,
+          Value<bool?> isAdmin = const Value.absent()}) =>
+      Student(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        isAdmin: isAdmin.present ? isAdmin.value : this.isAdmin,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Student(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('isAdmin: $isAdmin')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, isAdmin);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Student &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.isAdmin == this.isAdmin);
+}
+
+class StudentsCompanion extends UpdateCompanion<Student> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<bool?> isAdmin;
+  const StudentsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.isAdmin = const Value.absent(),
+  });
+  StudentsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.isAdmin = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<Student> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<bool>? isAdmin,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (isAdmin != null) 'is_admin': isAdmin,
+    });
+  }
+
+  StudentsCompanion copyWith(
+      {Value<int>? id, Value<String>? name, Value<bool?>? isAdmin}) {
+    return StudentsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      isAdmin: isAdmin ?? this.isAdmin,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (isAdmin.present) {
+      map['is_admin'] = Variable<bool>(isAdmin.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StudentsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('isAdmin: $isAdmin')
           ..write(')'))
         .toString();
   }
@@ -1660,9 +1655,9 @@ class KeyValueStorageTableCompanion
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   _$LocalDatabaseManager get managers => _$LocalDatabaseManager(this);
-  late final $StudentsTable students = $StudentsTable(this);
   late final $SubjectTable subject = $SubjectTable(this);
   late final $QueueRecsTable queueRecs = $QueueRecsTable(this);
+  late final $StudentsTable students = $StudentsTable(this);
   late final $WeeklyLessonsTable weeklyLessons = $WeeklyLessonsTable(this);
   late final $DatedLessonsTable datedLessons = $DatedLessonsTable(this);
   late final $KeyValueStorageTableTable keyValueStorageTable =
@@ -1672,9 +1667,9 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-        students,
         subject,
         queueRecs,
+        students,
         weeklyLessons,
         datedLessons,
         keyValueStorageTable
@@ -1682,122 +1677,6 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);
-}
-
-typedef $$StudentsTableInsertCompanionBuilder = StudentsCompanion Function({
-  Value<int> rowNumber,
-  required String name,
-  Value<bool?> isAdmin,
-});
-typedef $$StudentsTableUpdateCompanionBuilder = StudentsCompanion Function({
-  Value<int> rowNumber,
-  Value<String> name,
-  Value<bool?> isAdmin,
-});
-
-class $$StudentsTableTableManager extends RootTableManager<
-    _$LocalDatabase,
-    $StudentsTable,
-    Student,
-    $$StudentsTableFilterComposer,
-    $$StudentsTableOrderingComposer,
-    $$StudentsTableProcessedTableManager,
-    $$StudentsTableInsertCompanionBuilder,
-    $$StudentsTableUpdateCompanionBuilder> {
-  $$StudentsTableTableManager(_$LocalDatabase db, $StudentsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$StudentsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$StudentsTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$StudentsTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
-            Value<int> rowNumber = const Value.absent(),
-            Value<String> name = const Value.absent(),
-            Value<bool?> isAdmin = const Value.absent(),
-          }) =>
-              StudentsCompanion(
-            rowNumber: rowNumber,
-            name: name,
-            isAdmin: isAdmin,
-          ),
-          getInsertCompanionBuilder: ({
-            Value<int> rowNumber = const Value.absent(),
-            required String name,
-            Value<bool?> isAdmin = const Value.absent(),
-          }) =>
-              StudentsCompanion.insert(
-            rowNumber: rowNumber,
-            name: name,
-            isAdmin: isAdmin,
-          ),
-        ));
-}
-
-class $$StudentsTableProcessedTableManager extends ProcessedTableManager<
-    _$LocalDatabase,
-    $StudentsTable,
-    Student,
-    $$StudentsTableFilterComposer,
-    $$StudentsTableOrderingComposer,
-    $$StudentsTableProcessedTableManager,
-    $$StudentsTableInsertCompanionBuilder,
-    $$StudentsTableUpdateCompanionBuilder> {
-  $$StudentsTableProcessedTableManager(super.$state);
-}
-
-class $$StudentsTableFilterComposer
-    extends FilterComposer<_$LocalDatabase, $StudentsTable> {
-  $$StudentsTableFilterComposer(super.$state);
-  ColumnFilters<int> get rowNumber => $state.composableBuilder(
-      column: $state.table.rowNumber,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isAdmin => $state.composableBuilder(
-      column: $state.table.isAdmin,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ComposableFilter queueRecsRefs(
-      ComposableFilter Function($$QueueRecsTableFilterComposer f) f) {
-    final $$QueueRecsTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.rowNumber,
-        referencedTable: $state.db.queueRecs,
-        getReferencedColumn: (t) => t.studentRowNumber,
-        builder: (joinBuilder, parentComposers) =>
-            $$QueueRecsTableFilterComposer(ComposerState(
-                $state.db, $state.db.queueRecs, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$StudentsTableOrderingComposer
-    extends OrderingComposer<_$LocalDatabase, $StudentsTable> {
-  $$StudentsTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get rowNumber => $state.composableBuilder(
-      column: $state.table.rowNumber,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isAdmin => $state.composableBuilder(
-      column: $state.table.isAdmin,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
 typedef $$SubjectTableInsertCompanionBuilder = SubjectCompanion Function({
@@ -2080,6 +1959,11 @@ class $$QueueRecsTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
+  ColumnFilters<int> get studentRowNumber => $state.composableBuilder(
+      column: $state.table.studentRowNumber,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
   ColumnFilters<DateTime> get time => $state.composableBuilder(
       column: $state.table.time,
       builder: (column, joinBuilders) =>
@@ -2094,18 +1978,6 @@ class $$QueueRecsTableFilterComposer
       column: $state.table.workCount,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$StudentsTableFilterComposer get studentRowNumber {
-    final $$StudentsTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.studentRowNumber,
-        referencedTable: $state.db.students,
-        getReferencedColumn: (t) => t.rowNumber,
-        builder: (joinBuilder, parentComposers) =>
-            $$StudentsTableFilterComposer(ComposerState(
-                $state.db, $state.db.students, joinBuilder, parentComposers)));
-    return composer;
-  }
 
   $$SubjectTableFilterComposer get subjectID {
     final $$SubjectTableFilterComposer composer = $state.composerBuilder(
@@ -2128,6 +2000,11 @@ class $$QueueRecsTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
+  ColumnOrderings<int> get studentRowNumber => $state.composableBuilder(
+      column: $state.table.studentRowNumber,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
   ColumnOrderings<DateTime> get time => $state.composableBuilder(
       column: $state.table.time,
       builder: (column, joinBuilders) =>
@@ -2143,18 +2020,6 @@ class $$QueueRecsTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
-  $$StudentsTableOrderingComposer get studentRowNumber {
-    final $$StudentsTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.studentRowNumber,
-        referencedTable: $state.db.students,
-        getReferencedColumn: (t) => t.rowNumber,
-        builder: (joinBuilder, parentComposers) =>
-            $$StudentsTableOrderingComposer(ComposerState(
-                $state.db, $state.db.students, joinBuilder, parentComposers)));
-    return composer;
-  }
-
   $$SubjectTableOrderingComposer get subjectID {
     final $$SubjectTableOrderingComposer composer = $state.composerBuilder(
         composer: this,
@@ -2166,6 +2031,109 @@ class $$QueueRecsTableOrderingComposer
                 $state.db, $state.db.subject, joinBuilder, parentComposers)));
     return composer;
   }
+}
+
+typedef $$StudentsTableInsertCompanionBuilder = StudentsCompanion Function({
+  Value<int> id,
+  required String name,
+  Value<bool?> isAdmin,
+});
+typedef $$StudentsTableUpdateCompanionBuilder = StudentsCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<bool?> isAdmin,
+});
+
+class $$StudentsTableTableManager extends RootTableManager<
+    _$LocalDatabase,
+    $StudentsTable,
+    Student,
+    $$StudentsTableFilterComposer,
+    $$StudentsTableOrderingComposer,
+    $$StudentsTableProcessedTableManager,
+    $$StudentsTableInsertCompanionBuilder,
+    $$StudentsTableUpdateCompanionBuilder> {
+  $$StudentsTableTableManager(_$LocalDatabase db, $StudentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$StudentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$StudentsTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$StudentsTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<bool?> isAdmin = const Value.absent(),
+          }) =>
+              StudentsCompanion(
+            id: id,
+            name: name,
+            isAdmin: isAdmin,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            Value<bool?> isAdmin = const Value.absent(),
+          }) =>
+              StudentsCompanion.insert(
+            id: id,
+            name: name,
+            isAdmin: isAdmin,
+          ),
+        ));
+}
+
+class $$StudentsTableProcessedTableManager extends ProcessedTableManager<
+    _$LocalDatabase,
+    $StudentsTable,
+    Student,
+    $$StudentsTableFilterComposer,
+    $$StudentsTableOrderingComposer,
+    $$StudentsTableProcessedTableManager,
+    $$StudentsTableInsertCompanionBuilder,
+    $$StudentsTableUpdateCompanionBuilder> {
+  $$StudentsTableProcessedTableManager(super.$state);
+}
+
+class $$StudentsTableFilterComposer
+    extends FilterComposer<_$LocalDatabase, $StudentsTable> {
+  $$StudentsTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isAdmin => $state.composableBuilder(
+      column: $state.table.isAdmin,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$StudentsTableOrderingComposer
+    extends OrderingComposer<_$LocalDatabase, $StudentsTable> {
+  $$StudentsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isAdmin => $state.composableBuilder(
+      column: $state.table.isAdmin,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
 typedef $$WeeklyLessonsTableInsertCompanionBuilder = WeeklyLessonsCompanion
@@ -2571,12 +2539,12 @@ class $$KeyValueStorageTableTableOrderingComposer
 class _$LocalDatabaseManager {
   final _$LocalDatabase _db;
   _$LocalDatabaseManager(this._db);
-  $$StudentsTableTableManager get students =>
-      $$StudentsTableTableManager(_db, _db.students);
   $$SubjectTableTableManager get subject =>
       $$SubjectTableTableManager(_db, _db.subject);
   $$QueueRecsTableTableManager get queueRecs =>
       $$QueueRecsTableTableManager(_db, _db.queueRecs);
+  $$StudentsTableTableManager get students =>
+      $$StudentsTableTableManager(_db, _db.students);
   $$WeeklyLessonsTableTableManager get weeklyLessons =>
       $$WeeklyLessonsTableTableManager(_db, _db.weeklyLessons);
   $$DatedLessonsTableTableManager get datedLessons =>

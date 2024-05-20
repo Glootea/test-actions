@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$User {
   String get name => throw _privateConstructorUsedError;
-  int get rowNumber => throw _privateConstructorUsedError;
+  int get id => throw _privateConstructorUsedError;
   bool get isAdmin => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -29,7 +29,7 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call({String name, int rowNumber, bool isAdmin});
+  $Res call({String name, int id, bool isAdmin});
 }
 
 /// @nodoc
@@ -46,7 +46,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   @override
   $Res call({
     Object? name = null,
-    Object? rowNumber = null,
+    Object? id = null,
     Object? isAdmin = null,
   }) {
     return _then(_value.copyWith(
@@ -54,9 +54,9 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      rowNumber: null == rowNumber
-          ? _value.rowNumber
-          : rowNumber // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as int,
       isAdmin: null == isAdmin
           ? _value.isAdmin
@@ -73,7 +73,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, int rowNumber, bool isAdmin});
+  $Res call({String name, int id, bool isAdmin});
 }
 
 /// @nodoc
@@ -87,7 +87,7 @@ class __$$UserImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? name = null,
-    Object? rowNumber = null,
+    Object? id = null,
     Object? isAdmin = null,
   }) {
     return _then(_$UserImpl(
@@ -95,9 +95,9 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      rowNumber: null == rowNumber
-          ? _value.rowNumber
-          : rowNumber // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as int,
       isAdmin: null == isAdmin
           ? _value.isAdmin
@@ -111,18 +111,18 @@ class __$$UserImplCopyWithImpl<$Res>
 
 class _$UserImpl implements _User {
   const _$UserImpl(
-      {required this.name, required this.rowNumber, required this.isAdmin});
+      {required this.name, required this.id, required this.isAdmin});
 
   @override
   final String name;
   @override
-  final int rowNumber;
+  final int id;
   @override
   final bool isAdmin;
 
   @override
   String toString() {
-    return 'User(name: $name, rowNumber: $rowNumber, isAdmin: $isAdmin)';
+    return 'User(name: $name, id: $id, isAdmin: $isAdmin)';
   }
 
   @override
@@ -131,13 +131,12 @@ class _$UserImpl implements _User {
         (other.runtimeType == runtimeType &&
             other is _$UserImpl &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.rowNumber, rowNumber) ||
-                other.rowNumber == rowNumber) &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, name, rowNumber, isAdmin);
+  int get hashCode => Object.hash(runtimeType, name, id, isAdmin);
 
   @JsonKey(ignore: true)
   @override
@@ -149,13 +148,13 @@ class _$UserImpl implements _User {
 abstract class _User implements User {
   const factory _User(
       {required final String name,
-      required final int rowNumber,
+      required final int id,
       required final bool isAdmin}) = _$UserImpl;
 
   @override
   String get name;
   @override
-  int get rowNumber;
+  int get id;
   @override
   bool get isAdmin;
   @override

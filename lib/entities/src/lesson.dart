@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'lesson.freezed.dart';
 
-enum LessonState { inFuture, soon, active, inPast }
+enum LessonStatus { inFuture, soon, active, inPast }
 
 @freezed
 class Lesson with _$Lesson {
@@ -16,21 +16,24 @@ class Lesson with _$Lesson {
     required String subjectOnlineTableID,
   }) = _Lesson;
 
-  LessonState get state {
+  LessonStatus get status {
     final now = DateTime.now();
     log("now: $now, start: $startTime, end: $endTime");
     if (startTime.subtract(const Duration(minutes: 5)).isBefore(now) && endTime.isAfter(now)) {
-      return LessonState.active;
+      return LessonStatus.active;
     }
     if (startTime.isAfter(now) && startTime.difference(now) < const Duration(hours: 1)) {
-      return LessonState.soon;
+      return LessonStatus.soon;
     }
     if (startTime.isAfter(now)) {
-      return LessonState.inFuture;
+      return LessonStatus.inFuture;
     }
     if (endTime.isBefore(now)) {
-      return LessonState.inPast;
+      return LessonStatus.inPast;
     }
-    return LessonState.soon;
+    return LessonStatus.soon;
   }
+
+  static Duration queueStartDifference = const Duration(minutes: 5);
+  DateTime get queueStartTime => startTime.subtract(queueStartDifference);
 }

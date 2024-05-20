@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 
+@Deprecated("Don't overcomlicate card")
 class QueueStaticBackgroundRive extends StatelessWidget {
   final double size;
   final bool userInQueue;

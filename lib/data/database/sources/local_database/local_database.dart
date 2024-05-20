@@ -15,8 +15,8 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<void> addQueueRecord(QueueRecord queueRecord) async {
     await into(queueRecs).insert(QueueRecsCompanion.insert(
-      subjectID: queueRecord.localSubjectID,
-      studentRowNumber: queueRecord.studentRowNumber,
+      subjectID: queueRecord.lesson.subjectLocalID,
+      studentRowNumber: queueRecord.studentID,
       time: queueRecord.time,
       status: queueRecord.status.toString(),
     ));
@@ -25,16 +25,16 @@ class LocalDatabase extends _$LocalDatabase {
   Future<void> deleteQueueRecord(QueueRecord queueRecord) async {
     await (delete(queueRecs)
           ..where((tbl) =>
-              tbl.subjectID.equals(queueRecord.localSubjectID) &
-              tbl.studentRowNumber.equals(queueRecord.studentRowNumber)))
+              tbl.subjectID.equals(queueRecord.lesson.subjectLocalID) &
+              tbl.studentRowNumber.equals(queueRecord.studentID)))
         .go();
   }
 
   Future<void> updateQueueRecordUploadStatus(QueueRecord queueRecord, QueueRecordStatus status) async {
     await into(queueRecs).insert(
         QueueRecsCompanion.insert(
-            studentRowNumber: queueRecord.studentRowNumber,
-            subjectID: queueRecord.localSubjectID,
+            studentRowNumber: queueRecord.studentID,
+            subjectID: queueRecord.lesson.subjectLocalID,
             time: queueRecord.time,
             status: status.name,
             workCount: Value(queueRecord.workCount ?? 0)),

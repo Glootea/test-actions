@@ -30,10 +30,8 @@ class Subject extends Table {
 
 class Students extends Table {
   @override
-  Set<Column> get primaryKey => {rowNumber};
-  IntColumn get rowNumber => integer()();
-  // @Deprecated("Use rowNumber instead")
-  // IntColumn get id => integer()();
+  Set<Column> get primaryKey => {id};
+  IntColumn get id => integer()();
   TextColumn get name => text()();
   BoolColumn get isAdmin => boolean().nullable()();
 }

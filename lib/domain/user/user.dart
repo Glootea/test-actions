@@ -5,7 +5,7 @@ part 'user.freezed.dart';
 class User with _$User {
   const factory User({
     required String name,
-    required int rowNumber,
+    required int id,
     required bool isAdmin,
   }) = _User;
 }

@@ -186,9 +186,9 @@ class OnlineDataBase {
 
   Future<bool> addNewQueueRecord(QueueRecord queueRecord) async {
     try {
-      final spreadsheet = await _getSpreadsheet(queueRecord.onlineTableID);
+      final spreadsheet = await _getSpreadsheet(queueRecord.lesson.subjectOnlineTableID);
       final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
-      queueWorksheet!.values.insertRow(queueRecord.studentRowNumber, queueRecord.toOnlineRow);
+      queueWorksheet!.values.insertRow(queueRecord.studentID, queueRecord.toOnlineRow);
       return true;
     } catch (e) {
       log(e.toString());
@@ -198,10 +198,10 @@ class OnlineDataBase {
 
   Future<bool> deleteQueueRecord(QueueRecord queueRecord) async {
     try {
-      final spreadsheet = await _getSpreadsheet(queueRecord.onlineTableID);
+      final spreadsheet = await _getSpreadsheet(queueRecord.lesson.subjectOnlineTableID);
       final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
       final row = ['', queueRecord.workCount.toString()].toOnline;
-      queueWorksheet!.values.insertRow(queueRecord.studentRowNumber, row);
+      queueWorksheet!.values.insertRow(queueRecord.studentID, row);
       return true;
     } catch (e) {
       log(e.toString());

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/extension.dart';
 
 part 'queue_record.freezed.dart';
@@ -20,20 +21,26 @@ enum QueueRecordStatus {
 class QueueRecord with _$QueueRecord {
   const QueueRecord._();
   const factory QueueRecord({
-    required int localSubjectID,
-    required String onlineTableID,
-    required int studentRowNumber,
+    required Lesson lesson,
+    required String studentName,
+    required int studentID,
     required DateTime time,
-    int? workCount,
     required QueueRecordStatus status,
+    int? workCount,
   }) = _QueueRecord;
+
   static QueueRecord parseFromString(String qrData) {
     //TODO: implement NewQueueRecord parseFromString
     return QueueRecord(
         status: QueueRecordStatus.uploaded,
-        localSubjectID: 0,
-        onlineTableID: qrData,
-        studentRowNumber: 0,
+        lesson: Lesson(
+            name: "Lesson sample name",
+            startTime: DateTime.now(),
+            endTime: DateTime.now(),
+            subjectLocalID: 0,
+            subjectOnlineTableID: 'dfkjnb'),
+        studentID: 0,
+        studentName: "Student sample name",
         time: DateTime.now(),
         workCount: 0);
   }

@@ -21,12 +21,6 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const AdminPage(),
       );
     },
-    MainRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const MainScreen(),
-      );
-    },
     QueueAdminRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -60,7 +54,7 @@ abstract class _$AppRouter extends RootStackRouter {
     TodayRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const TodayPage(),
+        child: const TodayScreen(),
       );
     },
   };
@@ -76,20 +70,6 @@ class AdminRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'AdminRoute';
-
-  static const PageInfo<void> page = PageInfo<void>(name);
-}
-
-/// generated route for
-/// [MainScreen]
-class MainRoute extends PageRouteInfo<void> {
-  const MainRoute({List<PageRouteInfo>? children})
-      : super(
-          MainRoute.name,
-          initialChildren: children,
-        );
-
-  static const String name = 'MainRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
@@ -165,7 +145,7 @@ class TelegramBotAdminRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [TodayPage]
+/// [TodayScreen]
 class TodayRoute extends PageRouteInfo<void> {
   const TodayRoute({List<PageRouteInfo>? children})
       : super(

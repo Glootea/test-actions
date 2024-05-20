@@ -16,12 +16,12 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$QueueRecord {
-  int get localSubjectID => throw _privateConstructorUsedError;
-  String get onlineTableID => throw _privateConstructorUsedError;
-  int get studentRowNumber => throw _privateConstructorUsedError;
+  Lesson get lesson => throw _privateConstructorUsedError;
+  String get studentName => throw _privateConstructorUsedError;
+  int get studentID => throw _privateConstructorUsedError;
   DateTime get time => throw _privateConstructorUsedError;
-  int? get workCount => throw _privateConstructorUsedError;
   QueueRecordStatus get status => throw _privateConstructorUsedError;
+  int? get workCount => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $QueueRecordCopyWith<QueueRecord> get copyWith =>
@@ -35,12 +35,14 @@ abstract class $QueueRecordCopyWith<$Res> {
       _$QueueRecordCopyWithImpl<$Res, QueueRecord>;
   @useResult
   $Res call(
-      {int localSubjectID,
-      String onlineTableID,
-      int studentRowNumber,
+      {Lesson lesson,
+      String studentName,
+      int studentID,
       DateTime time,
-      int? workCount,
-      QueueRecordStatus status});
+      QueueRecordStatus status,
+      int? workCount});
+
+  $LessonCopyWith<$Res> get lesson;
 }
 
 /// @nodoc
@@ -56,39 +58,47 @@ class _$QueueRecordCopyWithImpl<$Res, $Val extends QueueRecord>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? localSubjectID = null,
-    Object? onlineTableID = null,
-    Object? studentRowNumber = null,
+    Object? lesson = null,
+    Object? studentName = null,
+    Object? studentID = null,
     Object? time = null,
-    Object? workCount = freezed,
     Object? status = null,
+    Object? workCount = freezed,
   }) {
     return _then(_value.copyWith(
-      localSubjectID: null == localSubjectID
-          ? _value.localSubjectID
-          : localSubjectID // ignore: cast_nullable_to_non_nullable
-              as int,
-      onlineTableID: null == onlineTableID
-          ? _value.onlineTableID
-          : onlineTableID // ignore: cast_nullable_to_non_nullable
+      lesson: null == lesson
+          ? _value.lesson
+          : lesson // ignore: cast_nullable_to_non_nullable
+              as Lesson,
+      studentName: null == studentName
+          ? _value.studentName
+          : studentName // ignore: cast_nullable_to_non_nullable
               as String,
-      studentRowNumber: null == studentRowNumber
-          ? _value.studentRowNumber
-          : studentRowNumber // ignore: cast_nullable_to_non_nullable
+      studentID: null == studentID
+          ? _value.studentID
+          : studentID // ignore: cast_nullable_to_non_nullable
               as int,
       time: null == time
           ? _value.time
           : time // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      workCount: freezed == workCount
-          ? _value.workCount
-          : workCount // ignore: cast_nullable_to_non_nullable
-              as int?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as QueueRecordStatus,
+      workCount: freezed == workCount
+          ? _value.workCount
+          : workCount // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $LessonCopyWith<$Res> get lesson {
+    return $LessonCopyWith<$Res>(_value.lesson, (value) {
+      return _then(_value.copyWith(lesson: value) as $Val);
+    });
   }
 }
 
@@ -101,12 +111,15 @@ abstract class _$$QueueRecordImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int localSubjectID,
-      String onlineTableID,
-      int studentRowNumber,
+      {Lesson lesson,
+      String studentName,
+      int studentID,
       DateTime time,
-      int? workCount,
-      QueueRecordStatus status});
+      QueueRecordStatus status,
+      int? workCount});
+
+  @override
+  $LessonCopyWith<$Res> get lesson;
 }
 
 /// @nodoc
@@ -120,38 +133,38 @@ class __$$QueueRecordImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? localSubjectID = null,
-    Object? onlineTableID = null,
-    Object? studentRowNumber = null,
+    Object? lesson = null,
+    Object? studentName = null,
+    Object? studentID = null,
     Object? time = null,
-    Object? workCount = freezed,
     Object? status = null,
+    Object? workCount = freezed,
   }) {
     return _then(_$QueueRecordImpl(
-      localSubjectID: null == localSubjectID
-          ? _value.localSubjectID
-          : localSubjectID // ignore: cast_nullable_to_non_nullable
-              as int,
-      onlineTableID: null == onlineTableID
-          ? _value.onlineTableID
-          : onlineTableID // ignore: cast_nullable_to_non_nullable
+      lesson: null == lesson
+          ? _value.lesson
+          : lesson // ignore: cast_nullable_to_non_nullable
+              as Lesson,
+      studentName: null == studentName
+          ? _value.studentName
+          : studentName // ignore: cast_nullable_to_non_nullable
               as String,
-      studentRowNumber: null == studentRowNumber
-          ? _value.studentRowNumber
-          : studentRowNumber // ignore: cast_nullable_to_non_nullable
+      studentID: null == studentID
+          ? _value.studentID
+          : studentID // ignore: cast_nullable_to_non_nullable
               as int,
       time: null == time
           ? _value.time
           : time // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      workCount: freezed == workCount
-          ? _value.workCount
-          : workCount // ignore: cast_nullable_to_non_nullable
-              as int?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as QueueRecordStatus,
+      workCount: freezed == workCount
+          ? _value.workCount
+          : workCount // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -160,30 +173,30 @@ class __$$QueueRecordImplCopyWithImpl<$Res>
 
 class _$QueueRecordImpl extends _QueueRecord {
   const _$QueueRecordImpl(
-      {required this.localSubjectID,
-      required this.onlineTableID,
-      required this.studentRowNumber,
+      {required this.lesson,
+      required this.studentName,
+      required this.studentID,
       required this.time,
-      this.workCount,
-      required this.status})
+      required this.status,
+      this.workCount})
       : super._();
 
   @override
-  final int localSubjectID;
+  final Lesson lesson;
   @override
-  final String onlineTableID;
+  final String studentName;
   @override
-  final int studentRowNumber;
+  final int studentID;
   @override
   final DateTime time;
   @override
-  final int? workCount;
-  @override
   final QueueRecordStatus status;
+  @override
+  final int? workCount;
 
   @override
   String toString() {
-    return 'QueueRecord(localSubjectID: $localSubjectID, onlineTableID: $onlineTableID, studentRowNumber: $studentRowNumber, time: $time, workCount: $workCount, status: $status)';
+    return 'QueueRecord(lesson: $lesson, studentName: $studentName, studentID: $studentID, time: $time, status: $status, workCount: $workCount)';
   }
 
   @override
@@ -191,21 +204,20 @@ class _$QueueRecordImpl extends _QueueRecord {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$QueueRecordImpl &&
-            (identical(other.localSubjectID, localSubjectID) ||
-                other.localSubjectID == localSubjectID) &&
-            (identical(other.onlineTableID, onlineTableID) ||
-                other.onlineTableID == onlineTableID) &&
-            (identical(other.studentRowNumber, studentRowNumber) ||
-                other.studentRowNumber == studentRowNumber) &&
+            (identical(other.lesson, lesson) || other.lesson == lesson) &&
+            (identical(other.studentName, studentName) ||
+                other.studentName == studentName) &&
+            (identical(other.studentID, studentID) ||
+                other.studentID == studentID) &&
             (identical(other.time, time) || other.time == time) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.workCount, workCount) ||
-                other.workCount == workCount) &&
-            (identical(other.status, status) || other.status == status));
+                other.workCount == workCount));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, localSubjectID, onlineTableID,
-      studentRowNumber, time, workCount, status);
+  int get hashCode => Object.hash(
+      runtimeType, lesson, studentName, studentID, time, status, workCount);
 
   @JsonKey(ignore: true)
   @override
@@ -216,26 +228,26 @@ class _$QueueRecordImpl extends _QueueRecord {
 
 abstract class _QueueRecord extends QueueRecord {
   const factory _QueueRecord(
-      {required final int localSubjectID,
-      required final String onlineTableID,
-      required final int studentRowNumber,
+      {required final Lesson lesson,
+      required final String studentName,
+      required final int studentID,
       required final DateTime time,
-      final int? workCount,
-      required final QueueRecordStatus status}) = _$QueueRecordImpl;
+      required final QueueRecordStatus status,
+      final int? workCount}) = _$QueueRecordImpl;
   const _QueueRecord._() : super._();
 
   @override
-  int get localSubjectID;
+  Lesson get lesson;
   @override
-  String get onlineTableID;
+  String get studentName;
   @override
-  int get studentRowNumber;
+  int get studentID;
   @override
   DateTime get time;
   @override
-  int? get workCount;
-  @override
   QueueRecordStatus get status;
+  @override
+  int? get workCount;
   @override
   @JsonKey(ignore: true)
   _$$QueueRecordImplCopyWith<_$QueueRecordImpl> get copyWith =>

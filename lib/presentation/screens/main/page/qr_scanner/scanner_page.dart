@@ -83,7 +83,7 @@ class _ScannerPageState extends State<ScannerPage> {
                   child: LoadingContainer<ScannerPageCubit, ScannerPageState>(
                       cubit: cubit,
                       child: state == ShowResultState()
-                          ? Center(child: Text("Result"))
+                          ? const Center(child: Text("Result"))
                           : Scaffold(
                               body: Stack(
                                 children: [

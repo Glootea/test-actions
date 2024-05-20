@@ -39,8 +39,8 @@ class WeeklyLessonEntity extends LessonTime with _$WeeklyLessonEntity {
       id.toString(),
       '-',
       weekdays.toOnlineString,
-      startTime.toOnlineString,
-      endTime.toOnlineString,
+      startTime.toDisplayTime,
+      endTime.toDisplayTime,
     ];
     return row.toOnline;
   }
@@ -70,10 +70,10 @@ class DatedLessonEntity extends LessonTime with _$DatedLessonEntity {
   List<String> get toRow {
     final row = [
       id.toString(),
-      dates.toOnlineString,
+      dates.toDatesString.toOnline,
       '-',
-      startTime.toOnlineString,
-      endTime.toOnlineString,
+      startTime.toDisplayTime.toOnline,
+      endTime.toDisplayTime.toOnline,
     ];
     return row.toOnline;
   }

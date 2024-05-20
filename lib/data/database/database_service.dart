@@ -52,21 +52,12 @@ class DatabaseService {
   }
 
   /// {"SubjectName": [List]<[QueueRecord]>}
-  Future<Map<String, List<QueueRecord>>> getQueueRecords(List<String> onlineTableID) // TODO: implement
-  async {
-    // return {
-    //   "АКМС (Анализ и концептуальное моделирование систем)": [
-    //    QueueRecord(
-    //         localSubjectID: 0,
-    //         onlineTableID: '4566',
-    //         status: NewQueueRecordStatus.uploaded,
-    //         studentRowNumber: 1,
-    //         workCount: 3,
-    //         time: DateTime(2024, 4, 28, 14, 16))
-    //   ]
-    // };
-    return {};
-    throw UnimplementedError();
+  Future<List<QueueRecord>?> fetchQueueRecordList(Lesson lesson) async {
+    return [];
+  }
+
+  Future<List<QueueRecord>> getLocalQueueRecordList(Lesson lesson) async {
+    return [];
   }
 
   Future<bool> addNewQueueRecord(QueueRecord queueRecord) // TODO: implement
