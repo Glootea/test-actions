@@ -5,9 +5,11 @@ class LessonCardButton extends StatelessWidget {
     super.key,
     required this.icon,
     required this.onTap,
+    this.backgroundColor = Colors.transparent,
   });
   final IconData icon;
   final VoidCallback onTap;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +18,12 @@ class LessonCardButton extends StatelessWidget {
         width: 64,
         child: IconButton(
           style: IconButton.styleFrom(
+            backgroundColor: backgroundColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
               side: BorderSide(
                 width: 2,
-                color: Theme.of(context).colorScheme.outline,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
               ),
             ),
           ),

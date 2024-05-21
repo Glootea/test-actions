@@ -66,10 +66,6 @@ class ThemeCubit extends Cubit<ThemeState> {
   final KeyValueStorage _keyValueStorage;
   ThemeCubit(this._keyValueStorage) : super(ThemeState.getDefault()) {
     _init();
-    Future.delayed(const Duration(seconds: 7)).then((value) {
-      setTheme(themePreset: ThemePreset.defaultPreset, brightness: Brightness.dark);
-      print("inited");
-    });
   }
 
   Future<void> _init() async {

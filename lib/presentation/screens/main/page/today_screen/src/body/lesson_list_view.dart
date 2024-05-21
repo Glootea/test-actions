@@ -39,7 +39,7 @@ class _LessonListViewState extends State<LessonListView> {
         builder: (context, state) {
           Widget getHeadline(String text) => Padding(
                 padding: const EdgeInsets.only(left: 8),
-                child: Text(text, style: Theme.of(context).textTheme.displayMedium),
+                child: Text(text, style: Theme.of(context).textTheme.displayMedium, overflow: TextOverflow.ellipsis),
               );
           final children = <Widget>[
             if (state.passedLessons.isNotEmpty) ...[
@@ -48,12 +48,13 @@ class _LessonListViewState extends State<LessonListView> {
             ],
             if (state.activeLessons.isNotEmpty) ...[
               Row(children: [
-                getHeadline("Активные"),
-                const Spacer(),
+                Expanded(child: getHeadline("Активные")),
                 Padding(
                   padding: const EdgeInsets.only(right: 20),
                   child: LessonCardButton(
-                      icon: Icons.qr_code_scanner_outlined, onTap: () => context.router.push(const QrScannerRoute())),
+                      backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      icon: Icons.qr_code_scanner_outlined,
+                      onTap: () => context.router.push(const QrScannerRoute())),
                 ) // TODO: move to cubit
               ]),
               Column(children: state.activeLessons.map((data) => LessonCard(data)).toList())

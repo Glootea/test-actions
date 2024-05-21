@@ -1,6 +1,6 @@
 {
-    "name": "queue",
-    "short_name": "queue",
+    "name": "QueueMinder",
+    "short_name": "QueueMinder",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

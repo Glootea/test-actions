@@ -10,7 +10,7 @@ class LoadingAnimation extends StatefulWidget {
   const LoadingAnimation({required this.state, required this.afterAnimationEnd, super.key});
 
   @override
-  State<LoadingAnimation> createState() => _LoadingAnimationState();
+  State<LoadingAnimation> createState() => _TempLoadingAnimationState();
 }
 
 class _LoadingAnimationState extends State<LoadingAnimation> {
@@ -72,5 +72,21 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
       stateMachines: const ['main'],
       onInit: (artboard) => _onRiveInit(artboard),
     );
+  }
+}
+
+@Deprecated("Remove when rive is supported in wasm and windows")
+class _TempLoadingAnimationState extends _LoadingAnimationState {
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(height: 300);
+  }
+
+  @override
+  void handleLoadingState(LoadingState state) {
+    _states.add(state);
+    if (_states.contains(LoadingState.loaded)) {
+      Future.delayed(const Duration(milliseconds: 1500 ~/ 1.8), () => widget.afterAnimationEnd());
+    }
   }
 }

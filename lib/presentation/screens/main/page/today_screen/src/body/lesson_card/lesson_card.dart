@@ -9,21 +9,33 @@ import 'package:queue/extension.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
 import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/lesson__card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
 import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
 
 enum _ButtonState { add, remove, qrCode, none }
 
-class LessonCard extends StatelessWidget {
+class LessonCard extends StatefulWidget {
   final Lesson lesson;
   const LessonCard(this.lesson, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final cubit = LessonCardCubit(
-      lesson,
+  State<LessonCard> createState() => _LessonCardState();
+}
+
+class _LessonCardState extends State<LessonCard> {
+  late final LessonCardCubit cubit;
+  @override
+  void initState() {
+    cubit = LessonCardCubit(
+      widget.lesson,
       context.read<DatabaseService>(),
       context.read<UserCubit>(),
     );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider.value(
       value: cubit,
       child: BlocBuilder<LessonCardCubit, LessonCardData>(builder: (context, data) {
@@ -105,27 +117,32 @@ class LessonCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Divider(
-                    thickness: 1,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  LabeledLinearProgressIndicator(
+                    startValue: 0,
+                    currentValue: data.queueData?.userPosition,
+                    endValue: data.queueData?.queueLength,
+                    message: data.message,
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        data.message,
-                        // 'Вы не находитесь в очереди',
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      Icon(
-                        Icons.more_horiz_outlined,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                        size: 24,
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisSize: MainAxisSize.max,
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     // Expanded(
+                  //     //   child: Text(
+                  //     //     data.message,
+                  //     //     // 'Вы не находитесь в очереди',
+                  //     //     textAlign: TextAlign.start,
+                  //     //     style: Theme.of(context).textTheme.bodyLarge,
+                  //     //     overflow: TextOverflow.ellipsis,
+                  //     //   ),
+                  //     // ),
+                  //     Icon(
+                  //       Icons.more_horiz_outlined,
+                  //       color: Theme.of(context).textTheme.bodyMedium?.color,
+                  //       size: 24,
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
