@@ -107,8 +107,8 @@ class _LessonCardState extends State<LessonCard> {
                   Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Opacity(
-                        opacity: 0.8,
+                      Hero(
+                        tag: data.lesson.startTime.hashCode,
                         child: Text(
                           '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
                           // '16:20 - 17:50 в Г-321',
@@ -117,11 +117,14 @@ class _LessonCardState extends State<LessonCard> {
                       ),
                     ],
                   ),
-                  LabeledLinearProgressIndicator(
-                    startValue: 0,
-                    currentValue: data.queueData?.userPosition,
-                    endValue: data.queueData?.queueLength,
-                    message: data.message,
+                  Hero(
+                    tag: data.queueData.hashCode,
+                    child: LabeledLinearProgressIndicator(
+                      startValue: 0,
+                      currentValue: data.queueData?.userPosition,
+                      endValue: data.queueData?.queueLength,
+                      message: data.message,
+                    ),
                   ),
                   // Row(
                   //   mainAxisSize: MainAxisSize.max,

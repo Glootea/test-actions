@@ -21,13 +21,13 @@ class _CircularUpdateTimerState extends State<CircularUpdateTimer> {
   Timer? timer;
   @override
   void initState() {
+    print("Init CircularUpdateTimer");
     super.initState();
     final future = widget.isUpdatingQueueRequest;
     if (future == null) {
       createTimer();
     } else {
       future.then((value) {
-        print(value);
         if (value == 'true') {
           createTimer();
         } else {
@@ -64,17 +64,19 @@ class _CircularUpdateTimerState extends State<CircularUpdateTimer> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () => setState(() {
-              isUpdating ? resetTimer() : createTimer();
-              context.read<KeyValueStorage>().set(StoredValues.isUpdatingQueue, isUpdating.toString());
-            }),
-        child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: CircularProgressIndicator(
-              value: isUpdating ? timerValue / widget.durationInSeconds : 1,
-              color:
-                  isUpdating ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.error,
-            )));
+    return Align(
+      child: GestureDetector(
+          onTap: () => setState(() {
+                isUpdating ? resetTimer() : createTimer();
+                context.read<KeyValueStorage>().set(StoredValues.isUpdatingQueue, isUpdating.toString());
+              }),
+          child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: CircularProgressIndicator(
+                value: isUpdating ? timerValue / widget.durationInSeconds : 1,
+                color:
+                    isUpdating ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.error,
+              ))),
+    );
   }
 }
