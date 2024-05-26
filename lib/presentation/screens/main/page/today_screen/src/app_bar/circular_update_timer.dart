@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:queue/data/database/sources/local_database/local_database.dart';
 
+final circularUpdateTimerKey = GlobalKey();
+
 class CircularUpdateTimer extends StatefulWidget {
   final int durationInSeconds;
   final VoidCallback onTimeExpired;

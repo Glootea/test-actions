@@ -20,17 +20,14 @@ class _LabeledLinearProgressIndicatorState extends State<LabeledLinearProgressIn
   @override
   Widget build(BuildContext context) {
     //TODO: fix not update on new data
-    print(widget.currentValue == null
-        ? "Null"
-        : "1.0 - (widget.currentValue - widget.startValue!) / (widget.endValue! - widget.startValue!) = ${1.0 - (widget.currentValue! - widget.startValue!) / (widget.endValue! - widget.startValue!)}");
     final double value = widget.currentValue == null
         ? 0.0
         : 1.0 - (widget.currentValue - widget.startValue!) / (widget.endValue! - widget.startValue!);
-    print("Build LabeledLinearProgressIndicator. ${value}");
     return AnimatedSize(
         duration: const Duration(milliseconds: 300),
-        child: Builder(builder: (_) {
-          return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Gap(8),
             LinearProgressIndicator(
               value: value,
@@ -49,7 +46,7 @@ class _LabeledLinearProgressIndicatorState extends State<LabeledLinearProgressIn
               expandIcon: Icons.more_horiz_outlined,
               iconSize: 24,
             )
-          ]);
-        }));
+          ]),
+        ));
   }
 }

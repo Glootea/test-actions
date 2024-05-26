@@ -7,9 +7,7 @@ import 'package:queue/domain/user/user.dart';
 class UserCubit extends Cubit<User?> {
   final KeyValueStorage _storage;
   bool _inited = false;
-  UserCubit(this._storage) : super(null) {
-    init();
-  }
+  UserCubit(this._storage) : super(null);
 
   Future<void> init() async {
     final (userName, rowNumberString, isAdmin) = await (

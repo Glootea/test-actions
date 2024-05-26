@@ -25,12 +25,12 @@ void main() async {
   OnlineDataBase onlineDatabase = OnlineDataBase();
   KeyValueStorage keyValueStorage = KeyValueStorage(localDatabase);
   DatabaseService databaseService = DatabaseService(localDatabase: localDatabase, onlineDataBase: onlineDatabase);
-  UserCubit userDataBase = UserCubit(keyValueStorage);
+  UserCubit userCubit = UserCubit(keyValueStorage);
   final themeCubit = ThemeCubit(keyValueStorage);
-  // final userDataBase = await UserDataBase.getConfiguredUserDataBase(databaseService.localDatabase);
-  runApp(MultiProvider(providers: [
+  await (themeCubit.init(), userCubit.init()).wait;
+  runApp(MultiBlocProvider(providers: [
     Provider.value(value: databaseService),
-    Provider.value(value: userDataBase),
+    Provider.value(value: userCubit),
     Provider.value(value: keyValueStorage),
     Provider.value(value: themeCubit),
   ], child: BlocProvider.value(value: themeCubit, child: const MyApp())));
@@ -41,20 +41,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _appRouter = AppRouter();
+    final appRouter = AppRouter();
     return BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
       return DynamicColorBuilder(builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         final colorScheme = state.getScheme ??
             (((state.brightness) == Brightness.dark) ? darkDynamic : lightDynamic) ??
             const ColorScheme.dark();
         return MaterialApp.router(
-            key: const ValueKey("QueueMinder"),
             title: "QueueMinder",
             builder: (context, child) => MediaQuery(
                   data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
                   child: child ?? Container(),
                 ),
-            routerConfig: _appRouter.config(),
+            routerConfig: appRouter.config(),
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
                 fontFamily: 'Roboto',

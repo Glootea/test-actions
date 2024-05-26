@@ -26,11 +26,13 @@ class _DetailedQueueScreenState extends State<DetailedQueueScreen> {
   @override
   void initState() {
     final KeyValueStorage storage = context.read<KeyValueStorage>();
-    updateTimer = CircularUpdateTimer(
-      durationInSeconds: 30,
-      isUpdatingQueueRequest: storage.get(StoredValues.isUpdatingQueue),
-      onTimeExpired: () {},
-      key: GlobalKey(),
+    updateTimer = Hero(
+      tag: 'circularUpdateTimer',
+      child: CircularUpdateTimer(
+          durationInSeconds: 30,
+          isUpdatingQueueRequest: storage.get(StoredValues.isUpdatingQueue),
+          onTimeExpired: () {},
+          key: circularUpdateTimerKey),
     );
     super.initState();
   }
@@ -50,12 +52,10 @@ class _DetailedQueueScreenState extends State<DetailedQueueScreen> {
                   InkWell(
                     onTap: () => AutoRouter.of(context).maybePop(),
                     child: Hero(
-                      tag: widget.cubit.hashCode,
+                      tag: "headline${data.lesson}",
                       child: Text(
                         data.lesson.name,
                         style: Theme.of(context).textTheme.displayMedium,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
                       ),
                     ),
                   ),
@@ -64,7 +64,7 @@ class _DetailedQueueScreenState extends State<DetailedQueueScreen> {
                     builder: (context) {
                       final children = [
                         Hero(
-                          tag: data.lesson.startTime.hashCode,
+                          tag: "time${data.lesson}",
                           child: Text(
                             "${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}",
                             style: Theme.of(context).textTheme.bodyMedium,
@@ -78,7 +78,7 @@ class _DetailedQueueScreenState extends State<DetailedQueueScreen> {
                     },
                   ),
                   Hero(
-                    tag: data.queueData.hashCode,
+                    tag: "progressIndicator${data.lesson}",
                     child: LabeledLinearProgressIndicator(
                       startValue: 0,
                       currentValue: data.queueData?.userPosition,

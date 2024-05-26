@@ -74,7 +74,7 @@ class _LessonCardState extends State<LessonCard> {
                           child: Align(
                             alignment: const AlignmentDirectional(-1, 0),
                             child: Hero(
-                              tag: cubit.hashCode,
+                              tag: "headline${widget.lesson}",
                               child: Text(
                                 data.lesson.name,
                                 overflow: TextOverflow.ellipsis,
@@ -108,7 +108,7 @@ class _LessonCardState extends State<LessonCard> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Hero(
-                        tag: data.lesson.startTime.hashCode,
+                        tag: "time${data.lesson}",
                         child: Text(
                           '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
                           // '16:20 - 17:50 в Г-321',
@@ -118,34 +118,15 @@ class _LessonCardState extends State<LessonCard> {
                     ],
                   ),
                   Hero(
-                    tag: data.queueData.hashCode,
+                    tag: "progressIndicator${widget.lesson}",
                     child: LabeledLinearProgressIndicator(
                       startValue: 0,
                       currentValue: data.queueData?.userPosition,
                       endValue: data.queueData?.queueLength,
                       message: data.message,
+                      key: ObjectKey(bloc),
                     ),
                   ),
-                  // Row(
-                  //   mainAxisSize: MainAxisSize.max,
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     // Expanded(
-                  //     //   child: Text(
-                  //     //     data.message,
-                  //     //     // 'Вы не находитесь в очереди',
-                  //     //     textAlign: TextAlign.start,
-                  //     //     style: Theme.of(context).textTheme.bodyLarge,
-                  //     //     overflow: TextOverflow.ellipsis,
-                  //     //   ),
-                  //     // ),
-                  //     Icon(
-                  //       Icons.more_horiz_outlined,
-                  //       color: Theme.of(context).textTheme.bodyMedium?.color,
-                  //       size: 24,
-                  //     ),
-                  //   ],
-                  // ),
                 ],
               ),
             ),

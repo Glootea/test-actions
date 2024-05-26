@@ -134,6 +134,7 @@ class _LabelRenderObject extends RenderBox {
   @override
   void performLayout() {
     if (_message != null) {
+      print("Message null");
       _messagePainter.layout(maxWidth: constraints.maxWidth);
       final messageLines = _messagePainter.computeLineMetrics();
       _longestLineWidth = messageLines.reduce((a, b) => a.width > b.width ? a : b).width;
@@ -143,18 +144,22 @@ class _LabelRenderObject extends RenderBox {
     }
 
     if (_value == null || _valuePresentation == null) {
+      print("Value null");
       _iconFitLastLine = _lastLineWidth < constraints.maxWidth - (_iconSize ?? 0) - padding;
       size = Size(constraints.maxWidth,
           _lineHeight * (_numMessageLines + (_iconFitLastLine ? 0 : 1))); // TODO: will cause error
       return;
     } else {
+      print("Value not null");
       _valuePainter.layout(maxWidth: constraints.maxWidth);
       _valueWidth = _valuePainter.computeLineMetrics().first.width;
       _lineHeight = _lineHeight == 0 ? _valuePainter.computeLineMetrics().first.height : _lineHeight;
     }
+    print("Default");
     _valuePosition = _value! * constraints.maxWidth + _valueWidth;
     _messageFitsLeft = _longestLineWidth < _valuePosition - padding;
     if (_iconSize != null) {
+      print("Icon not null");
       double maxOcupiedWidth = 0;
       if (_value != null || _valuePresentation != null) {
         maxOcupiedWidth = max(_valuePosition + _valueWidth, maxOcupiedWidth);
@@ -179,7 +184,8 @@ class _LabelRenderObject extends RenderBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if ((_value != null && _valuePresentation != null)) {
+    if (_value != null && _valuePresentation != null) {
+      _valuePosition = _value! * constraints.maxWidth + _valueWidth;
       _valuePainter.paint(context.canvas, offset + Offset(_valuePosition, 0));
     }
     if (_message != null) {

@@ -35,10 +35,13 @@ class TodayScreen extends StatelessWidget {
                 )
               ],
               centerTitle: true,
-              leading: CircularUpdateTimer(
-                durationInSeconds: 30,
-                isUpdatingQueueRequest: storage.get(StoredValues.isUpdatingQueue),
-                onTimeExpired: () {},
+              leading: Hero(
+                tag: 'circularUpdateTimer',
+                child: CircularUpdateTimer(
+                    durationInSeconds: 30,
+                    isUpdatingQueueRequest: storage.get(StoredValues.isUpdatingQueue),
+                    onTimeExpired: () {},
+                    key: circularUpdateTimerKey),
               ),
             ),
             body: const Stack(

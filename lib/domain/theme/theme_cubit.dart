@@ -64,11 +64,9 @@ class ThemeState with _$ThemeState {
 
 class ThemeCubit extends Cubit<ThemeState> {
   final KeyValueStorage _keyValueStorage;
-  ThemeCubit(this._keyValueStorage) : super(ThemeState.getDefault()) {
-    _init();
-  }
+  ThemeCubit(this._keyValueStorage) : super(ThemeState.getDefault());
 
-  Future<void> _init() async {
+  Future<void> init() async {
     final (colorPreset, brightness) = await (getColorPreset, getBrightness).wait;
     print("Go cached: $colorPreset $brightness");
     setTheme(themePreset: colorPreset, brightness: brightness);

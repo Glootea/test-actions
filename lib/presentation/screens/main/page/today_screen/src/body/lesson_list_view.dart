@@ -38,9 +38,8 @@ class _LessonListViewState extends State<LessonListView> {
         selector: (state) => state.separatedLessons,
         builder: (context, state) {
           Widget getHeadline(String text) => Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Text(text, style: Theme.of(context).textTheme.displayMedium, overflow: TextOverflow.ellipsis),
-              );
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Text(text, style: Theme.of(context).textTheme.displayMedium, overflow: TextOverflow.ellipsis));
           final children = <Widget>[
             if (state.passedLessons.isNotEmpty) ...[
               getHeadline("Прошедшие"),
@@ -65,18 +64,15 @@ class _LessonListViewState extends State<LessonListView> {
             ],
             SizedBox(height: getInitialOffset(state.passedLessons.length))
           ];
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: state.isEmpty
-                ? const _EmptyLessonListCard()
-                : ListView.separated(
-                    padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-                    shrinkWrap: true,
-                    controller: scrollController,
-                    separatorBuilder: (context, index) => const SizedBox(height: 16),
-                    itemBuilder: ((context, index) => children[index]),
-                    itemCount: children.length),
-          );
+          return state.isEmpty
+              ? const _EmptyLessonListCard()
+              : ListView.separated(
+                  padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
+                  shrinkWrap: true,
+                  controller: scrollController,
+                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  itemBuilder: ((context, index) => children[index]),
+                  itemCount: children.length);
         });
   }
 }
