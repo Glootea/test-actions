@@ -1,11 +1,23 @@
-import 'dart:developer';
+import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/presentation/common_src/loading/loading_animation.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/today_screen_cubit.dart';
+import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
+part 'loading_animation.dart';
+part 'loadable_cubit.dart';
 
 /// Creates loading animation while cubit state's [LoadingState] != [LoadingState.ended], then displays child widget
+/// /// User guide:
+/// 1. Create cubit that extends [LoadableCubit]
+/// 2. Create states that extends [LoadableState]
+///    - 2.1 Initial state should be with isStateLoading = [LoadingState.started]
+///    - 2.2 When data is loaded, emit state with isStateLoading = [LoadingState.loaded]
+///    - 2.3 Then end animation plays and and cubit internally calls [LoadableCubit.endLoading],
+///       that will emit state with isStateLoading = [LoadingState.ended],
+///       that will display content. So endLoading must be overridden in child class
+///       to emit state with main content after loading
+/// 3. Wrap page in [LoadingContainer]
 class LoadingContainer<B extends StateStreamable<S>, S extends LoadableState> extends StatelessWidget {
   final Widget child;
   final LoadableCubit cubit;

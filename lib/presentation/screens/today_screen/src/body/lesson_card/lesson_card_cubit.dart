@@ -3,8 +3,8 @@ import 'package:queue/data/database/database_service.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/entities/src/queue_record.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/lesson__card_data/lesson_card_data.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/lesson__card_data/queue_data/queue_data.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson__card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson__card_data/queue_data/queue_data.dart';
 
 class LessonCardCubit extends Cubit<LessonCardData> {
   final Lesson _lesson;

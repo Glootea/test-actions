@@ -2,9 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/navigation.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/lesson_card.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/today_screen_cubit.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
+import 'package:queue/presentation/screens/today_screen/today_screen_cubit.dart';
 
 class LessonListView extends StatefulWidget {
   const LessonListView({super.key});

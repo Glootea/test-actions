@@ -42,13 +42,12 @@ class DatabaseService {
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
                 startTime: DateTime.now().copyWith(hour: 18, minute: 30),
-                endTime: DateTime.now().copyWith(hour: 22, minute: 40),
+                endTime: DateTime.now().copyWith(hour: 23, minute: 40),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
             ]);
     // TODO: implement
-    throw UnimplementedError();
   }
 
   /// {"SubjectName": [List]<[QueueRecord]>}

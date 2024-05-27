@@ -1,17 +1,11 @@
 import 'dart:async';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:queue/data/database/database_service.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/entities/src/lesson.dart';
+import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
 
 part 'today_screen_cubit.freezed.dart';
-
-abstract class LoadableCubit<T> extends Cubit<T> {
-  LoadableCubit(super.initialState);
-
-  void endLoading();
-}
 
 class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
   final DatabaseService _databaseService;
@@ -36,13 +30,6 @@ class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
 
   @override
   void endLoading() => emit(state.copyWith(isLoading: LoadingState.ended));
-}
-
-enum LoadingState { started, loaded, ended, error, noLoading }
-
-abstract interface class LoadableState {
-  final LoadingState isStateLoading;
-  const LoadableState(this.isStateLoading);
 }
 
 class SeparatedLessons {

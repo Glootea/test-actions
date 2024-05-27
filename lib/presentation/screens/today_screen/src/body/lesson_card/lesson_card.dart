@@ -7,10 +7,10 @@ import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/entities/src/queue_record.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/navigation.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/lesson__card_data/lesson_card_data.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson__card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
 
 enum _ButtonState { add, remove, qrCode, none }
 

@@ -5,10 +5,10 @@ import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/presentation/common_src/imaged_background.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/app_bar/circular_update_timer.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/body/lesson_list_view.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/src/app_bar/today_lessons_end_drawer.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/today_screen_cubit.dart';
+import 'package:queue/presentation/screens/today_screen/src/app_bar/circular_update_timer.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_list_view.dart';
+import 'package:queue/presentation/screens/today_screen/src/app_bar/today_lessons_end_drawer.dart';
+import 'package:queue/presentation/screens/today_screen/today_screen_cubit.dart';
 
 @RoutePage()
 class TodayScreen extends StatelessWidget {
@@ -38,10 +38,10 @@ class TodayScreen extends StatelessWidget {
               leading: Hero(
                 tag: 'circularUpdateTimer',
                 child: CircularUpdateTimer(
-                    durationInSeconds: 30,
-                    isUpdatingQueueRequest: storage.get(StoredValues.isUpdatingQueue),
-                    onTimeExpired: () {},
-                    key: circularUpdateTimerKey),
+                  durationInSeconds: 30,
+                  isUpdatingQueueRequest: storage.get(StoredValues.isUpdatingQueue),
+                  onTimeExpired: () {},
+                ),
               ),
             ),
             body: const Stack(

@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/today_screen_cubit.dart';
-import 'package:rive/rive.dart';
+part of 'queue_loading_container.dart';
 
 class LoadingAnimation extends StatefulWidget {
   final LoadingState state;
@@ -79,7 +75,10 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
 class _TempLoadingAnimationState extends _LoadingAnimationState {
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(height: 300);
+    return const SizedBox(
+      height: 300,
+      child: ColoredBox(color: Colors.blue),
+    );
   }
 
   @override

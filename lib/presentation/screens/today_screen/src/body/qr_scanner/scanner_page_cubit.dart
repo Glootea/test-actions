@@ -1,14 +1,13 @@
-import 'dart:developer';
-import 'package:queue/data/database/database_service.dart';
-import 'package:queue/data/encryprion.dart';
-import 'package:queue/entities/export.dart';
-import 'package:queue/presentation/screens/main/page/qr_scanner/scanner_states.dart';
-import 'package:queue/presentation/screens/main/page/today_screen/today_screen_cubit.dart';
+part of 'scanner_page.dart';
 
 class ScannerPageCubit extends LoadableCubit<ScannerPageState> {
   final DatabaseService _databaseService;
 
-  ScannerPageCubit(this._databaseService) : super(ScanningState());
+  ScannerPageCubit(this._databaseService) : super(LoadingLibraryState()) {
+    mobile_scanner.loadLibrary().then((lib) {
+      emit(LoadedLibraryState());
+    });
+  }
   Future<void> onScan(String string) async {
     emit(ScannedState());
     final data = string.split('/').last;
