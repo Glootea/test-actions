@@ -43,7 +43,7 @@ class DatabaseService {
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
                 startTime: DateTime.now().copyWith(hour: 18, minute: 30, second: 0, microsecond: 0, millisecond: 0),
-                endTime: DateTime.now().copyWith(hour: 23, minute: 40, second: 0, microsecond: 0, millisecond: 0),
+                endTime: DateTime.now().copyWith(hour: 23, minute: 59, second: 0, microsecond: 0, millisecond: 0),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),

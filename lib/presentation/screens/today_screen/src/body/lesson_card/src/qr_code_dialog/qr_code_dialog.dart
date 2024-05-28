@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:queue/data/encryprion.dart';
 import 'package:queue/entities/export.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/qr_code_dialog/local_share_button.dart';
 
 class QrCodeDialog extends StatelessWidget {
   final QueueRecord queueRecord;
@@ -13,13 +13,13 @@ class QrCodeDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(Platform.operatingSystem);
-
-    return LimitedBox(
-      maxWidth: 400,
+    final data = Encryption.encryct('lorem ipsum dolor sit amet');
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 400),
       child: AlertDialog(
         title: const Text("Загрузка данных без интернета"),
         content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             const Text("Попроси друга отсканировать QR-код чтобы загрузить данные: "),
             Flexible(
@@ -30,7 +30,7 @@ class QrCodeDialog extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: PrettyQrView.data(
-                      data: Encryption.encryct('lorem ipsum dolor sit amet'),
+                      data: data,
                       decoration: const PrettyQrDecoration(background: Colors.white),
                     ),
                   ),
@@ -44,11 +44,11 @@ class QrCodeDialog extends StatelessWidget {
                         children: [
                           const Expanded(
                             child: Text(
-                              "Или поделись ссылкой через LocalShare: ",
+                              "Или поделись ссылкой через Nearby Share: ",
                               maxLines: null,
                             ),
                           ),
-                          TextButton(onPressed: () {}, child: const Text("Поделиться"))
+                          LocalShareButton(data)
                         ],
                       ),
                     "ios" || "macos" => Row(
@@ -59,7 +59,7 @@ class QrCodeDialog extends StatelessWidget {
                               maxLines: null,
                             ),
                           ),
-                          TextButton(onPressed: () {}, child: const Text("Поделиться"))
+                          TextButton(onPressed: () {}, child: LocalShareButton(data))
                         ],
                       ),
                     _ => Container()
