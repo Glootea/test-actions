@@ -4,7 +4,7 @@ import 'package:queue/extension.dart';
 
 part 'queue_record.freezed.dart';
 
-enum QueueRecordStatus {
+enum UploadStatus {
   uploaded('Uploaded'),
   shouldBeUploaded('Should be uploaded'),
   shouldBeDeleted('Should be deleted'),
@@ -14,7 +14,7 @@ enum QueueRecordStatus {
   @override
   String toString() => name;
 
-  const QueueRecordStatus(this.name);
+  const UploadStatus(this.name);
 }
 
 @freezed
@@ -25,14 +25,14 @@ class QueueRecord with _$QueueRecord {
     required String studentName,
     required int studentID,
     required DateTime time,
-    required QueueRecordStatus status,
+    required UploadStatus status,
     int? workCount,
   }) = _QueueRecord;
 
   static QueueRecord parseFromString(String qrData) {
     //TODO: implement NewQueueRecord parseFromString
     return QueueRecord(
-        status: QueueRecordStatus.uploaded,
+        status: UploadStatus.uploaded,
         lesson: Lesson(
             name: "Lesson sample name",
             startTime: DateTime.now(),

@@ -10,6 +10,10 @@ enum StoredValues {
   isUpdatingQueue,
   colorTheme,
   brightness,
+  groupName,
+  headmasterName,
+  useAttendance,
+  adminIDs,
 }
 
 class KeyValueStorage {

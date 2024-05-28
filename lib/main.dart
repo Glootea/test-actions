@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/data/database/sources/online_database/online_database.dart';
+import 'package:queue/domain/group_metainfo/group_metainfo.dart';
 import 'package:queue/domain/theme/theme_cubit.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,10 +31,11 @@ void main() async {
   await (themeCubit.init(), userCubit.init()).wait;
   runApp(MultiBlocProvider(providers: [
     Provider.value(value: databaseService),
-    Provider.value(value: userCubit),
     Provider.value(value: keyValueStorage),
-    Provider.value(value: themeCubit),
-  ], child: BlocProvider.value(value: themeCubit, child: const MyApp())));
+    BlocProvider.value(value: userCubit),
+    BlocProvider.value(value: themeCubit),
+    BlocProvider(create: (_) => GroupMetaInfoCubit(keyValueStorage)),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:queue/data/database/sources/local_database/src/tables.dart';
 import 'package:queue/data/database/sources/local_database/src/connection.dart' as impl;
+import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/entities/src/queue_record.dart';
 
 part 'local_database.g.dart';
 part 'package:queue/data/database/sources/local_database/key_value_storage.dart';
 
-@DriftDatabase(tables: [QueueRecs, Subject, Students, WeeklyLessons, DatedLessons, KeyValueStorageTable])
+@DriftDatabase(tables: [QueueRecs, Subject, Students, WeeklyLessons, DatedLessons, KeyValueStorageTable, Attendance])
 class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(impl.connect());
 
@@ -30,7 +31,7 @@ class LocalDatabase extends _$LocalDatabase {
         .go();
   }
 
-  Future<void> updateQueueRecordUploadStatus(QueueRecord queueRecord, QueueRecordStatus status) async {
+  Future<void> updateQueueRecordUploadStatus(QueueRecord queueRecord, UploadStatus status) async {
     await into(queueRecs).insert(
         QueueRecsCompanion.insert(
             studentRowNumber: queueRecord.studentID,
@@ -53,4 +54,31 @@ class LocalDatabase extends _$LocalDatabase {
 
   Future<void> _clean(StoredValues storedValue) async =>
       await (delete(keyValueStorageTable)..where((tbl) => tbl.key.equals(storedValue.name))).go();
+
+  Future<void> setAttendanded(Lesson lesson) async {
+    await into(attendance).insert(AttendanceCompanion.insert(
+        subjectID: lesson.subjectLocalID,
+        lessonStart: lesson.startTime,
+        dateCreated: DateTime.now(),
+        status: UploadStatus.shouldBeUploaded.name));
+  }
+
+  Future<void> updateAttendanded(Lesson lesson, UploadStatus status) async {
+    await (update(attendance)
+          ..where((tbl) => tbl.subjectID.equals(lesson.subjectLocalID) & tbl.lessonStart.equals(lesson.startTime)))
+        .write(AttendanceCompanion(status: Value(status.name)));
+  }
+
+  Future<void> removeAttendanded(Lesson lesson) async {
+    await (delete(attendance)
+          ..where((tbl) => tbl.subjectID.equals(lesson.subjectLocalID) & tbl.lessonStart.equals(lesson.startTime)))
+        .go();
+  }
+
+  Future<bool> isAttendanded(Lesson lesson) async {
+    final result = await (select(attendance)
+          ..where((tbl) => tbl.subjectID.equals(lesson.subjectLocalID) & tbl.lessonStart.equals(lesson.startTime)))
+        .getSingleOrNull();
+    return result != null;
+  }
 }
