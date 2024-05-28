@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/database_service.dart';
 import 'package:queue/domain/group_metainfo/group_metainfo.dart';
@@ -12,8 +9,8 @@ import 'package:queue/entities/src/queue_record.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson__card_data/lesson_card_data.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/qr_code_dialog/qr_code_dialog.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
 
 enum _ButtonState { add, remove, qrCode, none }
@@ -101,8 +98,9 @@ class _LessonCardState extends State<LessonCard> {
                                 _ButtonState.remove => Icons.remove_outlined,
                                 _ButtonState.none => throw UnimplementedError(),
                               },
-                              onTap: () => switch (buttonState) {
-                                _ButtonState.qrCode => cubit.showQrCode(),
+                              onTap: () async => switch (buttonState) {
+                                _ButtonState.qrCode => await showDialog(
+                                    context: context, builder: (context) => QrCodeDialog(data.queueData!.userRecord!)),
                                 _ButtonState.add => cubit.addQueueRecord(),
                                 _ButtonState.remove => cubit.deleteQueueRecord(),
                                 _ButtonState.none => throw UnimplementedError(),
@@ -124,7 +122,10 @@ class _LessonCardState extends State<LessonCard> {
                             if (useAttendance) const Spacer(),
                             if (useAttendance) Text("Я на паре: ", style: Theme.of(context).textTheme.bodyMedium),
                             if (useAttendance)
-                              Checkbox(value: data.attended, onChanged: (value) => cubit.toggleAttended()),
+                              Checkbox(
+                                  value: data.attended,
+                                  onChanged: (value) => cubit
+                                      .toggleAttended()), // TODO: implement custom checkbox to show error || loading
                           ]),
                         ))
                   ],

@@ -23,7 +23,6 @@ class _CircularUpdateTimerState extends State<CircularUpdateTimer> {
   Timer? timer;
   @override
   void initState() {
-    print("Init CircularUpdateTimer");
     super.initState();
     final future = widget.isUpdatingQueueRequest;
     if (future == null) {
@@ -51,15 +50,20 @@ class _CircularUpdateTimerState extends State<CircularUpdateTimer> {
       if (widget.durationInSeconds - timerValue == 0) {
         widget.onTimeExpired();
       }
-      setState(() => timerValue = (timerValue + 1) % widget.durationInSeconds);
+      if (mounted) {
+        setState(() => timerValue = (timerValue + 1) % widget.durationInSeconds);
+      }
     });
   }
 
   void resetTimer() {
-    setState(() {
-      isUpdating = false;
-      timerValue = 0;
-    });
+    if (mounted) {
+      setState(() {
+        isUpdating = false;
+        timerValue = 0;
+      });
+    }
+
     timer?.cancel();
     timer = null;
   }

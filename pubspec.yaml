@@ -61,7 +61,7 @@ dependencies:
   freezed: ^2.5.2
   freezed_annotation: ^2.4.1
   go_router_builder: ^2.6.0
-  rive: ^0.13.4
+  rive: ^0.13.5
   cached_network_image: ^3.3.1
   auto_route: ^8.1.3
   dynamic_color: ^1.7.0
@@ -94,6 +94,7 @@ flutter:
   assets:
     - assets/panda.png
     - assets/queue.riv
+    - assets/logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

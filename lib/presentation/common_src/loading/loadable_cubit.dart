@@ -1,6 +1,6 @@
 part of 'queue_loading_container.dart';
 
-/// Guide is in [LoadingContainer] discription
+/// Guide is in [LoadingContainer] description
 abstract class LoadableCubit<T extends LoadableState> extends Cubit<T> {
   LoadableCubit(super.initialState);
 

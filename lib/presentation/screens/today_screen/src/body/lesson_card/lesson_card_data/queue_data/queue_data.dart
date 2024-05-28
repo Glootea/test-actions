@@ -20,4 +20,13 @@ class QueueData with _$QueueData {
     }
     return null;
   }
+
+  /// Used for optimistic UI to show updates before it is uploaded to the server
+  QueueData shouldBeUploaded(Lesson lesson, int studentID) {
+    return copyWith(
+        live: false,
+        queueLength: queueLength + 1,
+        userPosition: queueLength + 1,
+        userRecord: QueueRecord.shouldBeUploaded(lesson, studentID));
+  }
 }

@@ -45,5 +45,13 @@ class QueueRecord with _$QueueRecord {
         workCount: 0);
   }
 
+  /// Used for optimistic UI to show updates before it is uploaded to the server
+  factory QueueRecord.shouldBeUploaded(Lesson lesson, int studentID) => QueueRecord(
+      lesson: lesson,
+      studentName: '',
+      studentID: studentID,
+      time: DateTime.now(),
+      status: UploadStatus.shouldBeUploaded);
+
   List<String> get toOnlineRow => [time.toRecTime, workCount.toString()].toOnline;
 }

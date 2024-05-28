@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/entities/src/queue_record.dart';
 import 'package:queue/extension.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson__card_data/queue_data/queue_data.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/queue_data/queue_data.dart';
 part 'lesson_card_data.freezed.dart';
 
 @freezed

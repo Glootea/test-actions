@@ -7,7 +7,7 @@ import 'package:queue/domain/group_metainfo/group_metainfo.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/presentation/screens/today_screen/src/app_bar/circular_update_timer.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/detailed_page/src/queue_record_listtile.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson__card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
 
@@ -28,8 +28,7 @@ class DetailedQueueScreen extends StatelessWidget {
               child: Scaffold(
             body: Padding(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: ListView(
                 children: [
                   InkWell(
                     onTap: () => AutoRouter.of(context).maybePop(),
@@ -72,9 +71,7 @@ class DetailedQueueScreen extends StatelessWidget {
                           )
                         ])
                       ];
-                      return MediaQuery.sizeOf(context).aspectRatio > 1
-                          ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: children)
-                          : Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);
+                      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);
                     },
                   ),
                   Hero(
@@ -92,6 +89,7 @@ class DetailedQueueScreen extends StatelessWidget {
                   Expanded(
                     child: ListView.separated(
                         shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: data.queueData?.queueRecordList.length ?? 0,
                         separatorBuilder: (context, index) => const Divider(),
                         itemBuilder: (context, index) =>

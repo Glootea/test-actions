@@ -14,7 +14,7 @@ class GroupMetaInfoCubit extends Cubit<GroupMetaInfoState> {
   Future<void> init() async {
     await _getLocalData().then((value) => emit(value));
     await Future.delayed(
-        const Duration(seconds: 3),
+        const Duration(seconds: 1),
         () => emit(
             state.copyWith(useAttendance: true))); // TODO: remove after testing and implementing online GroupMetaInfo
   }

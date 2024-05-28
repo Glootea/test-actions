@@ -14,6 +14,14 @@ class Lesson with _$Lesson {
     required String subjectOnlineTableID,
   }) = _Lesson;
 
+  factory Lesson.empty() => Lesson(
+        name: '',
+        startTime: DateTime.now(),
+        endTime: DateTime.now(),
+        subjectLocalID: 0,
+        subjectOnlineTableID: '',
+      );
+
   LessonStatus get status {
     final now = DateTime.now();
     if (startTime.subtract(const Duration(minutes: 5)).isBefore(now) && endTime.isAfter(now)) {
