@@ -20,7 +20,7 @@ mixin _$QueueRecord {
   String get studentName => throw _privateConstructorUsedError;
   int get studentID => throw _privateConstructorUsedError;
   DateTime get time => throw _privateConstructorUsedError;
-  QueueRecordStatus get status => throw _privateConstructorUsedError;
+  UploadStatus get status => throw _privateConstructorUsedError;
   int? get workCount => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -39,7 +39,7 @@ abstract class $QueueRecordCopyWith<$Res> {
       String studentName,
       int studentID,
       DateTime time,
-      QueueRecordStatus status,
+      UploadStatus status,
       int? workCount});
 
   $LessonCopyWith<$Res> get lesson;
@@ -85,7 +85,7 @@ class _$QueueRecordCopyWithImpl<$Res, $Val extends QueueRecord>
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as QueueRecordStatus,
+              as UploadStatus,
       workCount: freezed == workCount
           ? _value.workCount
           : workCount // ignore: cast_nullable_to_non_nullable
@@ -115,7 +115,7 @@ abstract class _$$QueueRecordImplCopyWith<$Res>
       String studentName,
       int studentID,
       DateTime time,
-      QueueRecordStatus status,
+      UploadStatus status,
       int? workCount});
 
   @override
@@ -160,7 +160,7 @@ class __$$QueueRecordImplCopyWithImpl<$Res>
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as QueueRecordStatus,
+              as UploadStatus,
       workCount: freezed == workCount
           ? _value.workCount
           : workCount // ignore: cast_nullable_to_non_nullable
@@ -190,7 +190,7 @@ class _$QueueRecordImpl extends _QueueRecord {
   @override
   final DateTime time;
   @override
-  final QueueRecordStatus status;
+  final UploadStatus status;
   @override
   final int? workCount;
 
@@ -232,7 +232,7 @@ abstract class _QueueRecord extends QueueRecord {
       required final String studentName,
       required final int studentID,
       required final DateTime time,
-      required final QueueRecordStatus status,
+      required final UploadStatus status,
       final int? workCount}) = _$QueueRecordImpl;
   const _QueueRecord._() : super._();
 
@@ -245,7 +245,7 @@ abstract class _QueueRecord extends QueueRecord {
   @override
   DateTime get time;
   @override
-  QueueRecordStatus get status;
+  UploadStatus get status;
   @override
   int? get workCount;
   @override

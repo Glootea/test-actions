@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:queue/data/database/sources/local_database/local_database.dart';
+import 'package:queue/domain/group_metainfo/group_metainfo.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/presentation/screens/today_screen/src/app_bar/circular_update_timer.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/detailed_page/src/queue_record_listtile.dart';
@@ -18,6 +19,7 @@ class DetailedQueueScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool useAttendance = context.select((GroupMetaInfoCubit cubit) => cubit.useAttendance);
     return BlocProvider.value(
         value: cubit,
         child: BlocBuilder<LessonCardCubit, LessonCardData>(builder: (context, data) {
@@ -44,12 +46,20 @@ class DetailedQueueScreen extends StatelessWidget {
                     builder: (context) {
                       final children = [
                         Hero(
-                          tag: "time${data.lesson}",
-                          child: Text(
-                            "${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
+                            tag: "time${data.lesson}",
+                            child: Material(
+                              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                Text(
+                                  '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
+                                  // '16:20 - 17:50 в Г-321',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                if (useAttendance) const Spacer(),
+                                if (useAttendance) Text("Я на паре: ", style: Theme.of(context).textTheme.bodyMedium),
+                                if (useAttendance)
+                                  Checkbox(value: data.attended, onChanged: (value) => cubit.toggleAttended()),
+                              ]),
+                            )),
                         Row(children: [
                           const Text("Обновление: "),
                           Hero(

@@ -2,22 +2,12 @@ import 'package:drift/drift.dart';
 
 class QueueRecs extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get studentRowNumber => integer().references(Students, #rowNumber)();
+  IntColumn get studentRowNumber => integer().references(Students, #id)();
   IntColumn get subjectID => integer().references(Subject, #id)();
   DateTimeColumn get time => dateTime()();
   TextColumn get status => text()();
   IntColumn get workCount => integer().nullable()();
 }
-
-// @Deprecated("Use QueueRecs instead")
-// class Recs extends Table {
-//   IntColumn get id => integer().autoIncrement()();
-//   IntColumn get studentID => integer().references(Students, #rowNumber)();
-//   IntColumn get lessonID => integer().references(Lessons, #id)();
-//   DateTimeColumn get time => dateTime()();
-//   IntColumn get uploaded => integer()();
-//   IntColumn get workCount => integer().nullable()();
-// }
 
 class Subject extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -57,4 +47,12 @@ class KeyValueStorageTable extends Table {
   TextColumn get value => text()();
   @override
   Set<Column> get primaryKey => {key};
+}
+
+class Attendance extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get subjectID => integer()();
+  DateTimeColumn get lessonStart => dateTime()();
+  DateTimeColumn get dateCreated => dateTime()();
+  TextColumn get status => text()();
 }

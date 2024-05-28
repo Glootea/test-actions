@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$LessonCardData {
   Lesson get lesson => throw _privateConstructorUsedError;
+  bool get attended => throw _privateConstructorUsedError;
   QueueData? get queueData => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -30,7 +31,7 @@ abstract class $LessonCardDataCopyWith<$Res> {
           LessonCardData value, $Res Function(LessonCardData) then) =
       _$LessonCardDataCopyWithImpl<$Res, LessonCardData>;
   @useResult
-  $Res call({Lesson lesson, QueueData? queueData});
+  $Res call({Lesson lesson, bool attended, QueueData? queueData});
 
   $LessonCopyWith<$Res> get lesson;
   $QueueDataCopyWith<$Res>? get queueData;
@@ -50,6 +51,7 @@ class _$LessonCardDataCopyWithImpl<$Res, $Val extends LessonCardData>
   @override
   $Res call({
     Object? lesson = null,
+    Object? attended = null,
     Object? queueData = freezed,
   }) {
     return _then(_value.copyWith(
@@ -57,6 +59,10 @@ class _$LessonCardDataCopyWithImpl<$Res, $Val extends LessonCardData>
           ? _value.lesson
           : lesson // ignore: cast_nullable_to_non_nullable
               as Lesson,
+      attended: null == attended
+          ? _value.attended
+          : attended // ignore: cast_nullable_to_non_nullable
+              as bool,
       queueData: freezed == queueData
           ? _value.queueData
           : queueData // ignore: cast_nullable_to_non_nullable
@@ -93,7 +99,7 @@ abstract class _$$LessonCardDataImplCopyWith<$Res>
       __$$LessonCardDataImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Lesson lesson, QueueData? queueData});
+  $Res call({Lesson lesson, bool attended, QueueData? queueData});
 
   @override
   $LessonCopyWith<$Res> get lesson;
@@ -113,6 +119,7 @@ class __$$LessonCardDataImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? lesson = null,
+    Object? attended = null,
     Object? queueData = freezed,
   }) {
     return _then(_$LessonCardDataImpl(
@@ -120,6 +127,10 @@ class __$$LessonCardDataImplCopyWithImpl<$Res>
           ? _value.lesson
           : lesson // ignore: cast_nullable_to_non_nullable
               as Lesson,
+      attended: null == attended
+          ? _value.attended
+          : attended // ignore: cast_nullable_to_non_nullable
+              as bool,
       queueData: freezed == queueData
           ? _value.queueData
           : queueData // ignore: cast_nullable_to_non_nullable
@@ -131,17 +142,20 @@ class __$$LessonCardDataImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$LessonCardDataImpl extends _LessonCardData {
-  const _$LessonCardDataImpl({required this.lesson, required this.queueData})
+  const _$LessonCardDataImpl(
+      {required this.lesson, required this.attended, required this.queueData})
       : super._();
 
   @override
   final Lesson lesson;
   @override
+  final bool attended;
+  @override
   final QueueData? queueData;
 
   @override
   String toString() {
-    return 'LessonCardData(lesson: $lesson, queueData: $queueData)';
+    return 'LessonCardData(lesson: $lesson, attended: $attended, queueData: $queueData)';
   }
 
   @override
@@ -150,12 +164,14 @@ class _$LessonCardDataImpl extends _LessonCardData {
         (other.runtimeType == runtimeType &&
             other is _$LessonCardDataImpl &&
             (identical(other.lesson, lesson) || other.lesson == lesson) &&
+            (identical(other.attended, attended) ||
+                other.attended == attended) &&
             (identical(other.queueData, queueData) ||
                 other.queueData == queueData));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, lesson, queueData);
+  int get hashCode => Object.hash(runtimeType, lesson, attended, queueData);
 
   @JsonKey(ignore: true)
   @override
@@ -168,11 +184,14 @@ class _$LessonCardDataImpl extends _LessonCardData {
 abstract class _LessonCardData extends LessonCardData {
   const factory _LessonCardData(
       {required final Lesson lesson,
+      required final bool attended,
       required final QueueData? queueData}) = _$LessonCardDataImpl;
   const _LessonCardData._() : super._();
 
   @override
   Lesson get lesson;
+  @override
+  bool get attended;
   @override
   QueueData? get queueData;
   @override

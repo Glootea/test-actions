@@ -19,30 +19,31 @@ class DatabaseService {
         const Duration(milliseconds: 100),
         () => [
               Lesson(
-                name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime.now().copyWith(hour: 10, minute: 30),
-                endTime: DateTime.now().copyWith(hour: 11, minute: 40),
+                name:
+                    "АКМС (Анализ и концептуальное моделирование систем)", // startTime MUST be set to microseconds due to attendance
+                startTime: DateTime.now().copyWith(hour: 10, minute: 30, second: 0, microsecond: 0, millisecond: 0),
+                endTime: DateTime.now().copyWith(hour: 11, minute: 40, second: 0, microsecond: 0, millisecond: 0),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime.now().copyWith(hour: 12, minute: 30),
-                endTime: DateTime.now().copyWith(hour: 13, minute: 40),
+                startTime: DateTime.now().copyWith(hour: 12, minute: 30, second: 0, microsecond: 0, millisecond: 0),
+                endTime: DateTime.now().copyWith(hour: 13, minute: 40, second: 0, microsecond: 0, millisecond: 0),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime.now().copyWith(hour: 15, minute: 30),
-                endTime: DateTime.now().copyWith(hour: 16, minute: 40),
+                startTime: DateTime.now().copyWith(hour: 15, minute: 30, second: 0, microsecond: 0, millisecond: 0),
+                endTime: DateTime.now().copyWith(hour: 16, minute: 40, second: 0, microsecond: 0, millisecond: 0),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime.now().copyWith(hour: 18, minute: 30),
-                endTime: DateTime.now().copyWith(hour: 23, minute: 40),
+                startTime: DateTime.now().copyWith(hour: 18, minute: 30, second: 0, microsecond: 0, millisecond: 0),
+                endTime: DateTime.now().copyWith(hour: 23, minute: 40, second: 0, microsecond: 0, millisecond: 0),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
               ),
@@ -64,19 +65,19 @@ class DatabaseService {
                   studentName: "Рыбкин Александр",
                   studentID: 1,
                   time: DateTime.now().subtract(const Duration(days: 1)),
-                  status: QueueRecordStatus.uploaded),
+                  status: UploadStatus.uploaded),
               QueueRecord(
                   lesson: lesson,
                   studentName: "Лянной Артем",
                   studentID: 1,
                   time: DateTime.now().subtract(const Duration(days: 2)),
-                  status: QueueRecordStatus.uploaded),
+                  status: UploadStatus.uploaded),
               QueueRecord(
                   lesson: lesson,
                   studentName: "Софья Бобылева",
                   studentID: 1,
                   time: DateTime.now().subtract(const Duration(hours: 2)),
-                  status: QueueRecordStatus.uploaded),
+                  status: UploadStatus.uploaded),
             ]);
   }
 
@@ -84,7 +85,7 @@ class DatabaseService {
   async {
     final uploaded = await _onlineDataBase.addNewQueueRecord(queueRecord);
     if (uploaded) {
-      queueRecord = queueRecord.copyWith(status: QueueRecordStatus.uploaded);
+      queueRecord = queueRecord.copyWith(status: UploadStatus.uploaded);
       await _localDatabase.addQueueRecord(queueRecord);
       return true;
     }
@@ -96,12 +97,27 @@ class DatabaseService {
     if (deleted) {
       _localDatabase.deleteQueueRecord(queueRecord);
     } else {
-      await _localDatabase.updateQueueRecordUploadStatus(queueRecord, QueueRecordStatus.shouldBeDeleted);
+      await _localDatabase.updateQueueRecordUploadStatus(queueRecord, UploadStatus.shouldBeDeleted);
     }
   }
 
   Lesson getLesson(int subjectLocalID) {
     // TODO: implement getLesson by subjectLocalID
     throw UnimplementedError();
+  }
+
+  Future<void> setAttendanded(Lesson lesson) async {
+    await _localDatabase.setAttendanded(lesson);
+    //TODO: add online upload
+  }
+
+  Future<void> removeAttendanded(Lesson lesson) async {
+    await _localDatabase.removeAttendanded(lesson);
+    //TODO: add online upload
+  }
+
+  Future<bool> isAttendanded(Lesson lesson) async {
+    return _localDatabase.isAttendanded(lesson);
+    //TODO: add online upload
   }
 }

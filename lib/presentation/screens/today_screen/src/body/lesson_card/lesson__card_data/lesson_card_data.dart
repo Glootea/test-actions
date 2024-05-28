@@ -10,6 +10,7 @@ class LessonCardData with _$LessonCardData {
   const LessonCardData._();
   const factory LessonCardData({
     required Lesson lesson,
+    required bool attended,
     required QueueData? queueData,
   }) = _LessonCardData;
 
@@ -17,10 +18,9 @@ class LessonCardData with _$LessonCardData {
         // user, lesson
         (null, LessonStatus status) when status != LessonStatus.active && status != LessonStatus.soon =>
           'Вы не находитесь в очереди',
-        (QueueRecordStatus.uploaded, _) =>
-          'Вы ${queueData?.userPosition} в очереди после ${queueData?.previousStudentName}',
-        (QueueRecordStatus status, _)
-            when status == QueueRecordStatus.shouldBeUploaded || status == QueueRecordStatus.shouldBeDeleted =>
+        (UploadStatus.uploaded, _) => 'Вы ${queueData?.userPosition} в очереди после ${queueData?.previousStudentName}',
+        (UploadStatus status, _)
+            when status == UploadStatus.shouldBeUploaded || status == UploadStatus.shouldBeDeleted =>
           'Ошибка сети',
         (_, LessonStatus.soon) => 'Очередь начнется в ${lesson.queueStartTime.toDisplayTime}',
         (_, LessonStatus.active) => 'Очередь началась!',
@@ -28,5 +28,5 @@ class LessonCardData with _$LessonCardData {
             '${queueData?.userRecord?.status}, ${lesson.status} is unknown status to get LessonCardData\'s message')
       };
 
-  QueueRecordStatus? get queueRecordStatus => queueData?.userRecord?.status;
+  UploadStatus? get queueRecordStatus => queueData?.userRecord?.status;
 }

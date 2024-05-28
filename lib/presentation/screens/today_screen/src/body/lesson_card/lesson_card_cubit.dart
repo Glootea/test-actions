@@ -11,14 +11,15 @@ class LessonCardCubit extends Cubit<LessonCardData> {
   final DatabaseService _databaseService;
   final UserCubit _userCubit;
   LessonCardCubit(this._lesson, this._databaseService, this._userCubit)
-      : super(LessonCardData(lesson: _lesson, queueData: null)) {
+      : super(LessonCardData(lesson: _lesson, queueData: null, attended: false)) {
     fetchQueue();
   }
 
   Future<void> fetchQueue() async {
-    final queue = await _databaseService.getLocalQueueRecordList(_lesson);
+    final (queue, attended) =
+        await (_databaseService.getLocalQueueRecordList(_lesson), _databaseService.isAttendanded(_lesson)).wait;
     final data = parseQueueRecordList(queue, false);
-    emit(state.copyWith(queueData: data));
+    emit(state.copyWith(queueData: data, attended: attended));
     final queueOnlineData = await _databaseService.fetchQueueRecordList(_lesson);
     if (queueOnlineData != null) {
       final onlineData = parseQueueRecordList(queue, true);
@@ -56,5 +57,16 @@ class LessonCardCubit extends Cubit<LessonCardData> {
       userRecord: userQueueRecord,
       live: live,
     );
+  }
+
+  Future<void> toggleAttended() async {
+    final prevAttended = state.attended;
+    final currentAttended = !prevAttended;
+    emit(state.copyWith(attended: currentAttended));
+    if (currentAttended) {
+      await _databaseService.setAttendanded(_lesson);
+    } else {
+      await _databaseService.removeAttendanded(_lesson);
+    }
   }
 }

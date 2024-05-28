@@ -27,7 +27,7 @@ class WeeklyLessonEntity extends LessonTime with _$WeeklyLessonEntity {
     row = row.fromOnline;
     return WeeklyLessonEntity(
       id: int.parse(row[0]),
-      weekdays: row[2].toWeekDays,
+      weekdays: row[2].toIntList,
       startTime: row[2].toTimeOfDay,
       endTime: row[3].toTimeOfDay,
     );

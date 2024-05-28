@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/database_service.dart';
+import 'package:queue/domain/group_metainfo/group_metainfo.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/entities/src/queue_record.dart';
@@ -36,16 +40,16 @@ class _LessonCardState extends State<LessonCard> {
 
   @override
   Widget build(BuildContext context) {
+    final bool useAttendance = context.select((GroupMetaInfoCubit cubit) => cubit.useAttendance);
     return BlocProvider.value(
       value: cubit,
       child: BlocBuilder<LessonCardCubit, LessonCardData>(builder: (context, data) {
-        final bloc = context.read<LessonCardCubit>();
         final userQueueRecordStatus = data.queueRecordStatus;
         final buttonState = switch ((data.lesson.status, userQueueRecordStatus)) {
-          (_, QueueRecordStatus.shouldBeUploaded) => _ButtonState.qrCode,
+          (_, UploadStatus.shouldBeUploaded) => _ButtonState.qrCode,
           (LessonStatus.active, null) => _ButtonState.add,
-          (LessonStatus.active, QueueRecordStatus.uploaded) ||
-          (LessonStatus.active, QueueRecordStatus.shouldBeUploaded) =>
+          (LessonStatus.active, UploadStatus.uploaded) ||
+          (LessonStatus.active, UploadStatus.shouldBeUploaded) =>
             _ButtonState.remove,
           (_, _) => _ButtonState.none
         };
@@ -58,76 +62,73 @@ class _LessonCardState extends State<LessonCard> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: SizedBox(
-                          height: 64,
-                          child: Align(
-                            alignment: const AlignmentDirectional(-1, 0),
-                            child: Hero(
-                              tag: "headline${widget.lesson}",
-                              child: Text(
-                                data.lesson.name,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w400),
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: SizedBox(
+                            height: 64,
+                            child: Align(
+                              alignment: const AlignmentDirectional(-1, 0),
+                              child: Hero(
+                                tag: "headline${widget.lesson}",
+                                child: Text(
+                                  data.lesson.name,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w400),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      if (buttonState != _ButtonState.none)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: LessonCardButton(
-                            icon: switch (buttonState) {
-                              _ButtonState.qrCode => Icons.qr_code_outlined,
-                              _ButtonState.add => Icons.add,
-                              _ButtonState.remove => Icons.remove_outlined,
-                              _ButtonState.none => throw UnimplementedError(),
-                            },
-                            onTap: () => switch (buttonState) {
-                              _ButtonState.qrCode => bloc.showQrCode(),
-                              _ButtonState.add => bloc.addQueueRecord(),
-                              _ButtonState.remove => bloc.deleteQueueRecord(),
-                              _ButtonState.none => throw UnimplementedError(),
-                            },
+                        if (buttonState != _ButtonState.none)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: LessonCardButton(
+                              icon: switch (buttonState) {
+                                _ButtonState.qrCode => Icons.qr_code_outlined,
+                                _ButtonState.add => Icons.add,
+                                _ButtonState.remove => Icons.remove_outlined,
+                                _ButtonState.none => throw UnimplementedError(),
+                              },
+                              onTap: () => switch (buttonState) {
+                                _ButtonState.qrCode => cubit.showQrCode(),
+                                _ButtonState.add => cubit.addQueueRecord(),
+                                _ButtonState.remove => cubit.deleteQueueRecord(),
+                                _ButtonState.none => throw UnimplementedError(),
+                              },
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Hero(
-                        tag: "time${data.lesson}",
-                        child: Text(
-                          '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
-                          // '16:20 - 17:50 в Г-321',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Hero(
-                    tag: "progressIndicator${widget.lesson}",
-                    child: LabeledLinearProgressIndicator(
-                      startValue: 0,
-                      currentValue: data.queueData?.userPosition,
-                      endValue: data.queueData?.queueLength,
-                      message: data.message,
-                      key: ObjectKey(bloc),
+                      ],
                     ),
-                  ),
-                ],
+                    Hero(
+                        tag: "time${data.lesson}",
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Text(
+                              '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
+                              // '16:20 - 17:50 в Г-321',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            if (useAttendance) const Spacer(),
+                            if (useAttendance) Text("Я на паре: ", style: Theme.of(context).textTheme.bodyMedium),
+                            if (useAttendance)
+                              Checkbox(value: data.attended, onChanged: (value) => cubit.toggleAttended()),
+                          ]),
+                        ))
+                  ],
+                ),
               ),
             ),
           ),

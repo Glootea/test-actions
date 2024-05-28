@@ -18,7 +18,7 @@ extension TimeFromString on String {
 
   List<DateTime> get toDatesList => split(',').map((e) => e.toDate).toList();
 
-  List<int> get toWeekDays => split(',').map((e) => int.parse(e)).toList();
+  List<int> get toIntList => split(',').map((e) => int.parse(e)).toList();
 }
 
 extension DateToString on DateTime {
