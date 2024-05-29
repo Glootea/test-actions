@@ -12,11 +12,9 @@ class LocalShareButton extends StatelessWidget {
     return TextButton(
         onPressed: () async {
           try {
-            final result = await platform.invokeMethod<bool>('share', {"text": data}) ?? false;
-            if (result && context.mounted) {
-              context.maybePop();
-            }
-          } on PlatformException catch (e) {
+            final result = await platform.invokeMethod<String>('share', {"text": data}) ?? false;
+            print(result);
+          } catch (e) {
             debugPrint(e.toString());
           }
         },

@@ -21,7 +21,7 @@ class DatabaseService {
               Lesson(
                 name:
                     "АКМС (Анализ и концептуальное моделирование систем)", // startTime MUST be set to microseconds due to attendance
-                startTime: DateTime.now().copyWith(hour: 10, minute: 30, second: 0, microsecond: 0, millisecond: 0),
+                startTime: DateTime.now().copyWith(hour: 8, minute: 30, second: 0, microsecond: 0, millisecond: 0),
                 endTime: DateTime.now().copyWith(hour: 11, minute: 40, second: 0, microsecond: 0, millisecond: 0),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',
@@ -35,7 +35,7 @@ class DatabaseService {
               ),
               Lesson(
                 name: "АКМС (Анализ и концептуальное моделирование систем)",
-                startTime: DateTime.now().copyWith(hour: 15, minute: 30, second: 0, microsecond: 0, millisecond: 0),
+                startTime: DateTime.now().copyWith(hour: 13, minute: 30, second: 0, microsecond: 0, millisecond: 0),
                 endTime: DateTime.now().copyWith(hour: 16, minute: 40, second: 0, microsecond: 0, millisecond: 0),
                 subjectLocalID: 0,
                 subjectOnlineTableID: '4566',

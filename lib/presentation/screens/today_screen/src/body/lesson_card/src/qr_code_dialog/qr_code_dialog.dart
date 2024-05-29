@@ -13,7 +13,9 @@ class QrCodeDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = Encryption.encryct('lorem ipsum dolor sit amet');
+    // final data = Encryption.encryct('lorem ipsum dolor sit amet');
+    final data = "https://www.google.com";
+
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 400),
       child: AlertDialog(
@@ -59,7 +61,7 @@ class QrCodeDialog extends StatelessWidget {
                               maxLines: null,
                             ),
                           ),
-                          TextButton(onPressed: () {}, child: LocalShareButton(data))
+                          LocalShareButton(data)
                         ],
                       ),
                     _ => Container()
