@@ -6,16 +6,16 @@ import 'package:queue/entities/src/subject.dart';
 import 'package:queue/extension.dart';
 
 class OnlineDataBase {
-  final GSheets _gsheets = GSheets(const String.fromEnvironment("CREDENTIALS"));
+  final GSheets _gsheets = GSheets(const String.fromEnvironment('CREDENTIALS'));
 
   /// {SpreadsheetID: Spreadsheet}
   final Map<String, Spreadsheet?> _spreadsheets = {};
 
   String? _infoTableIDBacked;
-  set _infoTableID(String tableID) => _infoTableIDBacked = tableID;
+  // set _infoTableID(String tableID) => _infoTableIDBacked = tableID;
   String get _getInfoTableID {
     if (_infoTableIDBacked == null) {
-      throw Exception("OnlineDatabase is not configured: infoTableID is null");
+      throw Exception('OnlineDatabase is not configured: infoTableID is null');
     }
     return _infoTableIDBacked!;
   }
@@ -31,7 +31,7 @@ class OnlineDataBase {
 
   /// Sets and configures (if necessary) infoTable spreadsheet
   Future<void> initialize(String infoTableID) async {
-    _infoTableID = infoTableID;
+    _infoTableIDBacked = infoTableID;
     final infoSpreadsheet = await _getSpreadsheet(infoTableID);
     if (await _infoSpreadsheetConfigured(infoSpreadsheet) == false) {
       await _createInfoFileBase(infoSpreadsheet);
@@ -39,10 +39,10 @@ class OnlineDataBase {
     _spreadsheets[infoTableID] = infoSpreadsheet;
   }
 
-  Future<bool> _infoSpreadsheetConfigured(Spreadsheet infoSpreadsheet) async => (infoSpreadsheet.sheets
+  Future<bool> _infoSpreadsheetConfigured(Spreadsheet infoSpreadsheet) async => infoSpreadsheet.sheets
       .map((e) => e.title)
       .toSet()
-      .containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName]));
+      .containsAll([_infoSheetName, _namesSheetName, _lessonsSheetName, _lessonTimesSheetName]);
 
   Future<void> _createInfoFileBase(Spreadsheet spreadsheet) async {
     Future<List<Worksheet>> addWorkSheets(Spreadsheet spreadsheet) async {
@@ -63,7 +63,7 @@ class OnlineDataBase {
       await Future.wait([fillNames, fillLessonTimes, fillLessons, fillInfo1, fillInfo2]);
     }
 
-    List<Worksheet> result = await addWorkSheets(spreadsheet);
+    final result = await addWorkSheets(spreadsheet);
     await _deleteDefaultWorkSheet(spreadsheet);
     await fillWorkSheets(result);
   }
@@ -131,7 +131,7 @@ class OnlineDataBase {
     final spreadsheet = await _getSpreadsheet(_getInfoTableID);
     final worksheet = spreadsheet.worksheetByTitle(_lessonsSheetName);
     final data = await worksheet!.values.allRows(fromRow: 2);
-    final subjectList = data.map((row) => Subject.fromRow(row)).toList();
+    final subjectList = data.map(Subject.fromRow).toList();
     return subjectList;
   }
 
@@ -139,7 +139,7 @@ class OnlineDataBase {
     final spreadsheet = await _getSpreadsheet(_getInfoTableID);
     final worksheet = spreadsheet.worksheetByTitle(_lessonTimesSheetName);
     final data = await worksheet!.values.allRows(fromRow: 2);
-    final lessonTimeList = data.map((row) => _parseLessonTime(row)).toList();
+    final lessonTimeList = data.map(_parseLessonTime).toList();
     return lessonTimeList;
   }
 
@@ -156,8 +156,12 @@ class OnlineDataBase {
     return data;
   }
 
-  Future<void> writeRec(
-      {required String tableID, required int rowNumber, required DateTime time, int? workCount}) async {
+  Future<void> writeRec({
+    required String tableID,
+    required int rowNumber,
+    required DateTime time,
+    int? workCount,
+  }) async {
     final row = [time.toRecTime, workCount?.toString() ?? ''].toOnline; // TODO: maybe rework to pass recOnline object
     final spreadsheet = await _getSpreadsheet(tableID);
     final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
@@ -188,7 +192,7 @@ class OnlineDataBase {
     try {
       final spreadsheet = await _getSpreadsheet(queueRecord.lesson.subjectOnlineTableID);
       final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
-      queueWorksheet!.values.insertRow(queueRecord.studentID, queueRecord.toOnlineRow);
+      await queueWorksheet!.values.insertRow(queueRecord.studentID, queueRecord.toOnlineRow);
       return true;
     } catch (e) {
       log(e.toString());
@@ -201,7 +205,7 @@ class OnlineDataBase {
       final spreadsheet = await _getSpreadsheet(queueRecord.lesson.subjectOnlineTableID);
       final queueWorksheet = spreadsheet.worksheetByTitle(_queueSheetName);
       final row = ['', queueRecord.workCount.toString()].toOnline;
-      queueWorksheet!.values.insertRow(queueRecord.studentID, row);
+      await queueWorksheet!.values.insertRow(queueRecord.studentID, row);
       return true;
     } catch (e) {
       log(e.toString());
@@ -225,11 +229,11 @@ const String _nameSurname = 'Name/Surname';
 const String _name = 'Name';
 const String _tableID = 'tableID';
 const String _infoTableIDString = 'infoTableID';
-const String _useDoneWorkCount = "Use done work count";
-const String _workCount = "Work Count";
-const String _autodelete = "Auto delete";
-const String _lastDelete = "Last delete";
-const String _dates = "Dates";
-const String _weekdays = "Weekdays";
-const String _startTime = "Start time";
-const String _endTime = "End time";
+const String _useDoneWorkCount = 'Use done work count';
+const String _workCount = 'Work Count';
+const String _autodelete = 'Auto delete';
+const String _lastDelete = 'Last delete';
+const String _dates = 'Dates';
+const String _weekdays = 'Weekdays';
+const String _startTime = 'Start time';
+const String _endTime = 'End time';

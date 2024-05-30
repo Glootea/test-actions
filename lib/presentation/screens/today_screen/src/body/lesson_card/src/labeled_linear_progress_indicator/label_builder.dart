@@ -1,20 +1,20 @@
 part of 'labeled_linear_progress_indicator.dart';
 
 class _LabelBuilder extends LeafRenderObjectWidget {
+  const _LabelBuilder({
+    required this.message,
+    required this.style,
+    this.value,
+    this.valuePresentation,
+    this.expandIcon,
+    this.iconSize,
+  });
   final String? message;
   final String? valuePresentation;
   final double? value;
   final TextStyle? style;
   final IconData? expandIcon;
   final double? iconSize;
-  const _LabelBuilder({
-    required this.message,
-    this.value,
-    this.valuePresentation,
-    required this.style,
-    this.expandIcon,
-    this.iconSize,
-  });
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -30,35 +30,25 @@ class _LabelBuilder extends LeafRenderObjectWidget {
 
   @override
   void updateRenderObject(BuildContext context, _LabelRenderObject renderObject) {
-    renderObject.message = message;
-    renderObject.value = value;
-    renderObject.style = style;
-    renderObject.valuePresentation = valuePresentation;
-    renderObject.expandIcon = expandIcon;
+    renderObject
+      ..message = message
+      ..value = value
+      ..style = style
+      ..valuePresentation = valuePresentation
+      ..expandIcon = expandIcon;
     super.updateRenderObject(context, renderObject);
   }
 }
 
 class _LabelRenderObject extends RenderBox {
-  late String? _message;
-  late double? _value;
-  late String? _valuePresentation;
-  late TextStyle? _style;
-
-  late TextPainter _messagePainter;
-  late TextPainter _valuePainter;
-
-  late IconData? _expandIcon;
-  late double? _iconSize;
-  late TextPainter? _iconPainter;
-
-  _LabelRenderObject(
-      {required String? message,
-      required double? value,
-      required String? valuePresentation,
-      required TextStyle? style,
-      required IconData? expandIcon,
-      required double? iconSize}) {
+  _LabelRenderObject({
+    required String? message,
+    required double? value,
+    required String? valuePresentation,
+    required TextStyle? style,
+    required IconData? expandIcon,
+    required double? iconSize,
+  }) {
     _message = message;
     _value = value;
     _style = style;
@@ -72,6 +62,17 @@ class _LabelRenderObject extends RenderBox {
       _iconPainter = TextPainter(text: iconTextSpan, textDirection: TextDirection.ltr);
     }
   }
+  late String? _message;
+  late double? _value;
+  late String? _valuePresentation;
+  late TextStyle? _style;
+
+  late TextPainter _messagePainter;
+  late TextPainter _valuePainter;
+
+  late IconData? _expandIcon;
+  late double? _iconSize;
+  late TextPainter? _iconPainter;
 
   String? get message => _message;
   set message(String? value) {
@@ -130,8 +131,9 @@ class _LabelRenderObject extends RenderBox {
   TextSpan get messageTextSpan => TextSpan(text: _message, style: _style);
   TextSpan get valueTextSpan => TextSpan(text: _valuePresentation, style: _style);
   TextSpan get iconTextSpan => TextSpan(
-      text: String.fromCharCode(expandIcon!.codePoint),
-      style: TextStyle(fontSize: _iconSize, fontFamily: expandIcon!.fontFamily));
+        text: String.fromCharCode(expandIcon!.codePoint),
+        style: TextStyle(fontSize: _iconSize, fontFamily: expandIcon!.fontFamily),
+      );
 
   double _longestLineWidth = 0;
   late double _lineHeight = _iconSize ?? 24;
@@ -158,8 +160,10 @@ class _LabelRenderObject extends RenderBox {
 
     if (_value == null || _valuePresentation == null) {
       _iconFitLastLine = _lastLineWidth < constraints.maxWidth - (_iconSize ?? 0) - padding;
-      size = Size(constraints.maxWidth,
-          padding + _lineHeight * (_numMessageLines + (_iconFitLastLine ? 0 : 1))); // TODO: will cause error
+      size = Size(
+        constraints.maxWidth,
+        padding + _lineHeight * (_numMessageLines + (_iconFitLastLine ? 0 : 1)),
+      ); // TODO: will cause error
       return;
     } else {
       _valuePainter.layout(maxWidth: constraints.maxWidth);
@@ -169,7 +173,7 @@ class _LabelRenderObject extends RenderBox {
     _valuePosition = _value! * constraints.maxWidth + _valueWidth;
     _messageFitsLeft = _longestLineWidth < _valuePosition - padding - _valueWidth;
     if (_iconSize != null) {
-      double maxOcupiedWidth = 0;
+      var maxOcupiedWidth = 0.0;
       if (_value != null || _valuePresentation != null) {
         maxOcupiedWidth = max(_valuePosition + _valueWidth, maxOcupiedWidth);
       }
@@ -183,9 +187,9 @@ class _LabelRenderObject extends RenderBox {
       _iconFitLastLine = maxOcupiedWidth < constraints.maxWidth - _iconSize!;
     }
 
-    int additionaLines = (_messageFitsLeft ? 0 : 1) + (_iconFitLastLine ? 0 : 1);
+    final additionaLines = (_messageFitsLeft ? 0 : 1) + (_iconFitLastLine ? 0 : 1);
     _messageHeight = _lineHeight * (_numMessageLines + additionaLines);
-    Size computedSize = Size(constraints.maxWidth, _messageHeight);
+    final computedSize = Size(constraints.maxWidth, _messageHeight);
 
     size = constraints.constrain(computedSize);
   }
@@ -210,7 +214,7 @@ class _LabelRenderObject extends RenderBox {
 
     if (expandIcon != null && _iconSize != null && _iconPainter != null) {
       _iconPainter!.layout();
-      double initialIconHeight = (_messageFitsLeft ? 0 : _lineHeight) +
+      var initialIconHeight = (_messageFitsLeft ? 0 : _lineHeight) +
           (_iconFitLastLine ? 0 : _lineHeight) +
           _lineHeight * _numMessageLines -
           _iconSize! / 2 -
@@ -218,12 +222,13 @@ class _LabelRenderObject extends RenderBox {
       if (_value == null) initialIconHeight += padding;
 
       _iconPainter!.paint(
-          context.canvas,
-          offset +
-              Offset(
-                constraints.maxWidth - _iconSize!,
-                initialIconHeight,
-              ));
+        context.canvas,
+        offset +
+            Offset(
+              constraints.maxWidth - _iconSize!,
+              initialIconHeight,
+            ),
+      );
     }
   }
 }

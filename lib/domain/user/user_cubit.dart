@@ -5,9 +5,9 @@ import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/domain/user/user.dart';
 
 class UserCubit extends Cubit<User?> {
+  UserCubit(this._storage) : super(null);
   final KeyValueStorage _storage;
   bool _inited = false;
-  UserCubit(this._storage) : super(null);
 
   Future<void> init() async {
     final (userName, rowNumberString, isAdmin) = await (
@@ -18,7 +18,7 @@ class UserCubit extends Cubit<User?> {
     if (rowNumberString == null || userName == null) return;
     final rowNumber = int.parse(rowNumberString);
     emit(User(name: userName, id: rowNumber, isAdmin: isAdmin == 'true'));
-    log("User cubit initialized: $state");
+    log('User cubit initialized: $state');
     _inited = true;
   }
 
@@ -34,7 +34,7 @@ class UserCubit extends Cubit<User?> {
       _storage.set(StoredValues.userRowNumber, rowNumber.toString()),
       _storage.set(StoredValues.userIsAdmin, isAdmin.toString())
     ).wait;
-    log("User cubit state changed: $state");
+    log('User cubit state changed: $state');
   }
 
   Future<void> logout() async {

@@ -1,9 +1,9 @@
 part of 'queue_loading_container.dart';
 
 class LoadingAnimation extends StatefulWidget {
+  const LoadingAnimation({required this.state, required this.afterAnimationEnd, super.key});
   final LoadingState state;
   final VoidCallback afterAnimationEnd;
-  const LoadingAnimation({required this.state, required this.afterAnimationEnd, super.key});
 
   @override
   State<LoadingAnimation> createState() => _TempLoadingAnimationState();
@@ -27,7 +27,7 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
 
     controller.findInput<bool>('to background')?.value = false;
 
-    endTrigger = controller.findInput<bool>('to end') as SMIBool;
+    endTrigger = controller.findInput<bool>('to end')! as SMIBool;
   }
 
   void _onRiveStateChange(String stateMachineName, String stateName) {
@@ -66,12 +66,12 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
     return RiveAnimation.asset(
       'assets/queue.riv', //TODO: change exit animation speed to 1.5
       stateMachines: const ['main'],
-      onInit: (artboard) => _onRiveInit(artboard),
+      onInit: _onRiveInit,
     );
   }
 }
 
-@Deprecated("Remove when rive is supported in wasm and windows")
+@Deprecated('Remove when rive is supported in wasm and windows')
 class _TempLoadingAnimationState extends _LoadingAnimationState {
   @override
   Widget build(BuildContext context) {

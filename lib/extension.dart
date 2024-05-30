@@ -2,28 +2,28 @@ import 'package:flutter/material.dart';
 
 extension TimeFromString on String {
   TimeOfDay get toTimeOfDay {
-    final List<int> a = split('(').last.split(')').first.split(':').map((e) => int.parse(e)).toList();
+    final a = split('(').last.split(')').first.split(':').map(int.parse).toList();
     return TimeOfDay(hour: a[0], minute: a[1]);
   }
 
   DateTime get toRecDateTime {
-    List<int> list = split('-').map((e) => int.parse(e)).toList();
+    final list = split('-').map(int.parse).toList();
     return DateTime(list[0], list[1], list[2], list[3], list[4], list[5], list[6]);
   }
 
   DateTime get toDate {
-    final numbers = split('.').map((e) => int.parse(e)).toList();
+    final numbers = split('.').map(int.parse).toList();
     return DateTime(numbers[2], numbers[1], numbers[0]);
   }
 
   List<DateTime> get toDatesList => split(',').map((e) => e.toDate).toList();
 
-  List<int> get toIntList => split(',').map((e) => int.parse(e)).toList();
+  List<int> get toIntList => split(',').map(int.parse).toList();
 }
 
 extension DateToString on DateTime {
   String get toDateString {
-    return "$day.$month.$year";
+    return '$day.$month.$year';
   }
 
   String get toRecTime {
@@ -49,13 +49,13 @@ extension Dates on List<DateTime> {
 }
 
 class MultipleFilesOnDiskException implements Exception {
-  final String message;
   MultipleFilesOnDiskException(this.message);
+  final String message;
 }
 
 class NoFileFoundOnDiskException implements Exception {
-  final String message;
   NoFileFoundOnDiskException(this.message);
+  final String message;
 }
 
 extension HandleBlank on List<String> {

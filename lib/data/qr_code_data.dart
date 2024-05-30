@@ -12,7 +12,7 @@ class QrCodeData {
 
   static (String tableID, int rowNumber, DateTime time) fromQrData(String string) {
     final data = Encryption.decrypt(string.substring(string.lastIndexOf('/') + 1));
-    final list = data.split("&&&");
+    final list = data.split('&&&');
     return (list[1], int.parse(list[2]), list[3].toRecDateTime);
   }
 }

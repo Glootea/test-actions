@@ -1,11 +1,12 @@
 import 'dart:async';
-
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive/rive.dart';
-part 'loading_animation.dart';
+
 part 'loadable_cubit.dart';
+part 'loading_animation.dart';
 
 /// Creates loading animation while cubit state's [LoadingState] != [LoadingState.ended], then displays child widget
 /// /// User guide:
@@ -19,13 +20,13 @@ part 'loadable_cubit.dart';
 ///       to emit state with main content after loading
 /// 3. Wrap page in [LoadingContainer]
 class LoadingContainer<B extends StateStreamable<S>, S extends LoadableState> extends StatelessWidget {
-  final Widget child;
-  final LoadableCubit cubit;
   const LoadingContainer({
     required this.child,
     required this.cubit,
     super.key,
   });
+  final Widget child;
+  final LoadableCubit cubit;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +53,6 @@ class LoadingContainer<B extends StateStreamable<S>, S extends LoadableState> ex
             ),
             secondChild: child,
           );
-        });
+        },);
   }
 }

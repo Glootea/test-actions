@@ -8,11 +8,11 @@ class StudentAdminPage extends StatelessWidget {
         Padding(
             padding: const EdgeInsets.only(left: 16),
             child: Text(
-              "Студенты",
+              'Студенты',
               style: Theme.of(context).textTheme.displayLarge,
               textAlign: TextAlign.left,
               overflow: TextOverflow.ellipsis,
-            ))
+            ),),
       ];
   @override
   Widget build(BuildContext context) {

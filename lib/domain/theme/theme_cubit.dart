@@ -18,9 +18,10 @@ enum ThemePreset {
   // #D0E6A5 #FFDD94 #FA897B #CCABD8
   ;
 
+  const ThemePreset(this.color);
+
   final Color color;
 
-  const ThemePreset(this.color);
   @override
   String toString() => name;
 
@@ -42,12 +43,13 @@ enum ThemePreset {
 
 @freezed
 class ThemeState with _$ThemeState {
-  const ThemeState._();
   const factory ThemeState({
     required ThemePreset themePreset,
     required Brightness brightness,
   }) = _ThemeState;
-  static ThemeState getDefault() =>
+
+  const ThemeState._();
+  factory ThemeState.getDefault() =>
       const ThemeState(themePreset: ThemePreset.defaultPreset, brightness: Brightness.dark);
 
   String? get getBackgroundImagePath => switch (themePreset) {
@@ -63,13 +65,15 @@ class ThemeState with _$ThemeState {
 }
 
 class ThemeCubit extends Cubit<ThemeState> {
-  final KeyValueStorage _keyValueStorage;
   ThemeCubit(this._keyValueStorage) : super(ThemeState.getDefault());
+  final KeyValueStorage _keyValueStorage;
 
   Future<void> init() async {
     final (colorPreset, brightness) = await (getColorPreset, getBrightness).wait;
-    print("Go cached: $colorPreset $brightness");
-    setTheme(themePreset: colorPreset, brightness: brightness);
+    if (kDebugMode) {
+      print('Go cached: $colorPreset $brightness');
+    }
+    await setTheme(themePreset: colorPreset, brightness: brightness);
   }
 
   Future<ThemePreset> get getColorPreset async {
@@ -88,13 +92,15 @@ class ThemeCubit extends Cubit<ThemeState> {
     return storedValue == Brightness.dark.toString() ? Brightness.dark : Brightness.light;
   }
 
-  void setTheme({ThemePreset? themePreset, Brightness? brightness}) async {
+  Future<void> setTheme({ThemePreset? themePreset, Brightness? brightness}) async {
     brightness ??= state.brightness;
     // themePreset = ((ThemePreset.defaultPreset == themePreset) ? state.themePreset : themePreset);
-    emit(state.copyWith(
-      themePreset: themePreset ?? state.themePreset,
-      brightness: brightness,
-    ));
+    emit(
+      state.copyWith(
+        themePreset: themePreset ?? state.themePreset,
+        brightness: brightness,
+      ),
+    );
     await _keyValueStorage.set(StoredValues.colorTheme, themePreset.toString());
     await _keyValueStorage.set(StoredValues.brightness, brightness.toString());
   }

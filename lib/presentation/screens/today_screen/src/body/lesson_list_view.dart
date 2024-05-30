@@ -38,31 +38,31 @@ class _LessonListViewState extends State<LessonListView> {
         selector: (state) => state.separatedLessons,
         builder: (context, state) {
           Widget getHeadline(String text) => Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(text, style: Theme.of(context).textTheme.displayMedium, overflow: TextOverflow.ellipsis));
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(text, style: Theme.of(context).textTheme.displayMedium, overflow: TextOverflow.ellipsis),);
           final children = <Widget>[
             if (state.passedLessons.isNotEmpty) ...[
-              getHeadline("Прошедшие"),
-              Column(children: state.passedLessons.map((data) => LessonCard(data)).toList())
+              getHeadline('Прошедшие'),
+              Column(children: state.passedLessons.map(LessonCard.new).toList()),
             ],
             if (state.activeLessons.isNotEmpty) ...[
               Row(children: [
-                Expanded(child: getHeadline("Активные")),
+                Expanded(child: getHeadline('Активные')),
                 Padding(
                   padding: const EdgeInsets.only(right: 20),
                   child: RoundedSquareButton(
                       backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
                       icon: Icons.qr_code_scanner_outlined,
-                      onTap: () => context.router.push(const QrScannerRoute())),
-                ) // TODO: move to cubit
-              ]),
-              Column(children: state.activeLessons.map((data) => LessonCard(data)).toList())
+                      onTap: () => context.router.push(const QrScannerRoute()),),
+                ), // TODO: move to cubit
+              ],),
+              Column(children: state.activeLessons.map(LessonCard.new).toList()),
             ],
             if (state.futureLessons.isNotEmpty) ...[
-              getHeadline("Предстоящие"),
-              Column(children: state.futureLessons.map((data) => LessonCard(data)).toList())
+              getHeadline('Предстоящие'),
+              Column(children: state.futureLessons.map(LessonCard.new).toList()),
             ],
-            SizedBox(height: getInitialOffset(state.passedLessons.length))
+            SizedBox(height: getInitialOffset(state.passedLessons.length)),
           ];
           return state.isEmpty
               ? const _EmptyLessonListCard()
@@ -71,9 +71,9 @@ class _LessonListViewState extends State<LessonListView> {
                   shrinkWrap: true,
                   controller: scrollController,
                   separatorBuilder: (context, index) => const SizedBox(height: 16),
-                  itemBuilder: ((context, index) => children[index]),
-                  itemCount: children.length);
-        });
+                  itemBuilder: (context, index) => children[index],
+                  itemCount: children.length,);
+        },);
   }
 }
 
@@ -87,16 +87,16 @@ class _EmptyLessonListCard extends StatelessWidget {
         child: Card(
             color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.8),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Занятий нет",
+                    'Занятий нет',
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                 ],
               ),
-            )));
+            ),),);
   }
 }

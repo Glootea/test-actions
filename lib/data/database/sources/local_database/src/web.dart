@@ -17,5 +17,5 @@ DatabaseConnection connect() {
           'browser features: ${db.missingFeatures}');
     }
     return db.resolvedExecutor;
-  }));
+  }),);
 }

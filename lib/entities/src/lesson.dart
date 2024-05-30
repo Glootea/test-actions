@@ -5,7 +5,6 @@ enum LessonStatus { inFuture, soon, active, inPast }
 
 @freezed
 class Lesson with _$Lesson {
-  const Lesson._();
   const factory Lesson({
     required String name,
     required DateTime startTime,
@@ -13,6 +12,7 @@ class Lesson with _$Lesson {
     required int subjectLocalID,
     required String subjectOnlineTableID,
   }) = _Lesson;
+  const Lesson._();
 
   factory Lesson.empty() => Lesson(
         name: '',

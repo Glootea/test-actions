@@ -3,27 +3,26 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:queue/data/encryprion.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/qr_code_dialog/local_share_button.dart';
 
 class QrCodeDialog extends StatelessWidget {
-  final QueueRecord queueRecord;
   const QrCodeDialog(this.queueRecord, {super.key});
+  final QueueRecord queueRecord;
 
   @override
   Widget build(BuildContext context) {
     // final data = Encryption.encryct('lorem ipsum dolor sit amet');
-    final data = "https://www.google.com";
+    const data = 'https://www.google.com';
 
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 400),
       child: AlertDialog(
-        title: const Text("Загрузка данных без интернета"),
+        title: const Text('Загрузка данных без интернета'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Попроси друга отсканировать QR-код чтобы загрузить данные: "),
+            const Text('Попроси друга отсканировать QR-код чтобы загрузить данные: '),
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -39,36 +38,32 @@ class QrCodeDialog extends StatelessWidget {
                 ),
               ),
             ),
-            (kIsWeb)
-                ? Container()
-                : switch (Platform.operatingSystem) {
-                    "android" => Row(
+            if (kIsWeb) Container() else switch (Platform.operatingSystem) {
+                    'android' => const Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              "Или поделись ссылкой через Nearby Share: ",
-                              maxLines: null,
+                              'Или поделись ссылкой через Nearby Share: ',
                             ),
                           ),
-                          LocalShareButton(data)
+                          LocalShareButton(data),
                         ],
                       ),
-                    "ios" || "macos" => Row(
+                    'ios' || 'macos' => const Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              "Или поделись ссылкой через AirDrop: ",
-                              maxLines: null,
+                              'Или поделись ссылкой через AirDrop: ',
                             ),
                           ),
-                          LocalShareButton(data)
+                          LocalShareButton(data),
                         ],
                       ),
                     _ => Container()
-                  }
+                  },
           ],
         ),
-        actions: [TextButton(onPressed: () => context.maybePop(), child: const Text("Закрыть"))],
+        actions: [TextButton(onPressed: () => context.maybePop(), child: const Text('Закрыть'))],
       ),
     );
   }

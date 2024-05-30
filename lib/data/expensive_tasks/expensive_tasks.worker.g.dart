@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: use_raw_strings, lines_longer_than_80_chars, public_member_api_docs
+
 part of 'expensive_tasks.dart';
 
 // **************************************************************************
@@ -7,15 +9,13 @@ part of 'expensive_tasks.dart';
 // **************************************************************************
 
 /// WorkerService class for ExpensiveTasks
-class _$ExpensiveTasksWorkerService extends ExpensiveTasks
-    implements WorkerService {
+class _$ExpensiveTasksWorkerService extends ExpensiveTasks implements WorkerService {
   _$ExpensiveTasksWorkerService() : super();
 
   @override
   Map<int, CommandHandler> get operations => _operations;
 
-  late final Map<int, CommandHandler> _operations =
-      Map.unmodifiable(<int, CommandHandler>{
+  late final Map<int, CommandHandler> _operations = Map.unmodifiable(<int, CommandHandler>{
     _$createRecId: ($) => createRec($.args[0], $.args[1], $.args[2], $.args[3]),
     _$deleteRecId: ($) => deleteRec($.args[0], $.args[1], $.args[2], $.args[3]),
   });
@@ -25,12 +25,10 @@ class _$ExpensiveTasksWorkerService extends ExpensiveTasks
 }
 
 /// Service initializer for ExpensiveTasks
-WorkerService $ExpensiveTasksInitializer(WorkerRequest startRequest) =>
-    _$ExpensiveTasksWorkerService();
+WorkerService $ExpensiveTasksInitializer(WorkerRequest startRequest) => _$ExpensiveTasksWorkerService();
 
 /// Operations map for ExpensiveTasks
-@Deprecated(
-    'squadron_builder now supports "plain old Dart objects" as services. '
+@Deprecated('squadron_builder now supports "plain old Dart objects" as services. '
     'Services do not need to derive from WorkerService nor do they need to mix in '
     'with \$ExpensiveTasksOperations anymore.')
 mixin $ExpensiveTasksOperations on WorkerService {
@@ -45,41 +43,31 @@ class ExpensiveTasksWorker extends Worker implements ExpensiveTasks {
       : super($ExpensiveTasksActivator, platformWorkerHook: platformWorkerHook);
 
   @override
-  Future<bool> createRec(String lessonTableID, String queueSheetName,
-          int onlineTableRowNumber, String time) =>
-      send(_$ExpensiveTasksWorkerService._$createRecId,
-          args: [lessonTableID, queueSheetName, onlineTableRowNumber, time]);
+  Future<bool> createRec(String lessonTableID, String queueSheetName, int onlineTableRowNumber, String time) => send(
+        _$ExpensiveTasksWorkerService._$createRecId,
+        args: [lessonTableID, queueSheetName, onlineTableRowNumber, time],
+      );
 
   @override
-  Future<bool> deleteRec(String lessonTableID, String queueSheetName,
-          int onlineTableRowNumber, int? workCount) =>
-      send(_$ExpensiveTasksWorkerService._$deleteRecId, args: [
-        lessonTableID,
-        queueSheetName,
-        onlineTableRowNumber,
-        workCount
-      ]);
+  Future<bool> deleteRec(String lessonTableID, String queueSheetName, int onlineTableRowNumber, int? workCount) => send(
+        _$ExpensiveTasksWorkerService._$deleteRecId,
+        args: [lessonTableID, queueSheetName, onlineTableRowNumber, workCount],
+      );
 }
 
 /// Worker pool for ExpensiveTasks
-class ExpensiveTasksWorkerPool extends WorkerPool<ExpensiveTasksWorker>
-    implements ExpensiveTasks {
-  ExpensiveTasksWorkerPool(
-      {ConcurrencySettings? concurrencySettings,
-      PlatformWorkerHook? platformWorkerHook})
+class ExpensiveTasksWorkerPool extends WorkerPool<ExpensiveTasksWorker> implements ExpensiveTasks {
+  ExpensiveTasksWorkerPool({ConcurrencySettings? concurrencySettings, PlatformWorkerHook? platformWorkerHook})
       : super(
-            () => ExpensiveTasksWorker(platformWorkerHook: platformWorkerHook),
-            concurrencySettings: concurrencySettings);
+          () => ExpensiveTasksWorker(platformWorkerHook: platformWorkerHook),
+          concurrencySettings: concurrencySettings,
+        );
 
   @override
-  Future<bool> createRec(String lessonTableID, String queueSheetName,
-          int onlineTableRowNumber, String time) =>
-      execute((w) => w.createRec(
-          lessonTableID, queueSheetName, onlineTableRowNumber, time));
+  Future<bool> createRec(String lessonTableID, String queueSheetName, int onlineTableRowNumber, String time) =>
+      execute((w) => w.createRec(lessonTableID, queueSheetName, onlineTableRowNumber, time));
 
   @override
-  Future<bool> deleteRec(String lessonTableID, String queueSheetName,
-          int onlineTableRowNumber, int? workCount) =>
-      execute((w) => w.deleteRec(
-          lessonTableID, queueSheetName, onlineTableRowNumber, workCount));
+  Future<bool> deleteRec(String lessonTableID, String queueSheetName, int onlineTableRowNumber, int? workCount) =>
+      execute((w) => w.deleteRec(lessonTableID, queueSheetName, onlineTableRowNumber, workCount));
 }

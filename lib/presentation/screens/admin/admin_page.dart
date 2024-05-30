@@ -9,42 +9,44 @@ class AdminPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<(String, PageRouteInfo<void>)> children = [
-      ("Студенты", const StudentAdminRoute()),
-      ("Занятия", const SubjectAdminRoute()),
-      ("Модерация очереди", const QueueAdminRoute()),
-      ("Телеграм бот", const TelegramBotAdminRoute()),
+    final children = <(String, PageRouteInfo<void>)>[
+      ('Студенты', const StudentAdminRoute()),
+      ('Занятия', const SubjectAdminRoute()),
+      ('Модерация очереди', const QueueAdminRoute()),
+      ('Телеграм бот', const TelegramBotAdminRoute()),
     ];
     return Scaffold(
-        body: Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Text(
-              "Админ панель",
-              style: Theme.of(context).textTheme.displayLarge,
-              textAlign: TextAlign.left,
-              overflow: TextOverflow.ellipsis,
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Text(
+                'Админ панель',
+                style: Theme.of(context).textTheme.displayLarge,
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          const Gap(16),
-          ListView.separated(
+            const Gap(16),
+            ListView.separated(
               shrinkWrap: true,
               itemBuilder: (context, index) => ListTile(
-                    title: Text(
-                      children[index].$1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: const Icon(Icons.arrow_forward_ios_outlined),
-                    onTap: () async => await AutoRouter.of(context).push(children[index].$2),
-                  ),
+                title: Text(
+                  children[index].$1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios_outlined),
+                onTap: () async => AutoRouter.of(context).push(children[index].$2),
+              ),
               separatorBuilder: (context, index) => const Divider(),
-              itemCount: 4)
-        ],
+              itemCount: 4,
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

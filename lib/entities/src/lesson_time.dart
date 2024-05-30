@@ -5,10 +5,10 @@ import 'package:queue/extension.dart';
 part 'lesson_time.freezed.dart';
 
 abstract class LessonTime {
+  const LessonTime(this.id, this.startTime, this.endTime);
   final int id;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
-  const LessonTime(this.id, this.startTime, this.endTime);
 
   List<String> get toRow;
 }

@@ -10,16 +10,15 @@ enum UploadStatus {
   shouldBeDeleted('Should be deleted'),
   ;
 
+  const UploadStatus(this.name);
+
   final String name;
   @override
   String toString() => name;
-
-  const UploadStatus(this.name);
 }
 
 @freezed
 class QueueRecord with _$QueueRecord {
-  const QueueRecord._();
   const factory QueueRecord({
     required Lesson lesson,
     required String studentName,
@@ -29,29 +28,33 @@ class QueueRecord with _$QueueRecord {
     int? workCount,
   }) = _QueueRecord;
 
-  static QueueRecord parseFromString(String qrData) {
-    //TODO: implement NewQueueRecord parseFromString
-    return QueueRecord(
-        status: UploadStatus.uploaded,
-        lesson: Lesson(
-            name: "Lesson sample name",
-            startTime: DateTime.now(),
-            endTime: DateTime.now(),
-            subjectLocalID: 0,
-            subjectOnlineTableID: 'dfkjnb'),
-        studentID: 0,
-        studentName: "Student sample name",
-        time: DateTime.now(),
-        workCount: 0);
-  }
-
   /// Used for optimistic UI to show updates before it is uploaded to the server
   factory QueueRecord.shouldBeUploaded(Lesson lesson, int studentID) => QueueRecord(
-      lesson: lesson,
-      studentName: '',
-      studentID: studentID,
+        lesson: lesson,
+        studentName: '',
+        studentID: studentID,
+        time: DateTime.now(),
+        status: UploadStatus.shouldBeUploaded,
+      );
+  const QueueRecord._();
+
+  factory QueueRecord.parseFromString(String qrData) {
+    //TODO: implement NewQueueRecord parseFromString
+    return QueueRecord(
+      status: UploadStatus.uploaded,
+      lesson: Lesson(
+        name: 'Lesson sample name',
+        startTime: DateTime.now(),
+        endTime: DateTime.now(),
+        subjectLocalID: 0,
+        subjectOnlineTableID: 'dfkjnb',
+      ),
+      studentID: 0,
+      studentName: 'Student sample name',
       time: DateTime.now(),
-      status: UploadStatus.shouldBeUploaded);
+      workCount: 0,
+    );
+  }
 
   List<String> get toOnlineRow => [time.toRecTime, workCount.toString()].toOnline;
 }

@@ -5,18 +5,18 @@ import 'package:queue/extension.dart';
 part 'group_metainfo.freezed.dart';
 
 class GroupMetaInfoCubit extends Cubit<GroupMetaInfoState> {
-  final KeyValueStorage _keyValueStorage;
   GroupMetaInfoCubit(this._keyValueStorage) : super(GroupMetaInfoState.empty()) {
     init();
   }
+  final KeyValueStorage _keyValueStorage;
   bool get useAttendance => state.useAttendance;
 
   Future<void> init() async {
-    await _getLocalData().then((value) => emit(value));
+    await _getLocalData().then(emit);
     await Future.delayed(
         const Duration(seconds: 1),
         () => emit(
-            state.copyWith(useAttendance: true))); // TODO: remove after testing and implementing online GroupMetaInfo
+            state.copyWith(useAttendance: true),),); // TODO: remove after testing and implementing online GroupMetaInfo
   }
 
   Future<GroupMetaInfoState> _getLocalData() async {
@@ -31,7 +31,7 @@ class GroupMetaInfoCubit extends Cubit<GroupMetaInfoState> {
         groupName: data.$1 ?? '',
         headmasterName: data.$2 ?? '',
         adminIDs: data.$3?.toIntList ?? [],
-        useAttendance: bool.parse(data.$4 ?? 'false'));
+        useAttendance: bool.parse(data.$4 ?? 'false'),);
   }
 
   Future<GroupMetaInfoState> _fetchOnlineData() async {

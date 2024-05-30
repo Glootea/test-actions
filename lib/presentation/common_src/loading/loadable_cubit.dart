@@ -23,6 +23,6 @@ enum LoadingState {
 }
 
 abstract interface class LoadableState {
-  final LoadingState isStateLoading;
   const LoadableState(this.isStateLoading);
+  final LoadingState isStateLoading;
 }

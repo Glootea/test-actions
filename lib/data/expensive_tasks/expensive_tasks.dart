@@ -1,7 +1,8 @@
 import 'package:gsheets/gsheets.dart';
-import 'package:squadron/squadron.dart';
 import 'package:queue/data/expensive_tasks/expensive_tasks.activator.g.dart';
+import 'package:squadron/squadron.dart';
 import 'package:squadron/squadron_annotations.dart';
+
 part 'expensive_tasks.worker.g.dart';
 
 // Workflow for changing file:
@@ -11,14 +12,14 @@ part 'expensive_tasks.worker.g.dart';
 
 @SquadronService(web: true)
 class ExpensiveTasks {
-  static final gsheets = GSheets(const String.fromEnvironment("CREDENTIALS"));
+  static final gsheets = GSheets(const String.fromEnvironment('CREDENTIALS'));
   @SquadronMethod()
   Future<bool> createRec(String lessonTableID, String queueSheetName, int onlineTableRowNumber, String time) async {
     try {
       final queueSheet =
           await gsheets.spreadsheet(lessonTableID).then((value) => value.worksheetByTitle(queueSheetName));
       if (queueSheet == null) {
-        throw Exception("Failed to load database");
+        throw Exception('Failed to load database');
       }
       return await queueSheet.values.insertValue(time, column: 1, row: onlineTableRowNumber);
     } on Exception {
@@ -37,9 +38,9 @@ class ExpensiveTasks {
       final spreadSheet = await gsheets.spreadsheet(lessonTableID);
       final queueSheet = spreadSheet.worksheetByTitle(queueSheetName);
       if (queueSheet == null) {
-        throw Exception("Failed to load database");
+        throw Exception('Failed to load database');
       }
-      Future<bool> task = ((workCount != null)
+      final task = ((workCount != null)
           ? queueSheet.values
               .insertValue(workCount, column: 2, row: onlineTableRowNumber)
               .timeout(const Duration(seconds: 5), onTimeout: () => false)
@@ -49,7 +50,7 @@ class ExpensiveTasks {
         queueSheet.values
             .insertValue('', column: 1, row: onlineTableRowNumber)
             .timeout(const Duration(seconds: 5), onTimeout: () => false),
-        task
+        task,
       ]).then((value) => value.every((element) => element));
     } on Exception {
       return false;

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 
 class RoundedSquareButton extends StatelessWidget {
   const RoundedSquareButton({
-    super.key,
-    required this.icon,
-    required this.onTap,
+    required this.icon, required this.onTap, super.key,
     this.backgroundColor = Colors.transparent,
   });
   final IconData icon;
@@ -36,6 +34,6 @@ class RoundedSquareButton extends StatelessWidget {
           // onPressed: () {
 
           // }),
-        ));
+        ),);
   }
 }

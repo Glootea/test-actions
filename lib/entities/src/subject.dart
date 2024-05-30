@@ -5,7 +5,6 @@ part 'subject.freezed.dart';
 @freezed
 @immutable
 class Subject with _$Subject {
-  const Subject._();
   const factory Subject({
     required int localId,
     required String name,
@@ -13,6 +12,7 @@ class Subject with _$Subject {
     required bool autoDelete,
     required bool useWorkCount,
   }) = _Subject;
+  const Subject._();
 
   factory Subject.fromRow(List<String> row) {
     row = row.fromOnline;
@@ -29,8 +29,8 @@ class Subject with _$Subject {
       localId.toString(),
       name,
       onlineTableID,
-      autoDelete ? 'true' : 'false',
-      useWorkCount ? 'true' : 'false',
+      if (autoDelete) 'true' else 'false',
+      if (useWorkCount) 'true' else 'false',
     ];
     return row.toOnline;
   }

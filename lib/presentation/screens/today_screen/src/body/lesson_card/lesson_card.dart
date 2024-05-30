@@ -16,8 +16,8 @@ import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src
 enum ButtonState { add, remove, qrCode, none }
 
 class LessonCard extends StatefulWidget {
-  final Lesson lesson;
   const LessonCard(this.lesson, {super.key});
+  final Lesson lesson;
 
   @override
   State<LessonCard> createState() => _LessonCardState();
@@ -37,81 +37,83 @@ class _LessonCardState extends State<LessonCard> {
 
   @override
   Widget build(BuildContext context) {
-    final bool useAttendance = context.select((GroupMetaInfoCubit cubit) => cubit.useAttendance);
+    final useAttendance = context.select((GroupMetaInfoCubit cubit) => cubit.useAttendance);
     return BlocProvider.value(
       value: cubit,
-      child: BlocBuilder<LessonCardCubit, LessonCardData>(builder: (context, data) {
-        return GestureDetector(
-          onTap: () async => await AutoRouter.of(context).push(DetailedQueueRoute(cubit: cubit)),
-          child: Card(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 64,
-                          child: Hero(
-                            tag: "headline${widget.lesson}",
-                            child: Align(
-                              alignment: const AlignmentDirectional(0, 0),
-                              child: Text(
-                                data.lesson.name,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w400),
+      child: BlocBuilder<LessonCardCubit, LessonCardData>(
+        builder: (context, data) {
+          return GestureDetector(
+            onTap: () async => AutoRouter.of(context).push(DetailedQueueRoute(cubit: cubit)),
+            child: Card(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 64,
+                            child: Hero(
+                              tag: 'headline${widget.lesson}',
+                              child: Align(
+                                alignment: AlignmentDirectional.center,
+                                child: Text(
+                                  data.lesson.name,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w400),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Hero(
-                        tag: "lessonButton${data.lesson}",
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: ConfiguredLessonButton(cubit: cubit, data: data),
+                        Hero(
+                          tag: 'lessonButton${data.lesson}',
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: ConfiguredLessonButton(cubit: cubit, data: data),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  LessonMetadataAndAttendanceRow(useAttendance: useAttendance, cubit: cubit, data: data),
-                  Hero(
-                    flightShuttleBuilder: (
-                      BuildContext _,
-                      Animation<double> __,
-                      HeroFlightDirection ___,
-                      BuildContext fromHeroContext,
-                      BuildContext ____,
-                    ) =>
-                        SingleChildScrollView(child: fromHeroContext.widget),
-                    tag: "progressIndicator${data.lesson}",
-                    // child: LabeledLinearProgressIndicator(
-                    //   startValue: 0,
-                    //   currentValue: data.queueData?.userPosition,
-                    //   endValue: data.queueData?.queueLength,
-                    //   message: data.message,
-                    // ),
-                    child: LabeledLinearProgressIndicator(
-                      startValue: 0,
-                      currentValue: 5,
-                      endValue: 15,
-                      message: data.message,
+                      ],
                     ),
-                  ),
-                ],
+                    LessonMetadataAndAttendanceRow(useAttendance: useAttendance, cubit: cubit, data: data),
+                    Hero(
+                      flightShuttleBuilder: (
+                        BuildContext _,
+                        Animation<double> __,
+                        HeroFlightDirection ___,
+                        BuildContext fromHeroContext,
+                        BuildContext ____,
+                      ) =>
+                          SingleChildScrollView(child: fromHeroContext.widget),
+                      tag: 'progressIndicator${data.lesson}',
+                      // child: LabeledLinearProgressIndicator(
+                      //   startValue: 0,
+                      //   currentValue: data.queueData?.userPosition,
+                      //   endValue: data.queueData?.queueLength,
+                      //   message: data.message,
+                      // ),
+                      child: LabeledLinearProgressIndicator(
+                        startValue: 0,
+                        currentValue: 5,
+                        endValue: 15,
+                        message: data.message,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 }
@@ -119,10 +121,10 @@ class _LessonCardState extends State<LessonCard> {
 //TODO: move to file
 class LessonMetadataAndAttendanceRow extends StatelessWidget {
   const LessonMetadataAndAttendanceRow({
-    super.key,
     required this.useAttendance,
     required this.cubit,
     required this.data,
+    super.key,
   });
 
   final bool useAttendance;
@@ -131,12 +133,14 @@ class LessonMetadataAndAttendanceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Hero(
-        tag: "time${data.lesson}",
-        child: Material(
-          type: MaterialType.transparency,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: Checkbox.width + 16),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
+      tag: 'time${data.lesson}',
+      child: Material(
+        type: MaterialType.transparency,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: Checkbox.width + 16),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
               Expanded(
                 child: Text(
                   '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
@@ -148,35 +152,40 @@ class LessonMetadataAndAttendanceRow extends StatelessWidget {
               if (useAttendance)
                 Expanded(
                   child: Transform.translate(
-                      offset: const Offset(4, 0),
-                      child: Builder(
-                        builder: (context) => Row(children: [
+                    offset: const Offset(4, 0),
+                    child: Builder(
+                      builder: (context) => Row(
+                        children: [
                           Expanded(
                             child: Text(
-                              "Я на паре: ",
+                              'Я на паре: ',
                               style: Theme.of(context).textTheme.bodyMedium,
                               textAlign: TextAlign.end,
                               overflow: TextOverflow.visible,
                             ),
                           ),
-                          Checkbox(value: data.attended, onChanged: (value) => cubit.toggleAttended())
-                        ]),
-                      )),
-                )
+                          Checkbox(value: data.attended, onChanged: (value) => cubit.toggleAttended()),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
 
               // TODO: implement custom checkbox to show error || loading
-            ]),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 
 //TODO: move to file
 class ConfiguredLessonButton extends StatelessWidget {
   const ConfiguredLessonButton({
-    super.key,
     required this.data,
     required this.cubit,
+    super.key,
   });
 
   final LessonCardCubit cubit;

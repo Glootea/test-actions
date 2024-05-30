@@ -1,11 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:queue/entities/export.dart';
-import 'package:queue/entities/src/queue_record.dart';
 part 'queue_data.freezed.dart';
 
 @freezed
 class QueueData with _$QueueData {
-  const QueueData._();
   const factory QueueData({
     required List<QueueRecord> queueRecordList,
     required int queueLength,
@@ -13,6 +11,7 @@ class QueueData with _$QueueData {
     required QueueRecord? userRecord,
     required bool live, // fetched online or locally
   }) = _QueueData;
+  const QueueData._();
 
   String? get previousStudentName {
     if (userPosition != null) {
@@ -27,6 +26,6 @@ class QueueData with _$QueueData {
         live: false,
         queueLength: queueLength + 1,
         userPosition: queueLength + 1,
-        userRecord: QueueRecord.shouldBeUploaded(lesson, studentID));
+        userRecord: QueueRecord.shouldBeUploaded(lesson, studentID),);
   }
 }

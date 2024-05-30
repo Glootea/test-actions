@@ -7,11 +7,11 @@ import 'package:queue/data/database/sources/local_database/local_database.dart';
 final circularUpdateTimerKey = GlobalKey();
 
 class CircularUpdateTimer extends StatefulWidget {
+  const CircularUpdateTimer(
+      {required this.durationInSeconds, required this.onTimeExpired, super.key, this.isUpdatingQueueRequest,});
   final int durationInSeconds;
   final VoidCallback onTimeExpired;
   final Future<String?>? isUpdatingQueueRequest;
-  const CircularUpdateTimer(
-      {super.key, required this.durationInSeconds, required this.onTimeExpired, this.isUpdatingQueueRequest});
 
   @override
   State<CircularUpdateTimer> createState() => _CircularUpdateTimerState();
@@ -82,7 +82,7 @@ class _CircularUpdateTimerState extends State<CircularUpdateTimer> {
                 value: isUpdating ? timerValue / widget.durationInSeconds : 1,
                 color:
                     isUpdating ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.error,
-              ))),
+              ),),),
     );
   }
 }

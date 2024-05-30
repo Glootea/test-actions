@@ -7,22 +7,22 @@ import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/les
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/queue_data/queue_data.dart';
 
 class LessonCardCubit extends Cubit<LessonCardData> {
-  final Lesson _lesson;
-  final DatabaseService _databaseService;
-  final UserCubit _userCubit;
   LessonCardCubit(this._lesson, this._databaseService, this._userCubit)
       : super(LessonCardData(lesson: _lesson, queueData: null, attended: false)) {
     fetchQueue();
   }
+  final Lesson _lesson;
+  final DatabaseService _databaseService;
+  final UserCubit _userCubit;
 
   Future<void> fetchQueue() async {
     final (queue, attended) =
         await (_databaseService.getLocalQueueRecordList(_lesson), _databaseService.isAttendanded(_lesson)).wait;
-    final data = parseQueueRecordList(queue, false);
+    final data = parseQueueRecordList(queue: queue, live: false);
     emit(state.copyWith(queueData: data, attended: attended));
     final queueOnlineData = await _databaseService.fetchQueueRecordList(_lesson);
     if (queueOnlineData != null) {
-      final onlineData = parseQueueRecordList(queue, true);
+      final onlineData = parseQueueRecordList(queue: queue, live: true);
       emit(state.copyWith(queueData: onlineData));
     }
   }
@@ -34,14 +34,14 @@ class LessonCardCubit extends Cubit<LessonCardData> {
 
   Future<void> deleteQueueRecord() async {
     // TODO: implement
-    final queueRecord = state.queueData!.userRecord;
+    final _ = state.queueData!.userRecord;
   }
 
-  QueueData parseQueueRecordList(List<QueueRecord> queue, bool live) {
+  QueueData parseQueueRecordList({required List<QueueRecord> queue, required bool live}) {
     final userRowNumber = _userCubit.rowNumber;
     final userQueueRecord = queue.where((el) => el.studentID == userRowNumber).firstOrNull;
     final queueLength = queue.length;
-    int userPosition = queueLength;
+    var userPosition = queueLength;
     if (userQueueRecord != null) {
       userPosition = queue.indexWhere((el) => el.studentID == userRowNumber);
     }

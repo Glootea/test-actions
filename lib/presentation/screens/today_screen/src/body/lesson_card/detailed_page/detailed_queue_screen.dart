@@ -8,24 +8,24 @@ import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/presentation/screens/today_screen/src/app_bar/circular_update_timer.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/detailed_page/src/queue_record_listtile.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
 
 @RoutePage()
 class DetailedQueueScreen extends StatelessWidget {
-  final LessonCardCubit cubit;
 
   const DetailedQueueScreen(this.cubit, {super.key});
+  final LessonCardCubit cubit;
 
   @override
   Widget build(BuildContext context) {
-    final bool useAttendance = context.select((GroupMetaInfoCubit cubit) => cubit.useAttendance);
-    final bool admin = context.select((UserCubit cubit) => cubit.state?.isAdmin ?? false);
+    final useAttendance = context.select((GroupMetaInfoCubit cubit) => cubit.useAttendance);
+    final admin = context.select((UserCubit cubit) => cubit.state?.isAdmin ?? false);
     return BlocProvider.value(
         value: cubit,
         child: BlocBuilder<LessonCardCubit, LessonCardData>(builder: (context, data) {
-          final KeyValueStorage storage = context.read<KeyValueStorage>();
+          final storage = context.read<KeyValueStorage>();
           return SafeArea(
               child: Scaffold(
             body: Padding(
@@ -35,7 +35,7 @@ class DetailedQueueScreen extends StatelessWidget {
                   InkWell(
                     onTap: () => AutoRouter.of(context).maybePop(),
                     child: Hero(
-                      tag: "headline${data.lesson}",
+                      tag: 'headline${data.lesson}',
                       child: Text(
                         data.lesson.name,
                         style: Theme.of(context).textTheme.displayMedium,
@@ -49,9 +49,8 @@ class DetailedQueueScreen extends StatelessWidget {
                         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                           Builder(
                             builder: (context) => Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text("Обновление: "),
+                                const Text('Обновление: '),
                                 Hero(
                                   tag: 'circularUpdateTimer',
                                   child: CircularUpdateTimer(
@@ -64,20 +63,20 @@ class DetailedQueueScreen extends StatelessWidget {
                             ),
                           ),
                           Hero(
-                            tag: "lessonButton${data.lesson}",
+                            tag: 'lessonButton${data.lesson}',
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: ConfiguredLessonButton(cubit: cubit, data: data),
                             ),
-                          )
-                        ]),
+                          ),
+                        ],),
                         LessonMetadataAndAttendanceRow(useAttendance: useAttendance, cubit: cubit, data: data),
                       ];
                       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);
                     },
                   ),
                   Hero(
-                    tag: "progressIndicator${data.lesson}",
+                    tag: 'progressIndicator${data.lesson}',
                     flightShuttleBuilder: (
                       BuildContext _,
                       Animation<double> __,
@@ -94,10 +93,10 @@ class DetailedQueueScreen extends StatelessWidget {
                     ),
                   ),
                   const Gap(16),
-                  Text("Очередь", style: Theme.of(context).textTheme.headlineMedium),
+                  Text('Очередь', style: Theme.of(context).textTheme.headlineMedium),
                   if (admin)
-                    ListTile(
-                      title: Text("Перейти к изменению очереди и занятия"),
+                    const ListTile(
+                      title: Text('Перейти к изменению очереди и занятия'),
                       trailing: Icon(Icons.chevron_right_outlined),
                     ),
                   const Gap(16),
@@ -107,11 +106,11 @@ class DetailedQueueScreen extends StatelessWidget {
                       itemCount: data.queueData?.queueRecordList.length ?? 0,
                       separatorBuilder: (context, index) => const Divider(),
                       itemBuilder: (context, index) =>
-                          QueueRecordListtile(index, data.queueData!.queueRecordList[index]))
+                          QueueRecordListtile(index, data.queueData!.queueRecordList[index]),),
                 ],
               ),
             ),
-          ));
-        }));
+          ),);
+        },),);
   }
 }
