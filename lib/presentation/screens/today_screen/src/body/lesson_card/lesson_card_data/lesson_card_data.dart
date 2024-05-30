@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/entities/src/queue_record.dart';
 import 'package:queue/extension.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/queue_data/queue_data.dart';
 part 'lesson_card_data.freezed.dart';
 
@@ -27,6 +28,13 @@ class LessonCardData with _$LessonCardData {
         (_, _) => throw UnimplementedError(
             '${queueData?.userRecord?.status}, ${lesson.status} is unknown status to get LessonCardData\'s message')
       };
-
+  ButtonState get buttonState => switch ((lesson.status, queueData?.userRecord?.status)) {
+        (_, UploadStatus.shouldBeUploaded) => ButtonState.qrCode,
+        (LessonStatus.active, null) => ButtonState.add,
+        (LessonStatus.active, UploadStatus.uploaded) ||
+        (LessonStatus.active, UploadStatus.shouldBeUploaded) =>
+          ButtonState.remove,
+        (_, _) => ButtonState.none
+      };
   UploadStatus? get queueRecordStatus => queueData?.userRecord?.status;
 }

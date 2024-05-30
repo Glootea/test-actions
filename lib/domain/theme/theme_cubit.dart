@@ -95,7 +95,6 @@ class ThemeCubit extends Cubit<ThemeState> {
       themePreset: themePreset ?? state.themePreset,
       brightness: brightness,
     ));
-    print(brightness);
     await _keyValueStorage.set(StoredValues.colorTheme, themePreset.toString());
     await _keyValueStorage.set(StoredValues.brightness, brightness.toString());
   }

@@ -5,15 +5,15 @@ import 'package:queue/data/database/database_service.dart';
 import 'package:queue/domain/group_metainfo/group_metainfo.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/entities/src/lesson.dart';
-import 'package:queue/entities/src/queue_record.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/qr_code_dialog/qr_code_dialog.dart';
 import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
 
-enum _ButtonState { add, remove, qrCode, none }
+enum ButtonState { add, remove, qrCode, none }
 
 class LessonCard extends StatefulWidget {
   final Lesson lesson;
@@ -41,15 +41,6 @@ class _LessonCardState extends State<LessonCard> {
     return BlocProvider.value(
       value: cubit,
       child: BlocBuilder<LessonCardCubit, LessonCardData>(builder: (context, data) {
-        final userQueueRecordStatus = data.queueRecordStatus;
-        final buttonState = switch ((data.lesson.status, userQueueRecordStatus)) {
-          (_, UploadStatus.shouldBeUploaded) => _ButtonState.qrCode,
-          (LessonStatus.active, null) => _ButtonState.add,
-          (LessonStatus.active, UploadStatus.uploaded) ||
-          (LessonStatus.active, UploadStatus.shouldBeUploaded) =>
-            _ButtonState.remove,
-          (_, _) => _ButtonState.none
-        };
         return GestureDetector(
           onTap: () async => await AutoRouter.of(context).push(DetailedQueueRoute(cubit: cubit)),
           child: Card(
@@ -59,82 +50,157 @@ class _LessonCardState extends State<LessonCard> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
-              child: AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: SizedBox(
-                            height: 64,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 64,
+                          child: Hero(
+                            tag: "headline${widget.lesson}",
                             child: Align(
-                              alignment: const AlignmentDirectional(-1, 0),
-                              child: Hero(
-                                tag: "headline${widget.lesson}",
-                                child: Text(
-                                  data.lesson.name,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w400),
-                                ),
+                              alignment: const AlignmentDirectional(0, 0),
+                              child: Text(
+                                data.lesson.name,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w400),
                               ),
                             ),
                           ),
                         ),
-                        if (buttonState != _ButtonState.none)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: LessonCardButton(
-                              icon: switch (buttonState) {
-                                _ButtonState.qrCode => Icons.qr_code_outlined,
-                                _ButtonState.add => Icons.add,
-                                _ButtonState.remove => Icons.remove_outlined,
-                                _ButtonState.none => throw UnimplementedError(),
-                              },
-                              onTap: () async => switch (buttonState) {
-                                _ButtonState.qrCode => await showDialog(
-                                    context: context, builder: (context) => QrCodeDialog(data.queueData!.userRecord!)),
-                                _ButtonState.add => cubit.addQueueRecord(),
-                                _ButtonState.remove => cubit.deleteQueueRecord(),
-                                _ButtonState.none => throw UnimplementedError(),
-                              },
-                            ),
-                          ),
-                      ],
+                      ),
+                      Hero(
+                        tag: "lessonButton${data.lesson}",
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: ConfiguredLessonButton(cubit: cubit, data: data),
+                        ),
+                      ),
+                    ],
+                  ),
+                  LessonMetadataAndAttendanceRow(useAttendance: useAttendance, cubit: cubit, data: data),
+                  Hero(
+                    flightShuttleBuilder: (
+                      BuildContext _,
+                      Animation<double> __,
+                      HeroFlightDirection ___,
+                      BuildContext fromHeroContext,
+                      BuildContext ____,
+                    ) =>
+                        SingleChildScrollView(child: fromHeroContext.widget),
+                    tag: "progressIndicator${data.lesson}",
+                    // child: LabeledLinearProgressIndicator(
+                    //   startValue: 0,
+                    //   currentValue: data.queueData?.userPosition,
+                    //   endValue: data.queueData?.queueLength,
+                    //   message: data.message,
+                    // ),
+                    child: LabeledLinearProgressIndicator(
+                      startValue: 0,
+                      currentValue: 5,
+                      endValue: 15,
+                      message: data.message,
                     ),
-                    Hero(
-                        tag: "time${data.lesson}",
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Row(mainAxisSize: MainAxisSize.min, children: [
-                            Text(
-                              '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
-                              // '16:20 - 17:50 в Г-321',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                            if (useAttendance) const Spacer(),
-                            if (useAttendance) Text("Я на паре: ", style: Theme.of(context).textTheme.bodyMedium),
-                            if (useAttendance)
-                              Checkbox(
-                                  value: data.attended,
-                                  onChanged: (value) => cubit
-                                      .toggleAttended()), // TODO: implement custom checkbox to show error || loading
-                          ]),
-                        ))
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
         );
       }),
+    );
+  }
+}
+
+//TODO: move to file
+class LessonMetadataAndAttendanceRow extends StatelessWidget {
+  const LessonMetadataAndAttendanceRow({
+    super.key,
+    required this.useAttendance,
+    required this.cubit,
+    required this.data,
+  });
+
+  final bool useAttendance;
+  final LessonCardCubit cubit;
+  final LessonCardData data;
+  @override
+  Widget build(BuildContext context) {
+    return Hero(
+        tag: "time${data.lesson}",
+        child: Material(
+          type: MaterialType.transparency,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: Checkbox.width + 16),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Expanded(
+                child: Text(
+                  '${data.lesson.startTime.toDisplayTime} - ${data.lesson.endTime.toDisplayTime}', //TODO: add classroom to lesson class
+                  // '16:20 - 17:50 в Г-321',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+              if (useAttendance)
+                Expanded(
+                  child: Transform.translate(
+                      offset: const Offset(4, 0),
+                      child: Builder(
+                        builder: (context) => Row(children: [
+                          Expanded(
+                            child: Text(
+                              "Я на паре: ",
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              textAlign: TextAlign.end,
+                              overflow: TextOverflow.visible,
+                            ),
+                          ),
+                          Checkbox(value: data.attended, onChanged: (value) => cubit.toggleAttended())
+                        ]),
+                      )),
+                )
+
+              // TODO: implement custom checkbox to show error || loading
+            ]),
+          ),
+        ));
+  }
+}
+
+//TODO: move to file
+class ConfiguredLessonButton extends StatelessWidget {
+  const ConfiguredLessonButton({
+    super.key,
+    required this.data,
+    required this.cubit,
+  });
+
+  final LessonCardCubit cubit;
+  final LessonCardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    if (data.buttonState == ButtonState.none) {
+      return const SizedBox.shrink();
+    }
+    return RoundedSquareButton(
+      icon: switch (data.buttonState) {
+        ButtonState.qrCode => Icons.qr_code_outlined,
+        ButtonState.add => Icons.add,
+        ButtonState.remove => Icons.remove_outlined,
+        ButtonState.none => throw UnimplementedError(),
+      },
+      onTap: () async => switch (data.buttonState) {
+        ButtonState.qrCode =>
+          await showDialog(context: context, builder: (context) => QrCodeDialog(data.queueData!.userRecord!)),
+        ButtonState.add => cubit.addQueueRecord(),
+        ButtonState.remove => cubit.deleteQueueRecord(),
+        ButtonState.none => throw UnimplementedError(),
+      },
     );
   }
 }

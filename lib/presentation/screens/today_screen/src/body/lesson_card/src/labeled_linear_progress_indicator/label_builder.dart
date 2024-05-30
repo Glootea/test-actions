@@ -8,10 +8,10 @@ class _LabelBuilder extends LeafRenderObjectWidget {
   final IconData? expandIcon;
   final double? iconSize;
   const _LabelBuilder({
-    this.message,
+    required this.message,
     this.value,
     this.valuePresentation,
-    this.style,
+    required this.style,
     this.expandIcon,
     this.iconSize,
   });
@@ -78,6 +78,8 @@ class _LabelRenderObject extends RenderBox {
     if (_message == value) return;
     _message = value;
     _messagePainter.text = messageTextSpan;
+    markNeedsPaint();
+    markNeedsLayout();
   }
 
   double? get value => _value;
@@ -85,6 +87,8 @@ class _LabelRenderObject extends RenderBox {
     if (_value == value) return;
     _value = value;
     _valuePainter.text = valueTextSpan;
+    markNeedsPaint();
+    markNeedsLayout();
   }
 
   String? get valuePresentation => _valuePresentation;
@@ -92,6 +96,8 @@ class _LabelRenderObject extends RenderBox {
     if (_valuePresentation == value) return;
     _valuePresentation = value;
     _valuePainter.text = valueTextSpan;
+    markNeedsPaint();
+    markNeedsLayout();
   }
 
   TextStyle? get style => _style;
@@ -100,12 +106,16 @@ class _LabelRenderObject extends RenderBox {
     _style = value;
     _messagePainter.text = messageTextSpan;
     _valuePainter.text = valueTextSpan;
+    markNeedsPaint();
+    markNeedsLayout();
   }
 
   IconData? get expandIcon => _expandIcon;
   set expandIcon(IconData? value) {
     if (_expandIcon == value) return;
     _expandIcon = value;
+    markNeedsPaint();
+    markNeedsLayout();
   }
 
   double? get iconSize => _iconSize;
@@ -113,6 +123,8 @@ class _LabelRenderObject extends RenderBox {
     if (_iconSize == value) return;
     _iconSize = value;
     _iconPainter = TextPainter(text: iconTextSpan, textDirection: TextDirection.ltr);
+    markNeedsPaint();
+    markNeedsLayout();
   }
 
   TextSpan get messageTextSpan => TextSpan(text: _message, style: _style);
@@ -123,18 +135,19 @@ class _LabelRenderObject extends RenderBox {
 
   double _longestLineWidth = 0;
   late double _lineHeight = _iconSize ?? 24;
-  int _numMessageLines = 1;
+  int _numMessageLines = 0;
   bool _messageFitsLeft = true;
-  late double _valueWidth;
-  late double _valuePosition;
+  double _valueWidth = 0;
+  double _valuePosition = double.infinity;
   double _lastLineWidth = 0;
   bool _iconFitLastLine = true;
-  final double padding = 8;
   double _messageHeight = 0;
+
+  final double padding = 8;
+
   @override
   void performLayout() {
     if (_message != null) {
-      print("Message null");
       _messagePainter.layout(maxWidth: constraints.maxWidth);
       final messageLines = _messagePainter.computeLineMetrics();
       _longestLineWidth = messageLines.reduce((a, b) => a.width > b.width ? a : b).width;
@@ -144,22 +157,18 @@ class _LabelRenderObject extends RenderBox {
     }
 
     if (_value == null || _valuePresentation == null) {
-      print("Value null");
       _iconFitLastLine = _lastLineWidth < constraints.maxWidth - (_iconSize ?? 0) - padding;
       size = Size(constraints.maxWidth,
-          _lineHeight * (_numMessageLines + (_iconFitLastLine ? 0 : 1))); // TODO: will cause error
+          padding + _lineHeight * (_numMessageLines + (_iconFitLastLine ? 0 : 1))); // TODO: will cause error
       return;
     } else {
-      print("Value not null");
       _valuePainter.layout(maxWidth: constraints.maxWidth);
       _valueWidth = _valuePainter.computeLineMetrics().first.width;
       _lineHeight = _lineHeight == 0 ? _valuePainter.computeLineMetrics().first.height : _lineHeight;
     }
-    print("Default");
     _valuePosition = _value! * constraints.maxWidth + _valueWidth;
-    _messageFitsLeft = _longestLineWidth < _valuePosition - padding;
+    _messageFitsLeft = _longestLineWidth < _valuePosition - padding - _valueWidth;
     if (_iconSize != null) {
-      print("Icon not null");
       double maxOcupiedWidth = 0;
       if (_value != null || _valuePresentation != null) {
         maxOcupiedWidth = max(_valuePosition + _valueWidth, maxOcupiedWidth);
@@ -168,14 +177,13 @@ class _LabelRenderObject extends RenderBox {
         if (_numMessageLines > 1) {
           maxOcupiedWidth = _lastLineWidth;
         } else {
-          maxOcupiedWidth = max(_lastLineWidth - padding, maxOcupiedWidth);
+          maxOcupiedWidth = max(_lastLineWidth, maxOcupiedWidth);
         }
       }
-      _iconFitLastLine = maxOcupiedWidth < constraints.maxWidth - _iconSize! - padding;
+      _iconFitLastLine = maxOcupiedWidth < constraints.maxWidth - _iconSize!;
     }
 
     int additionaLines = (_messageFitsLeft ? 0 : 1) + (_iconFitLastLine ? 0 : 1);
-    print("additionaLines: $additionaLines, _iconFitLastLine: $_iconFitLastLine");
     _messageHeight = _lineHeight * (_numMessageLines + additionaLines);
     Size computedSize = Size(constraints.maxWidth, _messageHeight);
 
@@ -185,12 +193,16 @@ class _LabelRenderObject extends RenderBox {
   @override
   void paint(PaintingContext context, Offset offset) {
     if (_value != null && _valuePresentation != null) {
-      _valuePosition = _value! * constraints.maxWidth + _valueWidth;
+      _valuePosition = _value! * constraints.maxWidth - _valueWidth / 2;
       _valuePainter.paint(context.canvas, offset + Offset(_valuePosition, 0));
     }
     if (_message != null) {
       if (_messageFitsLeft) {
-        _messagePainter.paint(context.canvas, offset);
+        if (_value == null) {
+          _messagePainter.paint(context.canvas, offset + Offset(0, padding));
+        } else {
+          _messagePainter.paint(context.canvas, offset);
+        }
       } else {
         _messagePainter.paint(context.canvas, offset + Offset(0, _lineHeight));
       }
@@ -198,15 +210,19 @@ class _LabelRenderObject extends RenderBox {
 
     if (expandIcon != null && _iconSize != null && _iconPainter != null) {
       _iconPainter!.layout();
-      print(_iconFitLastLine);
-      final initialIconHeight =
-          (_messageFitsLeft ? 0 : _lineHeight) + _lineHeight * _numMessageLines - _iconSize! / 2 - _lineHeight / 2;
+      double initialIconHeight = (_messageFitsLeft ? 0 : _lineHeight) +
+          (_iconFitLastLine ? 0 : _lineHeight) +
+          _lineHeight * _numMessageLines -
+          _iconSize! / 2 -
+          _lineHeight / 2;
+      if (_value == null) initialIconHeight += padding;
+
       _iconPainter!.paint(
           context.canvas,
           offset +
               Offset(
                 constraints.maxWidth - _iconSize!,
-                _iconFitLastLine ? initialIconHeight : initialIconHeight + ((_iconFitLastLine ? 0 : 1) * _lineHeight),
+                initialIconHeight,
               ));
     }
   }

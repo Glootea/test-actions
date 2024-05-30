@@ -50,7 +50,7 @@ class _LessonListViewState extends State<LessonListView> {
                 Expanded(child: getHeadline("Активные")),
                 Padding(
                   padding: const EdgeInsets.only(right: 20),
-                  child: LessonCardButton(
+                  child: RoundedSquareButton(
                       backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.8),
                       icon: Icons.qr_code_scanner_outlined,
                       onTap: () => context.router.push(const QrScannerRoute())),

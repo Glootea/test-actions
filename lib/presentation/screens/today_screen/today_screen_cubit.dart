@@ -9,11 +9,9 @@ part 'today_screen_cubit.freezed.dart';
 
 class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
   final DatabaseService _databaseService;
-  final UserCubit _userCubit;
 
   TodayScreenCubit({required DatabaseService databaseService, required UserCubit userCubit})
       : _databaseService = databaseService,
-        _userCubit = userCubit,
         super(TodayScreenState.loading()) {
     init();
   }

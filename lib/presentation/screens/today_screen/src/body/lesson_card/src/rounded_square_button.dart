@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LessonCardButton extends StatelessWidget {
-  const LessonCardButton({
+class RoundedSquareButton extends StatelessWidget {
+  const RoundedSquareButton({
     super.key,
     required this.icon,
     required this.onTap,

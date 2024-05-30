@@ -12,7 +12,23 @@ class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(impl.connect());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (Migrator m, int from, int to) async {
+          await (
+            delete(queueRecs).go(),
+            delete(subject).go(),
+            delete(students).go(),
+            delete(weeklyLessons).go(),
+            delete(datedLessons).go(),
+            delete(keyValueStorageTable).go(),
+            delete(attendance).go(),
+          ).wait;
+          await m.createAll();
+        },
+      );
 
   Future<void> addQueueRecord(QueueRecord queueRecord) async {
     await into(queueRecs).insert(QueueRecsCompanion.insert(
