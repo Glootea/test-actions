@@ -19,8 +19,8 @@ class _LabeledLinearProgressIndicatorState extends State<LabeledLinearProgressIn
   Widget build(BuildContext context) {
     //TODO: fix not update on new data
     final value = widget.currentValue == null
-        ? 0.0
-        : 1.0 - (widget.currentValue!) - (widget.startValue!) / (widget.endValue!) - (widget.startValue!);
+        ? null
+        : 1.0 - ((widget.currentValue!) - (widget.startValue!)) / ((widget.endValue!) - (widget.startValue!));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -28,9 +28,9 @@ class _LabeledLinearProgressIndicatorState extends State<LabeledLinearProgressIn
         LinearProgressIndicator(
           value: value,
           color: Theme.of(context).colorScheme.primary,
-          backgroundColor: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.5),
+          backgroundColor: Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.1),
           borderRadius: BorderRadius.circular(2),
-          minHeight: value != 0 ? 4 : 2,
+          minHeight: value != null && value != 0 ? 4 : 2,
         ),
         _LabelBuilder(
           message: widget.message,

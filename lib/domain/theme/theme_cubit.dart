@@ -27,7 +27,7 @@ enum ThemePreset {
 
   static ThemePreset fromString(String name) {
     switch (name) {
-      case 'defaultPreset':
+      case 'defaultPreset' || 'null':
         return ThemePreset.defaultPreset;
       case 'white':
         return ThemePreset.white;
@@ -36,7 +36,7 @@ enum ThemePreset {
       case 'blue':
         return ThemePreset.blue;
       default:
-        throw Exception('Unknown color theme $name');
+        throw Exception('Unknown color theme: $name');
     }
   }
 }
@@ -94,10 +94,10 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   Future<void> setTheme({ThemePreset? themePreset, Brightness? brightness}) async {
     brightness ??= state.brightness;
-    // themePreset = ((ThemePreset.defaultPreset == themePreset) ? state.themePreset : themePreset);
+    themePreset ??= state.themePreset;
     emit(
       state.copyWith(
-        themePreset: themePreset ?? state.themePreset,
+        themePreset: themePreset,
         brightness: brightness,
       ),
     );

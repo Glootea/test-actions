@@ -19,14 +19,17 @@ class LessonCardData with _$LessonCardData {
         // user, lesson
         (null, final LessonStatus status) when status != LessonStatus.active && status != LessonStatus.soon =>
           'Вы не находитесь в очереди',
-        (UploadStatus.uploaded, _) => 'Вы ${queueData?.userPosition} в очереди после ${queueData?.previousStudentName}',
+        (UploadStatus.uploaded, _) when queueData?.userPosition != 1 =>
+          'Вы ${queueData?.userPosition} в очереди после ${queueData?.previousStudentName}',
+        (UploadStatus.uploaded, _) when queueData?.userPosition == 1 => 'Вы первый в очереди',
         (final UploadStatus status, _)
             when status == UploadStatus.shouldBeUploaded || status == UploadStatus.shouldBeDeleted =>
           'Ошибка сети',
         (_, LessonStatus.soon) => 'Очередь начнется в ${lesson.queueStartTime.toDisplayTime}',
         (_, LessonStatus.active) => 'Очередь началась!',
         (_, _) => throw UnimplementedError(
-            "${queueData?.userRecord?.status}, ${lesson.status} is unknown status to get LessonCardData's message",)
+            "${queueData?.userRecord?.status}, ${lesson.status} is unknown status to get LessonCardData's message",
+          )
       };
   ButtonState get buttonState => switch ((lesson.status, queueData?.userRecord?.status)) {
         (_, UploadStatus.shouldBeUploaded) => ButtonState.qrCode,

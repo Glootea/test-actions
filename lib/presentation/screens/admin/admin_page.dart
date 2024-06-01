@@ -11,8 +11,8 @@ class AdminPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final children = <(String, PageRouteInfo<void>)>[
       ('Студенты', const StudentAdminRoute()),
-      ('Занятия', const SubjectAdminRoute()),
-      ('Модерация очереди', const QueueAdminRoute()),
+      // ('Занятия',  SubjectAdminRoute()),
+      // ('Модерация очереди',  QueueAdminRoute()),
       ('Телеграм бот', const TelegramBotAdminRoute()),
     ];
     return Scaffold(

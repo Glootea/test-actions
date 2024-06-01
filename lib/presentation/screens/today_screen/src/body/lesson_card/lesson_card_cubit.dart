@@ -43,7 +43,7 @@ class LessonCardCubit extends Cubit<LessonCardData> {
     final queueLength = queue.length;
     var userPosition = queueLength;
     if (userQueueRecord != null) {
-      userPosition = queue.indexWhere((el) => el.studentID == userRowNumber);
+      userPosition = queue.indexWhere((el) => el.studentID == userRowNumber) + 1;
     }
     return QueueData(
       queueLength: queueLength,

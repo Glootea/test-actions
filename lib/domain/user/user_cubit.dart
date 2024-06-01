@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/domain/user/user.dart';
@@ -15,11 +16,13 @@ class UserCubit extends Cubit<User?> {
       _storage.get(StoredValues.userRowNumber),
       _storage.get(StoredValues.userIsAdmin)
     ).wait;
+    _inited = true;
     if (rowNumberString == null || userName == null) return;
     final rowNumber = int.parse(rowNumberString);
     emit(User(name: userName, id: rowNumber, isAdmin: isAdmin == 'true'));
-    log('User cubit initialized: $state');
-    _inited = true;
+    if (kDebugMode) {
+      print('User cubit initialized: $state');
+    }
   }
 
   Future<void> login({
@@ -27,7 +30,7 @@ class UserCubit extends Cubit<User?> {
     required int rowNumber,
     required bool isAdmin,
   }) async {
-    assert(_inited == true, "User cubit hasn't been initialized");
+    assert(_inited == true, "User cubit hasn't been initialized for login");
     emit(User(name: name, id: rowNumber, isAdmin: isAdmin));
     await (
       _storage.set(StoredValues.userName, name),
@@ -38,7 +41,7 @@ class UserCubit extends Cubit<User?> {
   }
 
   Future<void> logout() async {
-    assert(_inited == true, "User cubit hasn't been initialized");
+    assert(_inited == true, "User cubit hasn't been initialized for logout");
     emit(null);
     await (
       _storage.clean(StoredValues.userName),

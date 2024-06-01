@@ -53,9 +53,8 @@ class _LabelRenderObject extends RenderBox {
     _value = value;
     _style = style;
     _valuePresentation = valuePresentation;
-    _messagePainter = TextPainter(text: TextSpan(text: _message, style: _style), textDirection: TextDirection.ltr);
-    _valuePainter =
-        TextPainter(text: TextSpan(text: _valuePresentation, style: _style), textDirection: TextDirection.ltr);
+    _messagePainter = TextPainter(text: messageTextSpan, textDirection: TextDirection.ltr);
+    _valuePainter = TextPainter(text: valueTextSpan, textDirection: TextDirection.ltr);
     _expandIcon = expandIcon;
     _iconSize = iconSize;
     if (_iconSize != null && _expandIcon != null) {
@@ -132,7 +131,7 @@ class _LabelRenderObject extends RenderBox {
   TextSpan get valueTextSpan => TextSpan(text: _valuePresentation, style: _style);
   TextSpan get iconTextSpan => TextSpan(
         text: String.fromCharCode(expandIcon!.codePoint),
-        style: TextStyle(fontSize: _iconSize, fontFamily: expandIcon!.fontFamily),
+        style: _style?.copyWith(fontSize: _iconSize, fontFamily: expandIcon!.fontFamily),
       );
 
   double _longestLineWidth = 0;
@@ -174,6 +173,7 @@ class _LabelRenderObject extends RenderBox {
     _messageFitsLeft = _longestLineWidth < _valuePosition - padding - _valueWidth;
     if (_iconSize != null) {
       var maxOcupiedWidth = 0.0;
+      _iconPainter!.layout();
       if (_value != null || _valuePresentation != null) {
         maxOcupiedWidth = max(_valuePosition + _valueWidth, maxOcupiedWidth);
       }
@@ -202,24 +202,20 @@ class _LabelRenderObject extends RenderBox {
     }
     if (_message != null) {
       if (_messageFitsLeft) {
-        if (_value == null) {
-          _messagePainter.paint(context.canvas, offset + Offset(0, padding));
-        } else {
-          _messagePainter.paint(context.canvas, offset);
-        }
+        _messagePainter.paint(context.canvas, offset + Offset(0, padding));
       } else {
         _messagePainter.paint(context.canvas, offset + Offset(0, _lineHeight));
       }
     }
 
     if (expandIcon != null && _iconSize != null && _iconPainter != null) {
-      _iconPainter!.layout();
-      var initialIconHeight = (_messageFitsLeft ? 0 : _lineHeight) +
+      final initialIconHeight = (_messageFitsLeft ? padding : _lineHeight) +
           (_iconFitLastLine ? 0 : _lineHeight) +
           _lineHeight * _numMessageLines -
           _iconSize! / 2 -
           _lineHeight / 2;
-      if (_value == null) initialIconHeight += padding;
+
+      // if (_value == null) initialIconHeight += padding;
 
       _iconPainter!.paint(
         context.canvas,

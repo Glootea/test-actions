@@ -14,7 +14,7 @@ class QueueData with _$QueueData {
   const QueueData._();
 
   String? get previousStudentName {
-    if (userPosition != null) {
+    if (userPosition != null && userPosition! > 1) {
       return queueRecordList[userPosition! - 1].studentName;
     }
     return null;
@@ -23,9 +23,10 @@ class QueueData with _$QueueData {
   /// Used for optimistic UI to show updates before it is uploaded to the server
   QueueData shouldBeUploaded(Lesson lesson, int studentID) {
     return copyWith(
-        live: false,
-        queueLength: queueLength + 1,
-        userPosition: queueLength + 1,
-        userRecord: QueueRecord.shouldBeUploaded(lesson, studentID),);
+      live: false,
+      queueLength: queueLength + 1,
+      userPosition: queueLength + 1,
+      userRecord: QueueRecord.shouldBeUploaded(lesson, studentID),
+    );
   }
 }

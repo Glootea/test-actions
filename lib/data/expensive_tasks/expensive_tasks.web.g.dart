@@ -4,12 +4,14 @@
 // Generator: WorkerGenerator 2.4.2
 // **************************************************************************
 
-import 'package:queue/data/expensive_tasks/expensive_tasks.dart';
 import 'package:squadron/squadron.dart';
+
+import 'expensive_tasks.dart';
 
 void main() {
   /// Web entry point for ExpensiveTasks
-  run($ExpensiveTasksInitializer);
+  run($ExpensiveTasksInitializer, null, null);
 }
 
-EntryPoint $getExpensiveTasksActivator() => 'lib/data/expensive_tasks/expensive_tasks.web.g.dart.js';
+EntryPoint $getExpensiveTasksActivator() =>
+    'lib/data/expensive_tasks/expensive_tasks.web.g.dart.js';

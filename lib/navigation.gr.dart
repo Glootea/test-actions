@@ -32,9 +32,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     QueueAdminRoute.name: (routeData) {
+      final args = routeData.argsAs<QueueAdminRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const QueueAdminPage(),
+        child: QueueAdminPage(
+          data: args.data,
+          key: args.key,
+        ),
       );
     },
     QrScannerRoute.name: (routeData) {
@@ -50,9 +54,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     SubjectAdminRoute.name: (routeData) {
+      final args = routeData.argsAs<SubjectAdminRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const SubjectAdminPage(),
+        child: SubjectAdminScreen(
+          data: args.data,
+          key: args.key,
+        ),
       );
     },
     TelegramBotAdminRoute.name: (routeData) {
@@ -124,16 +132,40 @@ class DetailedQueueRouteArgs {
 
 /// generated route for
 /// [QueueAdminPage]
-class QueueAdminRoute extends PageRouteInfo<void> {
-  const QueueAdminRoute({List<PageRouteInfo>? children})
-      : super(
+class QueueAdminRoute extends PageRouteInfo<QueueAdminRouteArgs> {
+  QueueAdminRoute({
+    required LessonCardData data,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
           QueueAdminRoute.name,
+          args: QueueAdminRouteArgs(
+            data: data,
+            key: key,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'QueueAdminRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<QueueAdminRouteArgs> page =
+      PageInfo<QueueAdminRouteArgs>(name);
+}
+
+class QueueAdminRouteArgs {
+  const QueueAdminRouteArgs({
+    required this.data,
+    this.key,
+  });
+
+  final LessonCardData data;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'QueueAdminRouteArgs{data: $data, key: $key}';
+  }
 }
 
 /// generated route for
@@ -165,17 +197,41 @@ class StudentAdminRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [SubjectAdminPage]
-class SubjectAdminRoute extends PageRouteInfo<void> {
-  const SubjectAdminRoute({List<PageRouteInfo>? children})
-      : super(
+/// [SubjectAdminScreen]
+class SubjectAdminRoute extends PageRouteInfo<SubjectAdminRouteArgs> {
+  SubjectAdminRoute({
+    required LessonCardData data,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
           SubjectAdminRoute.name,
+          args: SubjectAdminRouteArgs(
+            data: data,
+            key: key,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'SubjectAdminRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<SubjectAdminRouteArgs> page =
+      PageInfo<SubjectAdminRouteArgs>(name);
+}
+
+class SubjectAdminRouteArgs {
+  const SubjectAdminRouteArgs({
+    required this.data,
+    this.key,
+  });
+
+  final LessonCardData data;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'SubjectAdminRouteArgs{data: $data, key: $key}';
+  }
 }
 
 /// generated route for

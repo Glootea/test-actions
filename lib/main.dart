@@ -29,40 +29,52 @@ void main() async {
   final databaseService = DatabaseService(localDatabase: localDatabase, onlineDataBase: onlineDatabase);
   final userCubit = UserCubit(keyValueStorage);
   final themeCubit = ThemeCubit(keyValueStorage);
-  await (themeCubit.init(), userCubit.init()).wait;
-  runApp(MultiBlocProvider(providers: [
-    Provider.value(value: databaseService),
-    Provider.value(value: keyValueStorage),
-    BlocProvider.value(value: userCubit),
-    BlocProvider.value(value: themeCubit),
-    BlocProvider(create: (_) => GroupMetaInfoCubit(keyValueStorage)),
-  ], child: const MyApp(),),);
+  final _ = await (themeCubit.init(), userCubit.init()).wait;
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        Provider.value(value: databaseService),
+        Provider.value(value: keyValueStorage),
+        BlocProvider.value(value: userCubit),
+        BlocProvider.value(value: themeCubit),
+        BlocProvider(create: (_) => GroupMetaInfoCubit(keyValueStorage)),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
+
+final _appRouter = AppRouter();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final appRouter = AppRouter();
-    return BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
-      return DynamicColorBuilder(builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        final colorScheme = state.getScheme ??
-            (((state.brightness) == Brightness.dark) ? darkDynamic : lightDynamic) ??
-            const ColorScheme.dark();
-        return MaterialApp.router(
-            title: 'QueueMinder',
-            builder: (context, child) => MediaQuery(
-                  data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-                  child: child ?? Container(),
-                ),
-            routerConfig: appRouter.config(),
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        return DynamicColorBuilder(
+          builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+            final colorScheme = state.getScheme ??
+                (((state.brightness) == Brightness.dark) ? darkDynamic : lightDynamic) ??
+                const ColorScheme.dark();
+            return MaterialApp.router(
+              title: 'QueueMinder',
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                child: child ?? Container(),
+              ),
+              routerConfig: _appRouter.config(),
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
                 fontFamily: 'Roboto',
                 colorScheme: colorScheme,
-                timePickerTheme: TimePickerThemeData(dayPeriodColor: Theme.of(context).colorScheme.primaryContainer),),);
-      },);
-    },);
+                timePickerTheme: TimePickerThemeData(dayPeriodColor: Theme.of(context).colorScheme.primaryContainer),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
