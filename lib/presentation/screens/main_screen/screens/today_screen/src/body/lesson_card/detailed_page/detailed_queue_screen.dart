@@ -8,12 +8,12 @@ import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/common_src/go_to_tile.dart';
 import 'package:queue/presentation/common_src/screen_headline.dart';
-import 'package:queue/presentation/screens/today_screen/src/app_bar/circular_update_timer.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/detailed_page/src/queue_record_listtile.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/app_bar/circular_update_timer.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/detailed_page/src/queue_record_listtile.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
 
 @RoutePage()
 class DetailedQueueScreen extends StatelessWidget {
@@ -100,7 +100,7 @@ class DetailedQueueScreen extends StatelessWidget {
                           GoToTile(
                             title: 'Перейти к изменению занятия',
                             route: SubjectAdminRoute(data: data),
-                            heroTitle: 'SubjectPage${data.lesson}',
+                            heroTag: 'SubjectPage${data.lesson}',
                           ),
                           const Gap(16),
                           GoToTile(title: 'Перейти к изменению очереди', route: QueueAdminRoute(data: data)),

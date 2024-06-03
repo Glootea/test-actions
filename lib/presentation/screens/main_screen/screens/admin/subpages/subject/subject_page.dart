@@ -5,11 +5,11 @@ import 'package:gap/gap.dart';
 import 'package:queue/presentation/common_src/defined_text.dart';
 import 'package:queue/presentation/common_src/expandable_block.dart';
 import 'package:queue/presentation/common_src/toggle_row.dart';
-import 'package:queue/presentation/screens/admin/admin_settings_screen_template.dart';
-import 'package:queue/presentation/screens/admin/subpages/subject/src/lesson_koef_slider.dart';
-import 'package:queue/presentation/screens/admin/subpages/subject/src/lesson_times_table.dart';
-import 'package:queue/presentation/screens/admin/subpages/subject/subject_bloc.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/main_screen/screens/admin/admin_settings_screen_template.dart';
+import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/src/lesson_koef_slider.dart';
+import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/src/lesson_times_table.dart';
+import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/subject_bloc.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
 
 @RoutePage()
 class SubjectAdminScreen extends StatelessWidget {

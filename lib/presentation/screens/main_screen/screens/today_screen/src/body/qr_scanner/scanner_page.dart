@@ -9,7 +9,7 @@ import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/encryprion.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/qr_scanner/scanner_states.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/qr_scanner/scanner_states.dart';
 
 part 'scanner_page_cubit.dart';
 

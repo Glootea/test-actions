@@ -21,6 +21,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const AdminPage(),
       );
     },
+    DeadlineRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const DeadlineScreen(),
+      );
+    },
     DetailedQueueRoute.name: (routeData) {
       final args = routeData.argsAs<DetailedQueueRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -29,6 +35,12 @@ abstract class _$AppRouter extends RootStackRouter {
           args.cubit,
           key: args.key,
         ),
+      );
+    },
+    MainRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const MainScreen(),
       );
     },
     QueueAdminRoute.name: (routeData) {
@@ -69,6 +81,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const TelegramBotAdminPage(),
       );
     },
+    ThemeSettingsRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const ThemeSettingsScreen(),
+      );
+    },
     TodayRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -88,6 +106,20 @@ class AdminRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'AdminRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DeadlineScreen]
+class DeadlineRoute extends PageRouteInfo<void> {
+  const DeadlineRoute({List<PageRouteInfo>? children})
+      : super(
+          DeadlineRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'DeadlineRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
@@ -128,6 +160,20 @@ class DetailedQueueRouteArgs {
   String toString() {
     return 'DetailedQueueRouteArgs{cubit: $cubit, key: $key}';
   }
+}
+
+/// generated route for
+/// [MainScreen]
+class MainRoute extends PageRouteInfo<void> {
+  const MainRoute({List<PageRouteInfo>? children})
+      : super(
+          MainRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'MainRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
@@ -244,6 +290,20 @@ class TelegramBotAdminRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'TelegramBotAdminRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ThemeSettingsScreen]
+class ThemeSettingsRoute extends PageRouteInfo<void> {
+  const ThemeSettingsRoute({List<PageRouteInfo>? children})
+      : super(
+          ThemeSettingsRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'ThemeSettingsRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }

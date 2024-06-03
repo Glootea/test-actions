@@ -33,6 +33,7 @@ class AdminPage extends StatelessWidget {
             const Gap(16),
             ListView.separated(
               shrinkWrap: true,
+              itemCount: children.length,
               itemBuilder: (context, index) => ListTile(
                 title: Text(
                   children[index].$1,
@@ -42,7 +43,6 @@ class AdminPage extends StatelessWidget {
                 onTap: () async => AutoRouter.of(context).push(children[index].$2),
               ),
               separatorBuilder: (context, index) => const Divider(),
-              itemCount: 4,
             ),
           ],
         ),

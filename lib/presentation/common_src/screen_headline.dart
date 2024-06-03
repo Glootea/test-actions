@@ -14,11 +14,14 @@ class ScreenHeadline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => AutoRouter.of(context).maybePop(),
-      child: Hero(
-        tag: heroTag,
-        child: H1(title),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: () => AutoRouter.of(context).maybePop(),
+        child: Hero(
+          tag: heroTag,
+          child: H1(title),
+        ),
       ),
     );
   }

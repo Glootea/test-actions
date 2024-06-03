@@ -93,8 +93,8 @@ const _whiteLightColorScheme = ColorScheme(
   onError: Colors.redAccent,
   surface: Colors.white,
   onSurface: Colors.black,
-  primaryContainer: Colors.black,
-  onPrimaryContainer: Colors.white,
+  primaryContainer: Colors.white,
+  onPrimaryContainer: Colors.black,
   surfaceContainerLow: Colors.white60,
 );
 

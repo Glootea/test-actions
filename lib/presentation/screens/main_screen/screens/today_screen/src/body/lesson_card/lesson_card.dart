@@ -7,11 +7,11 @@ import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/navigation.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/qr_code_dialog/qr_code_dialog.dart';
-import 'package:queue/presentation/screens/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/src/qr_code_dialog/qr_code_dialog.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/src/rounded_square_button.dart';
 
 enum ButtonState { add, remove, qrCode, none }
 
