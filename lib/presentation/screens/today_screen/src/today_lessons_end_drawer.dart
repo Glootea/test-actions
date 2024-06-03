@@ -1,20 +1,73 @@
-import 'package:auto_route/auto_route.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:queue/domain/theme/theme_cubit.dart';
 import 'package:queue/domain/user/user_cubit.dart';
-import 'package:queue/navigation.dart';
+import 'package:queue/presentation/common_src/defined_text.dart';
+import 'package:queue/presentation/common_src/expandable_block.dart';
+import 'package:queue/presentation/common_src/toggle_row.dart';
 
 class TodayLessonsEndDrawer extends StatelessWidget {
   const TodayLessonsEndDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeCubit = context.read<ThemeCubit>();
     final children = [
-      Text('Тема', style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
-      const Gap(16),
-      const ThemePicker(),
+      const H2('Тема'),
+      BlocSelector<ThemeCubit, ThemeState, Brightness>(
+        builder: (context, state) => ToggleRow(
+          text: 'Темная тема: ',
+          onChanged: (_) =>
+              themeCubit.setTheme(brightness: state == Brightness.dark ? Brightness.light : Brightness.dark),
+          initialValue: state == Brightness.dark,
+        ),
+        selector: (state) => state.brightness,
+      ),
+      ExpandableBlock(
+        isExpanded: !kIsWeb && (Platform.isAndroid || Platform.isLinux || Platform.isMacOS || Platform.isWindows),
+        showDividers: false,
+        children: [
+          BlocSelector<ThemeCubit, ThemeState, ThemePreset>(
+            selector: (state) => state.themePreset,
+            builder: (context, state) => ToggleRow(
+              text: 'Динамическая тема: ',
+              onChanged: (value) =>
+                  themeCubit.setTheme(themePreset: value ? ThemePreset.dynamicTheme : ThemePreset.white),
+              initialValue: state == ThemePreset.dynamicTheme,
+            ),
+          ),
+        ],
+      ),
+      BlocSelector<ThemeCubit, ThemeState, bool>(
+        selector: (state) => state.themePreset != ThemePreset.dynamicTheme,
+        builder: (context, state) => ExpandableBlock(
+          isExpanded: state,
+          showDividers: false,
+          children: const [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: H3('Цветовая тема: '),
+            ),
+            ThemeColorPicker(),
+          ],
+        ),
+      ),
+      BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, state) => ExpandableBlock(
+          isExpanded: state.themePreset.backgroundImagePossible,
+          showDividers: false,
+          children: [
+            ToggleRow(
+              text: 'Изображение на фоне: ',
+              onChanged: (value) => themeCubit.setTheme(showBackgroundImage: value),
+              initialValue: themeCubit.state.showBackgroundImage,
+            ),
+          ],
+        ),
+      ),
+      const Divider(),
       OutlinedButton(
         onPressed: () => context.read<UserCubit>().login(name: 'Sasha', isAdmin: false, rowNumber: 1),
         child: const Text('Войти'),
@@ -36,18 +89,19 @@ class TodayLessonsEndDrawer extends StatelessWidget {
   }
 }
 
-class ThemePicker extends StatelessWidget {
-  const ThemePicker({
+class ThemeColorPicker extends StatelessWidget {
+  const ThemeColorPicker({
     super.key,
   });
-  List<Widget> _getChildren(BuildContext context, ThemeState state) =>
-      <Widget>[_BrightnessToggleItem(state)] +
-      ThemePreset.values.map((preset) => _ColorPickerItem(preset, state)).toList();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeState>(
       builder: (context, state) {
-        final children = _getChildren(context, state);
+        final children = ThemePreset.values
+            .where((preset) => preset != ThemePreset.dynamicTheme)
+            .map((preset) => _ColorPickerItem(preset, state))
+            .toList();
         return GridView.builder(
           itemCount: children.length,
           shrinkWrap: true,
@@ -74,29 +128,29 @@ class _ColorPickerItem extends StatelessWidget {
             brightness: state.brightness,
           ),
       selected: selected,
-      child: (color == Colors.transparent) ? const Center(child: Text('D')) : Container(color: color),
+      child: Container(color: color),
     );
   }
 }
 
-class _BrightnessToggleItem extends StatelessWidget {
-  const _BrightnessToggleItem(this.state);
-  final ThemeState state;
+// class _BrightnessToggleItem extends StatelessWidget {
+//   const _BrightnessToggleItem(this.state);
+//   final ThemeState state;
 
-  @override
-  Widget build(BuildContext context) {
-    return _ThemePickerItem(
-      onTap: () => context
-          .read<ThemeCubit>()
-          .setTheme(brightness: (state.brightness == Brightness.dark) ? Brightness.light : Brightness.dark),
-      selected: false,
-      child: switch (state.brightness) {
-        Brightness.light => const Icon(Icons.light_mode_outlined),
-        Brightness.dark => const Icon(Icons.dark_mode_outlined)
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return _ThemePickerItem(
+//       onTap: () => context
+//           .read<ThemeCubit>()
+//           .setTheme(brightness: (state.brightness == Brightness.dark) ? Brightness.light : Brightness.dark),
+//       selected: false,
+//       child: switch (state.brightness) {
+//         Brightness.light => const Icon(Icons.light_mode_outlined),
+//         Brightness.dark => const Icon(Icons.dark_mode_outlined)
+//       },
+//     );
+//   }
+// }
 
 class _ThemePickerItem extends StatelessWidget {
   const _ThemePickerItem({

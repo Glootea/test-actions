@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ThemeState {
   ThemePreset get themePreset => throw _privateConstructorUsedError;
   Brightness get brightness => throw _privateConstructorUsedError;
+  bool get showBackgroundImage => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ThemeStateCopyWith<ThemeState> get copyWith =>
@@ -30,7 +31,10 @@ abstract class $ThemeStateCopyWith<$Res> {
           ThemeState value, $Res Function(ThemeState) then) =
       _$ThemeStateCopyWithImpl<$Res, ThemeState>;
   @useResult
-  $Res call({ThemePreset themePreset, Brightness brightness});
+  $Res call(
+      {ThemePreset themePreset,
+      Brightness brightness,
+      bool showBackgroundImage});
 }
 
 /// @nodoc
@@ -48,6 +52,7 @@ class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState>
   $Res call({
     Object? themePreset = null,
     Object? brightness = null,
+    Object? showBackgroundImage = null,
   }) {
     return _then(_value.copyWith(
       themePreset: null == themePreset
@@ -58,6 +63,10 @@ class _$ThemeStateCopyWithImpl<$Res, $Val extends ThemeState>
           ? _value.brightness
           : brightness // ignore: cast_nullable_to_non_nullable
               as Brightness,
+      showBackgroundImage: null == showBackgroundImage
+          ? _value.showBackgroundImage
+          : showBackgroundImage // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -70,7 +79,10 @@ abstract class _$$ThemeStateImplCopyWith<$Res>
       __$$ThemeStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({ThemePreset themePreset, Brightness brightness});
+  $Res call(
+      {ThemePreset themePreset,
+      Brightness brightness,
+      bool showBackgroundImage});
 }
 
 /// @nodoc
@@ -86,6 +98,7 @@ class __$$ThemeStateImplCopyWithImpl<$Res>
   $Res call({
     Object? themePreset = null,
     Object? brightness = null,
+    Object? showBackgroundImage = null,
   }) {
     return _then(_$ThemeStateImpl(
       themePreset: null == themePreset
@@ -96,6 +109,10 @@ class __$$ThemeStateImplCopyWithImpl<$Res>
           ? _value.brightness
           : brightness // ignore: cast_nullable_to_non_nullable
               as Brightness,
+      showBackgroundImage: null == showBackgroundImage
+          ? _value.showBackgroundImage
+          : showBackgroundImage // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -103,17 +120,22 @@ class __$$ThemeStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
-  const _$ThemeStateImpl({required this.themePreset, required this.brightness})
+  const _$ThemeStateImpl(
+      {required this.themePreset,
+      required this.brightness,
+      required this.showBackgroundImage})
       : super._();
 
   @override
   final ThemePreset themePreset;
   @override
   final Brightness brightness;
+  @override
+  final bool showBackgroundImage;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ThemeState(themePreset: $themePreset, brightness: $brightness)';
+    return 'ThemeState(themePreset: $themePreset, brightness: $brightness, showBackgroundImage: $showBackgroundImage)';
   }
 
   @override
@@ -122,7 +144,8 @@ class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
     properties
       ..add(DiagnosticsProperty('type', 'ThemeState'))
       ..add(DiagnosticsProperty('themePreset', themePreset))
-      ..add(DiagnosticsProperty('brightness', brightness));
+      ..add(DiagnosticsProperty('brightness', brightness))
+      ..add(DiagnosticsProperty('showBackgroundImage', showBackgroundImage));
   }
 
   @override
@@ -133,11 +156,14 @@ class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
             (identical(other.themePreset, themePreset) ||
                 other.themePreset == themePreset) &&
             (identical(other.brightness, brightness) ||
-                other.brightness == brightness));
+                other.brightness == brightness) &&
+            (identical(other.showBackgroundImage, showBackgroundImage) ||
+                other.showBackgroundImage == showBackgroundImage));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, themePreset, brightness);
+  int get hashCode =>
+      Object.hash(runtimeType, themePreset, brightness, showBackgroundImage);
 
   @JsonKey(ignore: true)
   @override
@@ -149,13 +175,16 @@ class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
 abstract class _ThemeState extends ThemeState {
   const factory _ThemeState(
       {required final ThemePreset themePreset,
-      required final Brightness brightness}) = _$ThemeStateImpl;
+      required final Brightness brightness,
+      required final bool showBackgroundImage}) = _$ThemeStateImpl;
   const _ThemeState._() : super._();
 
   @override
   ThemePreset get themePreset;
   @override
   Brightness get brightness;
+  @override
+  bool get showBackgroundImage;
   @override
   @JsonKey(ignore: true)
   _$$ThemeStateImplCopyWith<_$ThemeStateImpl> get copyWith =>

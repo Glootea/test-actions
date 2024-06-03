@@ -1,3 +1,5 @@
+// ignore_for_file: require_trailing_commas
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,8 +8,11 @@ import 'package:queue/data/database/sources/local_database/local_database.dart';
 part 'theme_cubit.freezed.dart';
 
 enum ThemePreset {
-  defaultPreset(Colors.transparent),
-  white(Colors.white),
+  dynamicTheme(Colors.transparent),
+  white(
+    Colors.white,
+    'https://firebasestorage.googleapis.com/v0/b/queueminder.appspot.com/o/themes%2Fblack%2Fpanda.png?alt=media&token=5300bcff-1e05-4175-83a8-731fcda7ce19',
+  ),
   green(Colors.green),
   blue(Colors.blue),
   red(Colors.red),
@@ -18,18 +23,19 @@ enum ThemePreset {
   // #D0E6A5 #FFDD94 #FA897B #CCABD8
   ;
 
-  const ThemePreset(this.color);
+  const ThemePreset(this.color, [this.backgroundImagePath]);
 
   final Color color;
+  final String? backgroundImagePath;
 
   @override
   String toString() => name;
 
   static ThemePreset fromString(String name) {
     switch (name) {
-      case 'defaultPreset' || 'null':
-        return ThemePreset.defaultPreset;
-      case 'white':
+      case 'defaultPreset':
+        return ThemePreset.dynamicTheme;
+      case 'white' || 'null':
         return ThemePreset.white;
       case 'green':
         return ThemePreset.green;
@@ -39,6 +45,8 @@ enum ThemePreset {
         throw Exception('Unknown color theme: $name');
     }
   }
+
+  bool get backgroundImagePossible => backgroundImagePath != null;
 }
 
 @freezed
@@ -46,40 +54,67 @@ class ThemeState with _$ThemeState {
   const factory ThemeState({
     required ThemePreset themePreset,
     required Brightness brightness,
+    required bool showBackgroundImage,
   }) = _ThemeState;
 
   const ThemeState._();
   factory ThemeState.getDefault() =>
-      const ThemeState(themePreset: ThemePreset.defaultPreset, brightness: Brightness.dark);
+      const ThemeState(themePreset: ThemePreset.dynamicTheme, brightness: Brightness.dark, showBackgroundImage: true);
 
-  String? get getBackgroundImagePath => switch (themePreset) {
-        ThemePreset.defaultPreset => null,
-        _ => null,
-      };
   ColorScheme? get getScheme => switch (themePreset) {
-        ThemePreset.white => ColorScheme.fromSeed(seedColor: Colors.white, brightness: brightness),
+        ThemePreset.white => brightness == Brightness.light ? _whiteLightColorScheme : _whiteDarkColorScheme,
         ThemePreset.green => ColorScheme.fromSeed(seedColor: Colors.green, brightness: brightness),
         ThemePreset.blue => ColorScheme.fromSeed(seedColor: Colors.blue, brightness: brightness),
         _ => null
       };
 }
 
+const _whiteDarkColorScheme = ColorScheme(
+  brightness: Brightness.dark,
+  primary: Colors.white,
+  onPrimary: Colors.black,
+  secondary: Colors.black87,
+  onSecondary: Colors.black,
+  error: Colors.redAccent,
+  onError: Colors.redAccent,
+  surface: Colors.black54,
+  onSurface: Colors.white,
+  primaryContainer: Colors.black,
+  onPrimaryContainer: Colors.white,
+);
+
+const _whiteLightColorScheme = ColorScheme(
+  brightness: Brightness.light,
+  primary: Colors.black,
+  onPrimary: Colors.white,
+  secondary: Colors.black,
+  onSecondary: Colors.white,
+  error: Colors.redAccent,
+  onError: Colors.redAccent,
+  surface: Colors.white,
+  onSurface: Colors.black,
+  primaryContainer: Colors.black,
+  onPrimaryContainer: Colors.white,
+  surfaceContainerLow: Colors.white60,
+);
+
 class ThemeCubit extends Cubit<ThemeState> {
   ThemeCubit(this._keyValueStorage) : super(ThemeState.getDefault());
   final KeyValueStorage _keyValueStorage;
 
   Future<void> init() async {
-    final (colorPreset, brightness) = await (getColorPreset, getBrightness).wait;
+    final (colorPreset, brightness, showBackgroundImage) =
+        await (getColorPreset, getBrightness, getShowBackgroundImage).wait;
     if (kDebugMode) {
-      print('Go cached: $colorPreset $brightness');
+      print('Go cached: $colorPreset $brightness $showBackgroundImage');
     }
-    await setTheme(themePreset: colorPreset, brightness: brightness);
+    await setTheme(themePreset: colorPreset, brightness: brightness, showBackgroundImage: showBackgroundImage);
   }
 
   Future<ThemePreset> get getColorPreset async {
     final storedValue = await _keyValueStorage.get(StoredValues.colorTheme);
     if (storedValue == null) {
-      return ThemePreset.defaultPreset;
+      return ThemePreset.dynamicTheme;
     }
     return ThemePreset.fromString(storedValue);
   }
@@ -92,31 +127,28 @@ class ThemeCubit extends Cubit<ThemeState> {
     return storedValue == Brightness.dark.toString() ? Brightness.dark : Brightness.light;
   }
 
-  Future<void> setTheme({ThemePreset? themePreset, Brightness? brightness}) async {
+  Future<bool> get getShowBackgroundImage async {
+    final storedValue = await _keyValueStorage.get(StoredValues.showBackgroundImage);
+    if (storedValue == null) {
+      return true;
+    }
+    return storedValue == 'true';
+  }
+
+  Future<void> setTheme({ThemePreset? themePreset, Brightness? brightness, bool? showBackgroundImage}) async {
     brightness ??= state.brightness;
     themePreset ??= state.themePreset;
+    showBackgroundImage ??= state.showBackgroundImage;
+
     emit(
       state.copyWith(
         themePreset: themePreset,
         brightness: brightness,
+        showBackgroundImage: showBackgroundImage,
       ),
     );
     await _keyValueStorage.set(StoredValues.colorTheme, themePreset.toString());
     await _keyValueStorage.set(StoredValues.brightness, brightness.toString());
+    await _keyValueStorage.set(StoredValues.showBackgroundImage, showBackgroundImage.toString());
   }
-
-  // static const _colorTheme = ColorScheme(
-  //     brightness: Brightness.dark,
-  //     primary: Colors.white,
-  //     onPrimary: Colors.black,
-  //     secondary: Colors.grey,
-  //     onSecondary: Colors.black,
-  //     error: Colors.red,
-  //     onError: Colors.redAccent,
-  //     background: Colors.black,
-  //     onBackground: Colors.white,
-  //     surface: Colors.black38,
-  //     onSurface: Colors.white,
-  //     primaryContainer: Colors.black,
-  //     onPrimaryContainer: Colors.white);
 }

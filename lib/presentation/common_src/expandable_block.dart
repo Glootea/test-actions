@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class ExpandableBlock extends StatelessWidget {
-  const ExpandableBlock({required this.children, required this.isExpanded, super.key});
+  const ExpandableBlock({required this.children, required this.isExpanded, this.showDividers = true, super.key});
   final List<Widget> children;
   final bool isExpanded;
+  final bool showDividers;
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +14,9 @@ class ExpandableBlock extends StatelessWidget {
       child: isExpanded
           ? Column(
               children: [
-                const Divider(),
+                if (showDividers) const Divider(),
                 ...children,
-                const Divider(),
+                if (showDividers) const Divider(),
               ],
             )
           : Container(),

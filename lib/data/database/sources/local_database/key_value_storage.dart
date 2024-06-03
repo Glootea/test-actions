@@ -2,7 +2,7 @@ part of 'local_database.dart';
 
 enum StoredValues {
   infoTableID,
-  backgroundImage,
+  showBackgroundImage,
   userName,
   shouldUpdate,
   userIsAdmin,
@@ -17,7 +17,6 @@ enum StoredValues {
 }
 
 class KeyValueStorage {
-
   KeyValueStorage(this._database);
   final LocalDatabase _database;
   Future<String?> get(StoredValues storedValue) async => _database._get(storedValue);

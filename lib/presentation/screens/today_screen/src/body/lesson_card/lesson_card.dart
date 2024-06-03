@@ -46,9 +46,11 @@ class _LessonCardState extends State<LessonCard> {
             onTap: () async => AutoRouter.of(context).push(DetailedQueueRoute(cubit: cubit)),
             child: Card(
               clipBehavior: Clip.antiAliasWithSaveLayer,
-              color: Theme.of(context).colorScheme.secondaryContainer,
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: Theme.of(context).colorScheme.outline),
+              ),
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
                 child: Column(
@@ -63,7 +65,7 @@ class _LessonCardState extends State<LessonCard> {
                             child: Hero(
                               tag: 'headline${widget.lesson}',
                               child: Align(
-                                alignment: AlignmentDirectional.center,
+                                alignment: AlignmentDirectional.centerStart,
                                 child: Text(
                                   data.lesson.name,
                                   overflow: TextOverflow.ellipsis,
