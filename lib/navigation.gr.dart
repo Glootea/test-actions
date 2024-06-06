@@ -53,6 +53,12 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    InitLoadingRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const InitLoadingScreen(),
+      );
+    },
     MainRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -228,6 +234,20 @@ class DetailedQueueRouteArgs {
   String toString() {
     return 'DetailedQueueRouteArgs{cubit: $cubit, key: $key}';
   }
+}
+
+/// generated route for
+/// [InitLoadingScreen]
+class InitLoadingRoute extends PageRouteInfo<void> {
+  const InitLoadingRoute({List<PageRouteInfo>? children})
+      : super(
+          InitLoadingRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'InitLoadingRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for

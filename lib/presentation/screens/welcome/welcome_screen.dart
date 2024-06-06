@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:queue/navigation.dart';
 import 'package:queue/presentation/common_src/expandable_block.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
 import 'package:queue/presentation/common_src/screen_headline.dart';
@@ -24,7 +25,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       constraints: BoxConstraints.tight(Size(size / 2, size / 2)),
       child: LoadingAnimation(state: LoadingState.started, afterAnimationEnd: () {}),
     );
-
+    final createGroupButton = Padding(
+      padding: const EdgeInsets.only(top: 32),
+      child: Align(
+        child: OutlinedButton(
+          onPressed: () async => AutoRouter.of(context).popAndPush(const InitLoadingRoute()),
+          child: const Text('Создать группу'),
+        ),
+      ),
+    );
     final titleAndButtons = [
       const Align(child: ScreenHeadline(title: 'QueueMinder', heroTag: 'title')),
       Row(
@@ -47,6 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ],
       ),
+      createGroupButton,
     ];
 
     final descriptionBlock = Padding(
@@ -55,15 +65,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         showDividers: false,
         isExpanded: selected != null,
         children: [
-          if (selected == 0) const Text('Описание для учеников') else const Text('Описание для старост'),
+          if (selected == 0)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Единственным способом входа является ссылка, выданная старостой.\n\n\n',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text('''
+Приложение для управления очередями сдачи работ на парах и отслеживания дедлайнов.
+Возможности:
+  - создание очередей по расписанию
+  - отслеживание количества сданных работ и учет данного фактора при составлении очереди
+  - интеграция с календарем для уведомлений, отслеживания заданий и их выполнения к дедлайну
+  '''),
+          ),
         ],
-      ),
-    );
-
-    final createGroupButton = Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Align(
-        child: OutlinedButton(onPressed: () {}, child: const Text('Создать группу')),
       ),
     );
 
@@ -77,9 +97,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ],
             ),
             descriptionBlock,
-            createGroupButton,
+            const Gap(16),
           ]
-        : [loadingAnimation, ...titleAndButtons, descriptionBlock, createGroupButton];
+        : [
+            loadingAnimation,
+            ...titleAndButtons,
+            descriptionBlock,
+            createGroupButton,
+            const Gap(16),
+          ];
 
     return PopScope(
       canPop: false,

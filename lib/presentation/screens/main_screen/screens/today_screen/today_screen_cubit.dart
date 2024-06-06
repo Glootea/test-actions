@@ -26,7 +26,7 @@ class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
   }
 
   @override
-  void endLoading() => emit(state.copyWith(isLoading: LoadingState.ended));
+  void onEndLoading() => emit(state.copyWith(isLoading: LoadingState.ended));
 }
 
 class SeparatedLessons {

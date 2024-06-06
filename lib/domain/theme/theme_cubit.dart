@@ -104,7 +104,13 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   Future<void> init() async {
     final (colorPreset, brightness, showBackgroundImage) =
-        await (getColorPreset, getBrightness, getShowBackgroundImage).wait;
+        // ignore: inference_failure_on_untyped_parameter
+        await (getColorPreset, getBrightness, getShowBackgroundImage).wait.catchError((e) {
+      if (kDebugMode) {
+        print('Theme cubit init error: $e');
+      }
+      return Future.value((ThemePreset.dynamicTheme, Brightness.dark, true));
+    });
     if (kDebugMode) {
       print('Go cached: $colorPreset $brightness $showBackgroundImage');
     }

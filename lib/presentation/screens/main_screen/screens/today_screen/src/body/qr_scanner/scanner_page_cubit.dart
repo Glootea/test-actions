@@ -24,7 +24,7 @@ class ScannerPageCubit extends LoadableCubit<ScannerPageState> {
   }
 
   @override
-  void endLoading() {
+  void onEndLoading() {
     log('endLoading');
     emit((state as LoadedState).createShowResultState());
   }

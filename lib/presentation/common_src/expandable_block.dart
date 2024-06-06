@@ -10,6 +10,7 @@ class ExpandableBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedSize(
       duration: Duration(milliseconds: 300 * children.length),
+      reverseDuration: Duration(milliseconds: 300 * children.length),
       alignment: Alignment.topCenter,
       child: isExpanded
           ? Column(

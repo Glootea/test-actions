@@ -47,7 +47,9 @@ app.*.map.json
 /lib/secret/
 /android/app/google-services.json
 /lib/firebase_options.dart
-
+firebase.json
+.firebase
+.vscode
 
 #Large windows build files
 /windows/out/

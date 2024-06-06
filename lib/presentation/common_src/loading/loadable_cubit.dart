@@ -4,7 +4,7 @@ part of 'queue_loading_container.dart';
 abstract class LoadableCubit<T extends LoadableState> extends Cubit<T> {
   LoadableCubit(super.initialState);
 
-  void endLoading();
+  void onEndLoading();
 }
 
 enum LoadingState {
