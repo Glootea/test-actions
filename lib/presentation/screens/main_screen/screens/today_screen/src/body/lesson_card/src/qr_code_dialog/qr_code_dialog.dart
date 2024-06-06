@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:queue/entities/export.dart';
+import 'package:queue/presentation/common_src/screen_padding.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/src/qr_code_dialog/local_share_button.dart';
 
 class QrCodeDialog extends StatelessWidget {
@@ -24,12 +25,10 @@ class QrCodeDialog extends StatelessWidget {
           children: [
             const Text('Попроси друга отсканировать QR-код чтобы загрузить данные: '),
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+              child: ScreenPadding(
                 child: Container(
                   decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
+                  child: ScreenPadding(
                     child: PrettyQrView.data(
                       data: data,
                       decoration: const PrettyQrDecoration(background: Colors.white),

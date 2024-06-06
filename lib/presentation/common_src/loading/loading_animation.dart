@@ -6,7 +6,7 @@ class LoadingAnimation extends StatefulWidget {
   final VoidCallback afterAnimationEnd;
 
   @override
-  State<LoadingAnimation> createState() => _TempLoadingAnimationState();
+  State<LoadingAnimation> createState() => _LoadingAnimationState();
 }
 
 class _LoadingAnimationState extends State<LoadingAnimation> {
@@ -71,21 +71,21 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
   }
 }
 
-@Deprecated('Remove when rive is supported in wasm and windows')
-class _TempLoadingAnimationState extends _LoadingAnimationState {
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox(
-      height: 300,
-      child: ColoredBox(color: Colors.blue),
-    );
-  }
+// @Deprecated('Remove when rive is supported in wasm and windows')
+// class _TempLoadingAnimationState extends _LoadingAnimationState {
+//   @override
+//   Widget build(BuildContext context) {
+//     return const SizedBox(
+//       height: 300,
+//       child: ColoredBox(color: Colors.blue),
+//     );
+//   }
 
-  @override
-  void handleLoadingState(LoadingState state) {
-    _states.add(state);
-    if (_states.contains(LoadingState.loaded)) {
-      Future.delayed(const Duration(milliseconds: 1500 ~/ 1.8), () => widget.afterAnimationEnd());
-    }
-  }
-}
+//   @override
+//   void handleLoadingState(LoadingState state) {
+//     _states.add(state);
+//     if (_states.contains(LoadingState.loaded)) {
+//       Future.delayed(const Duration(milliseconds: 1500 ~/ 1.8), () => widget.afterAnimationEnd());
+//     }
+//   }
+// }

@@ -9,31 +9,30 @@ import 'package:queue/presentation/screens/main_screen/screens/admin/admin_setti
 import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/src/lesson_koef_slider.dart';
 import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/src/lesson_times_table.dart';
 import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/subject_bloc.dart';
-import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
 
 @RoutePage()
 class SubjectAdminScreen extends StatelessWidget {
-  const SubjectAdminScreen({required this.data, super.key});
+  const SubjectAdminScreen({required this.subjectID, super.key});
 
-  final LessonCardData data;
+  final int subjectID;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = SubjectEditingBloc(data);
+    final cubit = SubjectEditingBloc(subjectID);
     return BlocProvider.value(
       value: cubit,
       child: AdminSettingsScreenTemplate(
         onSubmit: () async {},
         title: 'Изменение занятия',
-        headlineHeroTag: 'SubjectPage${data.lesson}',
+        headlineHeroTag: 'SubjectPage$subjectID',
         children: [
           const H2('Название'),
           Hero(
-            tag: 'headline${data.lesson}',
+            tag: 'headline$subjectID',
             child: Material(
               type: MaterialType.transparency,
               child: TextField(
-                controller: TextEditingController(text: data.lesson.name),
+                // controller: TextEditingController(text: subjectID.lesson.name),
                 maxLines: null,
                 decoration: const InputDecoration(border: UnderlineInputBorder()),
               ),

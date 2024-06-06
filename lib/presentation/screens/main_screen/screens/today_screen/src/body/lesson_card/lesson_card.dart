@@ -7,6 +7,7 @@ import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/entities/src/lesson.dart';
 import 'package:queue/extension.dart';
 import 'package:queue/navigation.dart';
+import 'package:queue/presentation/common_src/screen_padding.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_data/lesson_card_data.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/src/labeled_linear_progress_indicator/labeled_linear_progress_indicator.dart';
@@ -51,8 +52,7 @@ class _LessonCardState extends State<LessonCard> {
                 borderRadius: BorderRadius.circular(16),
                 side: BorderSide(color: Theme.of(context).colorScheme.outline),
               ),
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
+              child: ScreenPadding(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

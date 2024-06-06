@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:queue/presentation/common_src/screen_headline.dart';
+import 'package:queue/presentation/common_src/screen_padding.dart';
 
 class AdminSettingsScreenTemplate extends StatelessWidget {
   const AdminSettingsScreenTemplate({
@@ -23,8 +24,7 @@ class AdminSettingsScreenTemplate extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: ScreenPadding(
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: children.length + 2,

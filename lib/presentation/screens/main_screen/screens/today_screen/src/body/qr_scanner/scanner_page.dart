@@ -9,6 +9,7 @@ import 'package:queue/data/database/database_service.dart';
 import 'package:queue/data/encryprion.dart';
 import 'package:queue/entities/export.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
+import 'package:queue/presentation/common_src/screen_padding.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/qr_scanner/scanner_states.dart';
 
 part 'scanner_page_cubit.dart';
@@ -77,8 +78,7 @@ class _ScannerPageState extends State<ScannerPage> {
                                 ),
                                 Align(
                                   alignment: Alignment.topCenter,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                                  child: ScreenPadding(
                                     child: Text(
                                       'Сканируйте QR код чтобы добавить друга без интернета в очередь',
                                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),

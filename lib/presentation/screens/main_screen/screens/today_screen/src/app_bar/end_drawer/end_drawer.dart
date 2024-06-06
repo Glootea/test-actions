@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/domain/user/user_cubit.dart';
@@ -12,6 +13,11 @@ class TodayLessonsEndDrawer extends StatelessWidget {
     final children = [
       const Padding(padding: EdgeInsets.only(left: 4, bottom: 8), child: H2('Настройки')),
       const GoToTile(title: 'Настройки темы', heroTag: 'Настройки темы', route: ThemeSettingsRoute()),
+      const GoToTile(
+        title: 'Интеграция с календарем',
+        heroTag: 'Интеграция с календарем',
+        route: CalendarIntegrationSettingsRoute(),
+      ),
       const Divider(),
       OutlinedButton(
         onPressed: () => context.read<UserCubit>().login(name: 'Sasha', isAdmin: false, rowNumber: 1),
@@ -21,7 +27,13 @@ class TodayLessonsEndDrawer extends StatelessWidget {
         onPressed: () => context.read<UserCubit>().login(name: 'Sasha', isAdmin: true, rowNumber: 1),
         child: const Text('Войти админ'),
       ),
-      OutlinedButton(onPressed: () => context.read<UserCubit>().logout(), child: const Text('Выйти')),
+      OutlinedButton(
+        onPressed: () {
+          AutoRouter.of(context).navigate(const WelcomeRoute());
+          context.read<UserCubit>().logout().then((value) => print(context.read<UserCubit>().state));
+        },
+        child: const Text('Выйти'),
+      ),
     ];
     return SafeArea(
       child: Drawer(

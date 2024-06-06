@@ -5,16 +5,16 @@ import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/
 
 @RoutePage()
 class QueueAdminPage extends StatelessWidget {
-  const QueueAdminPage({required this.data, super.key});
+  const QueueAdminPage({required this.subjectID, super.key});
 
-  final LessonCardData data;
+  final int subjectID;
 
   @override
   Widget build(BuildContext context) {
     return AdminSettingsScreenTemplate(
       onSubmit: () async {},
-      title: 'Изменение очереди: ${data.lesson.name}',
-      headlineHeroTag: 'QueueAdminPage${data.lesson}',
+      title: 'Изменение очереди: $subjectID',
+      headlineHeroTag: 'QueueAdminPage$subjectID',
       children: [Container()],
     );
   }

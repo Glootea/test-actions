@@ -21,6 +21,22 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const AdminPage(),
       );
     },
+    CalendarIntegrationSettingsRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const CalendarIntegrationSettingsScreen(),
+      );
+    },
+    ChooseSubjectRoute.name: (routeData) {
+      final args = routeData.argsAs<ChooseSubjectRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ChooseSubjectScreen(
+          onTap: args.onTap,
+          key: args.key,
+        ),
+      );
+    },
     DeadlineRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -48,7 +64,7 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: QueueAdminPage(
-          data: args.data,
+          subjectID: args.subjectID,
           key: args.key,
         ),
       );
@@ -70,15 +86,9 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: SubjectAdminScreen(
-          data: args.data,
+          subjectID: args.subjectID,
           key: args.key,
         ),
-      );
-    },
-    TelegramBotAdminRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const TelegramBotAdminPage(),
       );
     },
     ThemeSettingsRoute.name: (routeData) {
@@ -91,6 +101,12 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const TodayScreen(),
+      );
+    },
+    WelcomeRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const WelcomeScreen(),
       );
     },
   };
@@ -108,6 +124,58 @@ class AdminRoute extends PageRouteInfo<void> {
   static const String name = 'AdminRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [CalendarIntegrationSettingsScreen]
+class CalendarIntegrationSettingsRoute extends PageRouteInfo<void> {
+  const CalendarIntegrationSettingsRoute({List<PageRouteInfo>? children})
+      : super(
+          CalendarIntegrationSettingsRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'CalendarIntegrationSettingsRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ChooseSubjectScreen]
+class ChooseSubjectRoute extends PageRouteInfo<ChooseSubjectRouteArgs> {
+  ChooseSubjectRoute({
+    required void Function(int) onTap,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ChooseSubjectRoute.name,
+          args: ChooseSubjectRouteArgs(
+            onTap: onTap,
+            key: key,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'ChooseSubjectRoute';
+
+  static const PageInfo<ChooseSubjectRouteArgs> page =
+      PageInfo<ChooseSubjectRouteArgs>(name);
+}
+
+class ChooseSubjectRouteArgs {
+  const ChooseSubjectRouteArgs({
+    required this.onTap,
+    this.key,
+  });
+
+  final void Function(int) onTap;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'ChooseSubjectRouteArgs{onTap: $onTap, key: $key}';
+  }
 }
 
 /// generated route for
@@ -180,13 +248,13 @@ class MainRoute extends PageRouteInfo<void> {
 /// [QueueAdminPage]
 class QueueAdminRoute extends PageRouteInfo<QueueAdminRouteArgs> {
   QueueAdminRoute({
-    required LessonCardData data,
+    required int subjectID,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
           QueueAdminRoute.name,
           args: QueueAdminRouteArgs(
-            data: data,
+            subjectID: subjectID,
             key: key,
           ),
           initialChildren: children,
@@ -200,17 +268,17 @@ class QueueAdminRoute extends PageRouteInfo<QueueAdminRouteArgs> {
 
 class QueueAdminRouteArgs {
   const QueueAdminRouteArgs({
-    required this.data,
+    required this.subjectID,
     this.key,
   });
 
-  final LessonCardData data;
+  final int subjectID;
 
   final Key? key;
 
   @override
   String toString() {
-    return 'QueueAdminRouteArgs{data: $data, key: $key}';
+    return 'QueueAdminRouteArgs{subjectID: $subjectID, key: $key}';
   }
 }
 
@@ -246,13 +314,13 @@ class StudentAdminRoute extends PageRouteInfo<void> {
 /// [SubjectAdminScreen]
 class SubjectAdminRoute extends PageRouteInfo<SubjectAdminRouteArgs> {
   SubjectAdminRoute({
-    required LessonCardData data,
+    required int subjectID,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
           SubjectAdminRoute.name,
           args: SubjectAdminRouteArgs(
-            data: data,
+            subjectID: subjectID,
             key: key,
           ),
           initialChildren: children,
@@ -266,32 +334,18 @@ class SubjectAdminRoute extends PageRouteInfo<SubjectAdminRouteArgs> {
 
 class SubjectAdminRouteArgs {
   const SubjectAdminRouteArgs({
-    required this.data,
+    required this.subjectID,
     this.key,
   });
 
-  final LessonCardData data;
+  final int subjectID;
 
   final Key? key;
 
   @override
   String toString() {
-    return 'SubjectAdminRouteArgs{data: $data, key: $key}';
+    return 'SubjectAdminRouteArgs{subjectID: $subjectID, key: $key}';
   }
-}
-
-/// generated route for
-/// [TelegramBotAdminPage]
-class TelegramBotAdminRoute extends PageRouteInfo<void> {
-  const TelegramBotAdminRoute({List<PageRouteInfo>? children})
-      : super(
-          TelegramBotAdminRoute.name,
-          initialChildren: children,
-        );
-
-  static const String name = 'TelegramBotAdminRoute';
-
-  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
@@ -318,6 +372,20 @@ class TodayRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'TodayRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [WelcomeScreen]
+class WelcomeRoute extends PageRouteInfo<void> {
+  const WelcomeRoute({List<PageRouteInfo>? children})
+      : super(
+          WelcomeRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'WelcomeRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }

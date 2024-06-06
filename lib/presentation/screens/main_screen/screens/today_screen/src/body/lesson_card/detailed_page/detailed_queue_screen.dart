@@ -8,6 +8,7 @@ import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/common_src/go_to_tile.dart';
 import 'package:queue/presentation/common_src/screen_headline.dart';
+import 'package:queue/presentation/common_src/screen_padding.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/app_bar/circular_update_timer.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/detailed_page/src/queue_record_listtile.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card.dart';
@@ -31,8 +32,7 @@ class DetailedQueueScreen extends StatelessWidget {
           final storage = context.read<KeyValueStorage>();
           return SafeArea(
             child: Scaffold(
-              body: Padding(
-                padding: const EdgeInsets.all(16),
+              body: ScreenPadding(
                 child: ListView(
                   children: [
                     ScreenHeadline(
@@ -99,11 +99,13 @@ class DetailedQueueScreen extends StatelessWidget {
                           const Divider(),
                           GoToTile(
                             title: 'Перейти к изменению занятия',
-                            route: SubjectAdminRoute(data: data),
+                            route: SubjectAdminRoute(subjectID: data.lesson.subjectLocalID),
                             heroTag: 'SubjectPage${data.lesson}',
                           ),
                           const Gap(16),
-                          GoToTile(title: 'Перейти к изменению очереди', route: QueueAdminRoute(data: data)),
+                          GoToTile(
+                              title: 'Перейти к изменению очереди',
+                              route: QueueAdminRoute(subjectID: data.lesson.subjectLocalID)),
                           const Divider(),
                         ],
                       ),

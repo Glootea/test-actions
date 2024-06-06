@@ -2,6 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:queue/navigation.dart';
+import 'package:queue/presentation/common_src/go_to_tile.dart';
+import 'package:queue/presentation/common_src/screen_headline.dart';
+import 'package:queue/presentation/common_src/screen_padding.dart';
 
 @RoutePage()
 class AdminPage extends StatelessWidget {
@@ -9,40 +12,35 @@ class AdminPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = <(String, PageRouteInfo<void>)>[
-      ('Студенты', const StudentAdminRoute()),
-      // ('Занятия',  SubjectAdminRoute()),
-      // ('Модерация очереди',  QueueAdminRoute()),
-      ('Телеграм бот', const TelegramBotAdminRoute()),
-    ];
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: ScreenPadding(
+        child: ListView(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Text(
-                'Админ панель',
-                style: Theme.of(context).textTheme.displayLarge,
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
+            const Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: ScreenHeadline(
+                title: 'Админ панель',
+                heroTag: 'Админ панель',
               ),
             ),
             const Gap(16),
-            ListView.separated(
+            ListView(
               shrinkWrap: true,
-              itemCount: children.length,
-              itemBuilder: (context, index) => ListTile(
-                title: Text(
-                  children[index].$1,
-                  overflow: TextOverflow.ellipsis,
+              children: [
+                const GoToTile(title: 'Студенты', route: StudentAdminRoute(), heroTag: 'Студенты'),
+                GoToTile(
+                  title: 'Занятия',
+                  route: ChooseSubjectRoute(
+                    onTap: (subjectID) => AutoRouter.of(context).push(SubjectAdminRoute(subjectID: subjectID)),
+                  ),
                 ),
-                trailing: const Icon(Icons.arrow_forward_ios_outlined),
-                onTap: () async => AutoRouter.of(context).push(children[index].$2),
-              ),
-              separatorBuilder: (context, index) => const Divider(),
+                GoToTile(
+                  title: 'Модерация очереди',
+                  route: ChooseSubjectRoute(
+                    onTap: (subjectID) => AutoRouter.of(context).push(QueueAdminRoute(subjectID: subjectID)),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

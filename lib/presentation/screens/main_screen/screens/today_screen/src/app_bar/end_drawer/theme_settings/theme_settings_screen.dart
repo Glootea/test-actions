@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:queue/domain/theme/theme_cubit.dart';
 import 'package:queue/presentation/common_src/defined_text.dart';
 import 'package:queue/presentation/common_src/expandable_block.dart';
 import 'package:queue/presentation/common_src/screen_headline.dart';
+import 'package:queue/presentation/common_src/screen_padding.dart';
 import 'package:queue/presentation/common_src/toggle_row.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/app_bar/end_drawer/theme_settings/theme_picker.dart';
 
@@ -22,8 +22,7 @@ class ThemeSettingsScreen extends StatelessWidget {
     final themeCubit = context.read<ThemeCubit>();
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      body: ScreenPadding(
         child: ListView(
           children: [
             const ScreenHeadline(title: 'Настройки темы', heroTag: 'Настройки темы'),

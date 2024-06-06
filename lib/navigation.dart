@@ -1,12 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:queue/presentation/screens/auth/welcome_screen.dart';
 import 'package:queue/presentation/screens/main_screen/main_screen.dart';
 import 'package:queue/presentation/screens/main_screen/screens/admin/admin_page.dart';
 import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/queue_page.dart';
 import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/student_page.dart';
+import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/choose_subject_screen.dart';
 import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/subject/subject_page.dart';
-import 'package:queue/presentation/screens/main_screen/screens/admin/subpages/telegram_bot_page.dart';
 import 'package:queue/presentation/screens/main_screen/screens/deadline_screen/deadline_screen.dart';
+import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/app_bar/end_drawer/calendar_integration_settings/calendar_integration_settings.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/app_bar/end_drawer/theme_settings/theme_settings_screen.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/detailed_page/detailed_queue_screen.dart';
 import 'package:queue/presentation/screens/main_screen/screens/today_screen/src/body/lesson_card/lesson_card_cubit.dart';
@@ -20,12 +22,13 @@ part 'navigation.gr.dart';
 class AppRouter extends _$AppRouter {
   @override
   List<AutoRoute> get routes => [
+        AutoRoute(page: WelcomeRoute.page, path: '/welcome'),
         AutoRoute(
           page: MainRoute.page,
           path: '/',
           initial: true,
           children: [
-            AutoRoute(page: TodayRoute.page, path: 'today'),
+            AutoRoute(page: TodayRoute.page, path: 'today', initial: true),
             AutoRoute(page: AdminRoute.page, path: 'admin'),
             AutoRoute(page: DeadlineRoute.page, path: 'deadlines'),
           ],
@@ -34,8 +37,9 @@ class AppRouter extends _$AppRouter {
         AutoRoute(page: QrScannerRoute.page, path: '/today/scanner', fullMatch: true),
         AutoRoute(page: QueueAdminRoute.page, path: '/admin/queue'),
         AutoRoute(page: StudentAdminRoute.page, path: '/admin/students'),
+        AutoRoute(page: ChooseSubjectRoute.page, path: '/admin/chooseSubject'),
         AutoRoute(page: SubjectAdminRoute.page, path: '/admin/subjects'),
-        AutoRoute(page: TelegramBotAdminRoute.page, path: '/admin/telegram'),
         AutoRoute(page: ThemeSettingsRoute.page, path: '/themeSettings'),
+        AutoRoute(page: CalendarIntegrationSettingsRoute.page, path: '/calendarIntegrationSettings'),
       ];
 }
