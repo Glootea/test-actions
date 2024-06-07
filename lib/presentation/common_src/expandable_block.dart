@@ -12,15 +12,19 @@ class ExpandableBlock extends StatelessWidget {
       duration: Duration(milliseconds: 300 * children.length),
       reverseDuration: Duration(milliseconds: 300 * children.length),
       alignment: Alignment.topCenter,
-      child: isExpanded
-          ? Column(
-              children: [
-                if (showDividers) const Divider(),
-                ...children,
-                if (showDividers) const Divider(),
-              ],
-            )
-          : Container(),
+      curve: Curves.easeInOut,
+      child: AnimatedCrossFade(
+        firstChild: Column(
+          children: [
+            if (showDividers) const Divider(),
+            ...children,
+            if (showDividers) const Divider(),
+          ],
+        ),
+        secondChild: Container(),
+        crossFadeState: isExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+        duration: const Duration(milliseconds: 300),
+      ),
     );
   }
 }

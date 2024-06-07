@@ -30,6 +30,7 @@ void main() async {
   final userCubit = UserCubit(keyValueStorage);
   final themeCubit = ThemeCubit(keyValueStorage);
   final _ = await (themeCubit.init(), userCubit.init()).wait;
+  final appRouter = AppRouter(userCubit: userCubit).config();
   runApp(
     MultiBlocProvider(
       providers: [
@@ -39,15 +40,14 @@ void main() async {
         BlocProvider.value(value: themeCubit),
         BlocProvider(create: (_) => GroupMetaInfoCubit(keyValueStorage)),
       ],
-      child: const MyApp(),
+      child: MyApp(router: appRouter),
     ),
   );
 }
 
-final _appRouter = AppRouter();
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({required this.router, super.key});
+  final RouterConfig<Object>? router;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
                 data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
                 child: child ?? Container(),
               ),
-              routerConfig: _appRouter.config(),
+              routerConfig: router,
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
                 fontFamily: 'Roboto',

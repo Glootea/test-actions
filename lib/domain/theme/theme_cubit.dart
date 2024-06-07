@@ -71,31 +71,37 @@ class ThemeState with _$ThemeState {
 
 const _whiteDarkColorScheme = ColorScheme(
   brightness: Brightness.dark,
-  primary: Colors.white,
-  onPrimary: Colors.black,
-  secondary: Colors.black87,
-  onSecondary: Colors.black,
-  error: Colors.redAccent,
-  onError: Colors.redAccent,
-  surface: Colors.black54,
-  onSurface: Colors.white,
-  primaryContainer: Colors.black,
-  onPrimaryContainer: Colors.white,
+  primary: Color(0xFFE0E0E0), // Light gray
+  onPrimary: Color(0xFF303030), // Dark gray
+  secondary: Color(0xfffffef4), // Teal
+  onSecondary: Color(0xFF303030), // Dark gray
+  error: Color(0xFFCF6679), // Light red
+  onError: Color(0xFF303030), // Dark gray
+  surface: Color(0xFF121212), // Dark gray
+  onSurface: Color(0xFFE0E0E0), // Light gray
+  primaryContainer: Color(0xFF3D3D3D), // Light blue gray
+  onPrimaryContainer: Color(0xFFD7D7D7), // Dark gray
+  surfaceContainerLow: Color(0xFF1E1E1E), // Slightly lighter dark gray
 );
 
 const _whiteLightColorScheme = ColorScheme(
   brightness: Brightness.light,
-  primary: Colors.black,
-  onPrimary: Colors.white,
-  secondary: Colors.black,
-  onSecondary: Colors.white,
-  error: Colors.redAccent,
-  onError: Colors.redAccent,
-  surface: Colors.white,
-  onSurface: Colors.black,
-  primaryContainer: Colors.white,
-  onPrimaryContainer: Colors.black,
-  surfaceContainerLow: Colors.white60,
+  primary: Color(0xFF424242), // Darker shade of grey
+  onPrimary: Color(0xFFFFFFFF), // White
+  secondary: Color(0xFF757575), // Medium shade of grey
+  onSecondary: Color(0xFFFFFFFF), // White
+  error: Color(0xFFD32F2F), // Muted red
+  onError: Color(0xFFFFFFFF), // White
+  surface: Color(0xFFF5F5F5), // Very light grey
+  onSurface: Color(0xFF212121), // Almost black grey
+  primaryContainer: Color(0xFF616161), // Slightly darker grey
+  onPrimaryContainer: Color(0xFFFFFFFF), // White
+  surfaceContainerLow: Color(0xFFE0E0E0), // Light grey
+  outline: Color(0xFFBDBDBD), // Light grey for outline
+  shadow: Color(0xFF000000), // Shadow color, typically black
+  inverseSurface: Color(0xFF303030), // Dark grey for inverse surface
+  onInverseSurface: Color(0xFFFFFFFF), // White on inverse surface
+  inversePrimary: Color(0xFFFFFFFF), // Inverse primary for dark mode compatibility
 );
 
 class ThemeCubit extends Cubit<ThemeState> {

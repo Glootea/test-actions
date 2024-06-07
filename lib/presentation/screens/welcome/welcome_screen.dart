@@ -19,7 +19,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   int? selected = 0;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context).shortestSide;
+    final size = MediaQuery.sizeOf(context).shortestSide - 32;
 
     final loadingAnimation = ConstrainedBox(
       constraints: BoxConstraints.tight(Size(size / 2, size / 2)),
@@ -30,11 +30,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       child: Align(
         child: OutlinedButton(
           onPressed: () async => AutoRouter.of(context).popAndPush(const InitLoadingRoute()),
-          child: const Text('Создать группу'),
+          child: const Text('Войти'),
         ),
       ),
     );
-    final titleAndButtons = [
+    final titleAndButtons = <Widget>[
       const Align(child: ScreenHeadline(title: 'QueueMinder', heroTag: 'title')),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -56,7 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ],
       ),
-      createGroupButton,
+      if (selected == 1) createGroupButton,
     ];
 
     final descriptionBlock = Padding(
@@ -65,22 +65,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         showDividers: false,
         isExpanded: selected != null,
         children: [
-          if (selected == 0)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Единственным способом входа является ссылка, выданная старостой.\n\n\n',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              (selected != 1)
+                  ? 'Единственным способом входа является ссылка, выданная старостой.\n\nЕсли вы хотите создать свою группу, перейдите в раздел старост.\n'
+                  : 'Данные хранятся на Google Drive, для этого требуется авторизация.\n\n\n',
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
+          ),
           const Align(
             alignment: Alignment.centerLeft,
             child: Text('''
 Приложение для управления очередями сдачи работ на парах и отслеживания дедлайнов.
 Возможности:
-  - создание очередей по расписанию
-  - отслеживание количества сданных работ и учет данного фактора при составлении очереди
-  - интеграция с календарем для уведомлений, отслеживания заданий и их выполнения к дедлайну
+  • создание очередей по расписанию
+  • отслеживание количества сданных работ и учет данного фактора при составлении очереди
+  • интеграция с календарем для уведомлений, отслеживания заданий и их выполнения к дедлайну
   '''),
           ),
         ],
@@ -92,7 +93,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(children: titleAndButtons),
+                ConstrainedBox(
+                  constraints: BoxConstraints.tight(Size(size / 2, size / 2)),
+                  child: ListView(shrinkWrap: true, children: <Widget>[const SizedBox(height: 64)] + titleAndButtons),
+                ),
                 loadingAnimation,
               ],
             ),
