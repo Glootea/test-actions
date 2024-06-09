@@ -16,15 +16,14 @@ class User with _$User {
 
   const User._();
 
-  factory User.fetchOnlineAccount({
+  static Future<User> fetchOnlineAccounts({
     required String name,
     required int id,
     required bool isAdmin,
-  }) {
-    final onlineAccounts =
-        [_GoogleOnlineAccountFactory().fetchCurrentUserAccount()].whereType<OnlineAccount>().toList();
-
-    return User._private(name: name, id: id, isAdmin: isAdmin, onlineAccounts: onlineAccounts);
+  }) async {
+    final onlineAccounts = await Future.wait([_GoogleOnlineAccountFactory().fetchCurrentUserAccount()]);
+    final actualAccounts = onlineAccounts.where((el) => el != null).map((el) => el!).toList();
+    return User._private(name: name, id: id, isAdmin: isAdmin, onlineAccounts: actualAccounts);
   }
 
   static OnlineAccountFactory getFactory<T extends OnlineAccount>() => switch (T) {
@@ -48,6 +47,9 @@ class User with _$User {
     await onlineAccounts.whereType<T>().firstOrNull?.logout();
     return copyWith(onlineAccounts: onlineAccounts.where((el) => el.runtimeType != T).toList());
   }
+
+  ///Possible sign in options: [GoogleOnlineAccount]
+  T? getOnlineAccount<T extends OnlineAccount>() => onlineAccounts.whereType<T>().firstOrNull;
 }
 
 sealed class OnlineAccount {
@@ -57,5 +59,5 @@ sealed class OnlineAccount {
 
 abstract interface class OnlineAccountFactory {
   Future<OnlineAccount?> createSignInAccount();
-  OnlineAccount? fetchCurrentUserAccount();
+  Future<OnlineAccount?> fetchCurrentUserAccount();
 }

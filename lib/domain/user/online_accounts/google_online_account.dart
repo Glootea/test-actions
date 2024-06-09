@@ -12,7 +12,7 @@ class _GoogleOnlineAccountFactory implements OnlineAccountFactory {
       );
       await _googleSignIn!.signOut();
       final account = await _googleSignIn!.signIn();
-      if (account != null) return GoogleOnlineAccount(account);
+      if (account != null) return GoogleOnlineAccount(_googleSignIn!, account);
     } catch (e) {
       if (kDebugMode) print(e);
     }
@@ -20,21 +20,24 @@ class _GoogleOnlineAccountFactory implements OnlineAccountFactory {
   }
 
   @override
-  OnlineAccount? fetchCurrentUserAccount() {
+  Future<OnlineAccount?> fetchCurrentUserAccount() {
     _googleSignIn ??= GoogleSignIn(
       scopes: [
         'https://www.googleapis.com/auth/drive.file',
       ],
     );
-    final account = _googleSignIn!.currentUser;
-    if (account != null) return GoogleOnlineAccount(account);
-    return null;
+    return _googleSignIn!.signInSilently().then((value) {
+      print('Account: $value');
+      if (value != null) return GoogleOnlineAccount(_googleSignIn!, value);
+      return null;
+    });
   }
 }
 
 class GoogleOnlineAccount implements OnlineAccount {
-  GoogleOnlineAccount(this.account);
+  GoogleOnlineAccount(this.googleSignIn, this.account);
 
+  final GoogleSignIn googleSignIn;
   final GoogleSignInAccount account;
 
   @override

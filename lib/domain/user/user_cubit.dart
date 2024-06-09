@@ -19,7 +19,8 @@ class UserCubit extends Cubit<User?> {
     _inited = true;
     if (rowNumberString == null || userName == null) return;
     final rowNumber = int.parse(rowNumberString);
-    emit(User.fetchOnlineAccount(name: userName, id: rowNumber, isAdmin: isAdmin == 'true'));
+    final user = await User.fetchOnlineAccounts(name: userName, id: rowNumber, isAdmin: isAdmin == 'true');
+    emit(user);
     if (kDebugMode) {
       print('User cubit initialized: $state');
     }
@@ -31,7 +32,8 @@ class UserCubit extends Cubit<User?> {
     required bool isAdmin,
   }) async {
     assert(_inited == true, "User cubit hasn't been initialized for login");
-    emit(User.fetchOnlineAccount(name: name, id: rowNumber, isAdmin: isAdmin));
+    final user = await User.fetchOnlineAccounts(name: name, id: rowNumber, isAdmin: isAdmin);
+    emit(user);
     await (
       _storage.set(StoredValues.userName, name),
       _storage.set(StoredValues.userRowNumber, rowNumber.toString()),

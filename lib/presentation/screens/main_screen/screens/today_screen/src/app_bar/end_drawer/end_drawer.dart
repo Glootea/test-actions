@@ -1,6 +1,9 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:queue/data/google_drive_provider/google_drive_provider.dart';
+import 'package:queue/domain/user/user.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/common_src/defined_text.dart';
@@ -33,6 +36,20 @@ class TodayLessonsEndDrawer extends StatelessWidget {
           context.read<UserCubit>().logout().then((value) => print(context.read<UserCubit>().state));
         },
         child: const Text('Выйти'),
+      ),
+      OutlinedButton(
+        onPressed: () async {
+          final userCubit = context.read<UserCubit>();
+          final signIn = userCubit.state!.getOnlineAccount<GoogleOnlineAccount>()?.googleSignIn;
+          if (signIn == null) {
+            if (kDebugMode) print('No google sign in');
+            return;
+          }
+          final drive = GoogleDriveProvider(signIn);
+          await drive.init();
+          await drive.createSpreadSheet('sample');
+        },
+        child: const Text('Создать файл'),
       ),
     ];
     return SafeArea(
