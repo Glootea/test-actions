@@ -31,9 +31,12 @@ class TodayLessonsEndDrawer extends StatelessWidget {
         child: const Text('Войти админ'),
       ),
       OutlinedButton(
-        onPressed: () {
-          AutoRouter.of(context).navigate(const WelcomeRoute());
-          context.read<UserCubit>().logout().then((value) => print(context.read<UserCubit>().state));
+        onPressed: () async {
+          await AutoRouter.of(context).navigate(const WelcomeRoute());
+
+          if (context.mounted) {
+            await context.read<UserCubit>().logout().then((value) => print(context.read<UserCubit>().state));
+          }
         },
         child: const Text('Выйти'),
       ),

@@ -59,6 +59,7 @@ abstract class _$AppRouter extends RootStackRouter {
         routeData: routeData,
         child: InitLoadingScreen(
           userCubit: args.userCubit,
+          intent: args.intent,
           key: args.key,
         ),
       );
@@ -245,12 +246,14 @@ class DetailedQueueRouteArgs {
 class InitLoadingRoute extends PageRouteInfo<InitLoadingRouteArgs> {
   InitLoadingRoute({
     required UserCubit userCubit,
+    required InitLoadingScreenIntent intent,
     Key? key,
     List<PageRouteInfo>? children,
   }) : super(
           InitLoadingRoute.name,
           args: InitLoadingRouteArgs(
             userCubit: userCubit,
+            intent: intent,
             key: key,
           ),
           initialChildren: children,
@@ -265,16 +268,19 @@ class InitLoadingRoute extends PageRouteInfo<InitLoadingRouteArgs> {
 class InitLoadingRouteArgs {
   const InitLoadingRouteArgs({
     required this.userCubit,
+    required this.intent,
     this.key,
   });
 
   final UserCubit userCubit;
 
+  final InitLoadingScreenIntent intent;
+
   final Key? key;
 
   @override
   String toString() {
-    return 'InitLoadingRouteArgs{userCubit: $userCubit, key: $key}';
+    return 'InitLoadingRouteArgs{userCubit: $userCubit, intent: $intent, key: $key}';
   }
 }
 

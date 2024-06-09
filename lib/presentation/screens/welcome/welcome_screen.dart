@@ -8,6 +8,7 @@ import 'package:queue/presentation/common_src/expandable_block.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
 import 'package:queue/presentation/common_src/screen_headline.dart';
 import 'package:queue/presentation/common_src/screen_padding.dart';
+import 'package:queue/presentation/screens/welcome/init_loading_screen/init_loading_screen.dart';
 
 @RoutePage()
 class WelcomeScreen extends StatefulWidget {
@@ -29,15 +30,29 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
     final createGroupButton = Padding(
       padding: const EdgeInsets.only(top: 32),
-      child: Align(
-        child: OutlinedButton(
-          onPressed: () async => AutoRouter.of(context).popAndPush(
-            InitLoadingRoute(
-              userCubit: context.read<UserCubit>(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          OutlinedButton(
+            onPressed: () async => AutoRouter.of(context).popAndPush(
+              InitLoadingRoute(
+                userCubit: context.read<UserCubit>(),
+                intent: InitLoadingScreenIntent.loginHeadMaster,
+              ),
             ),
+            child: const Text('Войти'),
           ),
-          child: const Text('Войти'),
-        ),
+          const Gap(16),
+          OutlinedButton(
+            onPressed: () async => AutoRouter.of(context).popAndPush(
+              InitLoadingRoute(
+                userCubit: context.read<UserCubit>(),
+                intent: InitLoadingScreenIntent.createGroupHeadMaster,
+              ),
+            ),
+            child: const Text('Создать'),
+          ),
+        ],
       ),
     );
     final titleAndButtons = <Widget>[

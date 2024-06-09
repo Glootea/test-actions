@@ -22,7 +22,9 @@ class GoogleDriveProvider {
     try {
       _httpClient = (await _googleSignIn.authenticatedClient())!;
       _driveApi = DriveApi(_httpClient);
-      _folder = await _driveApi.files.list(q: "name = '${OnlineDatabaseStrings.folderName}'").then((value) async {
+      _folder = await _driveApi.files
+          .list(q: "name = '${OnlineDatabaseStrings.folderName}' and trashed = false")
+          .then((value) async {
         final folder = value.files?.firstOrNull;
         if (folder == null) {
           if (kDebugMode) print('Creating queueminder folder');
@@ -43,11 +45,11 @@ class GoogleDriveProvider {
   late DriveApi _driveApi;
   late File _folder;
 
-  Future<bool> fileExists(String name) async {
+  Future<bool> fileExistsInAppFolder(String name) async {
     assert(_inited, "GoogleDriveProvider hasn't been initialized");
 
     return _driveApi.files
-        .list(q: "name = '$name' and parents = '${_folder.id}'")
+        .list(q: "name = '$name' and parents = '${_folder.id}' and trashed = false")
         .then((v) => v.files?.firstOrNull != null);
   }
 
@@ -66,7 +68,7 @@ class GoogleDriveProvider {
   Future<void> deleteFile(String name) async {
     assert(_inited, "GoogleDriveProvider hasn't been initialized");
     final fileID = await _driveApi.files
-        .list(q: "name = '$name' and parents = '${_folder.id}'")
+        .list(q: "name = '$name' and parents = '${_folder.id}' and trashed = false")
         .then((v) => v.files?.firstOrNull?.id);
     if (fileID == null) {
       if (kDebugMode) print('File $name not found');

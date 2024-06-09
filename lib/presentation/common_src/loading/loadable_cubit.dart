@@ -28,6 +28,10 @@ class LoadableState {
   final String? loadingStateText;
 }
 
+class DefaultNoLoadingState extends LoadableState {
+  const DefaultNoLoadingState() : super(LoadingStateEnum.noLoading);
+}
+
 class DefaultLoadingState extends LoadableState {
   const DefaultLoadingState({super.loadingStateText}) : super(LoadingStateEnum.started);
 }

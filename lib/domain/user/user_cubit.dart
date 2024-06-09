@@ -45,7 +45,12 @@ class UserCubit extends Cubit<User?> {
       _storage.set(StoredValues.userRowNumber, rowNumber.toString()),
       _storage.set(StoredValues.userIsAdmin, isAdmin.toString())
     ).wait;
-    log('User cubit state changed: $state');
+    log('User cubit state login: $state');
+  }
+
+  Future<void> loginTemp() async {
+    assert(_inited == true, "User cubit hasn't been initialized for login");
+    emit(User.temp());
   }
 
   Future<void> logout() async {
@@ -70,7 +75,12 @@ class UserCubit extends Cubit<User?> {
     assert(_inited == true, "User cubit hasn't been initialized for sign in");
     assert(T == GoogleOnlineAccount, 'Unsupported sign in type: $T');
     final user = state;
-    if (user == null) return;
+    if (user == null) {
+      if (kDebugMode) {
+        print('User not logged in, so no signInSingle can be performed');
+      }
+      return;
+    }
     emit(await user.signInSingle<T>());
   }
 

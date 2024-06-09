@@ -16,6 +16,13 @@ class User with _$User {
 
   const User._();
 
+  ///Used to sign in user to online account first to pull data from there
+  factory User.temp() => const User._private(
+        name: 'temp',
+        id: 0,
+        isAdmin: false,
+      );
+
   static Future<User> fetchOnlineAccounts({
     required String name,
     required int id,

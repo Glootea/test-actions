@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -11,12 +10,21 @@ import 'package:queue/presentation/screens/welcome/init_loading_screen/init_load
 
 @RoutePage()
 class InitLoadingScreen extends StatelessWidget {
-  const InitLoadingScreen({required this.userCubit, super.key});
+  const InitLoadingScreen({required this.userCubit, required this.intent, super.key});
   final UserCubit userCubit;
+  final InitLoadingScreenIntent intent;
 
   @override
   Widget build(BuildContext context) {
     final cubit = InitLoadingCubit(userCubit);
+    switch (intent) {
+      case InitLoadingScreenIntent.createGroupHeadMaster:
+        cubit.headManGroupCreationIntent();
+      case InitLoadingScreenIntent.loginHeadMaster:
+        cubit.headMasterLogin();
+      case InitLoadingScreenIntent.signInByLink:
+        cubit.headMasterLogin();
+    }
     return BlocProvider.value(
       value: cubit,
       child: BlocConsumer<InitLoadingCubit, LoadableState>(
@@ -43,9 +51,6 @@ class InitLoadingScreen extends StatelessWidget {
                       const Gap(16),
                       OutlinedButton(
                         onPressed: () {
-                          if (kDebugMode) {
-                            print('Can go to main screen');
-                          }
                           AutoRouter.of(context).push(const MainRoute());
                         },
                         child: const Text('Продолжить'),
@@ -54,6 +59,7 @@ class InitLoadingScreen extends StatelessWidget {
                   ),
                 ),
               ),
+            DefaultNoLoadingState() => const SizedBox(),
             _ => throw UnimplementedError('Unexpected state: ${cubit.state}'),
           },
         ),
@@ -93,7 +99,7 @@ class InitLoadingScreen extends StatelessWidget {
               const SnackBar(content: Text('Поля заполнены некорректно')),
             );
           } else {
-            return cubit.login(
+            return cubit.headManCreateGroup(
               GroupCreationData(
                 groupName: groupController.value.text,
                 headMasterName: headMasterController.value.text,
@@ -104,4 +110,10 @@ class InitLoadingScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+enum InitLoadingScreenIntent {
+  loginHeadMaster,
+  createGroupHeadMaster,
+  signInByLink,
 }
