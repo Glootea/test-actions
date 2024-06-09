@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'theme_cubit.dart';
+part of 'theme_state.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -119,7 +119,7 @@ class __$$ThemeStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
+class _$ThemeStateImpl extends _ThemeState {
   const _$ThemeStateImpl(
       {required this.themePreset,
       required this.brightness,
@@ -134,18 +134,8 @@ class _$ThemeStateImpl extends _ThemeState with DiagnosticableTreeMixin {
   final bool showBackgroundImage;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'ThemeState(themePreset: $themePreset, brightness: $brightness, showBackgroundImage: $showBackgroundImage)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'ThemeState'))
-      ..add(DiagnosticsProperty('themePreset', themePreset))
-      ..add(DiagnosticsProperty('brightness', brightness))
-      ..add(DiagnosticsProperty('showBackgroundImage', showBackgroundImage));
   }
 
   @override

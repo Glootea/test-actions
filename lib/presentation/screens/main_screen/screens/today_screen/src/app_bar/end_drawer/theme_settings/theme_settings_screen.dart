@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:queue/domain/theme/theme_cubit.dart';
+import 'package:queue/domain/theme/theme_state.dart';
 import 'package:queue/presentation/common_src/defined_text.dart';
 import 'package:queue/presentation/common_src/expandable_block.dart';
 import 'package:queue/presentation/common_src/screen_headline.dart';

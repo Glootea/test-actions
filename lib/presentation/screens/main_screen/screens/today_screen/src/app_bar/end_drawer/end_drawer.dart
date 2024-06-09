@@ -45,9 +45,8 @@ class TodayLessonsEndDrawer extends StatelessWidget {
             if (kDebugMode) print('No google sign in');
             return;
           }
-          final drive = GoogleDriveProvider(signIn);
-          await drive.init();
-          await drive.createSpreadSheet('sample');
+          final drive = await GoogleDriveProvider.create(signIn);
+          await drive.createFile(name: 'sample', type: FileType.spreadsheet);
         },
         child: const Text('Создать файл'),
       ),

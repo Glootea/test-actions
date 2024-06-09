@@ -7,14 +7,19 @@ import 'package:queue/presentation/common_src/loading/queue_loading_container.da
 part 'today_screen_cubit.freezed.dart';
 
 class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
-  TodayScreenCubit({required DatabaseService databaseService})
+  TodayScreenCubit._({required DatabaseService databaseService})
       : _databaseService = databaseService,
-        super(TodayScreenState.loading()) {
-    init();
-  }
+        super(TodayScreenState.loading());
+
   final DatabaseService _databaseService;
 
-  Future<void> init() async {
+  static Future<TodayScreenCubit> create(DatabaseService databaseService) async {
+    final cubit = TodayScreenCubit._(databaseService: databaseService);
+    await cubit._init();
+    return cubit;
+  }
+
+  Future<void> _init() async {
     final todayLessons = await _databaseService.todayLessons();
     // final onlineTableIDs = todayLessons.map((e) => e.lesson.subjectOnlineTableID).toList();
     // final queueRecordList = await _databaseService.getQueueRecords(onlineTableIDs);

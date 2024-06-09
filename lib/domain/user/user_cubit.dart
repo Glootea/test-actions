@@ -6,11 +6,17 @@ import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/domain/user/user.dart';
 
 class UserCubit extends Cubit<User?> {
-  UserCubit(this._storage) : super(null);
+  UserCubit._(this._storage) : super(null);
   final KeyValueStorage _storage;
   bool _inited = false;
 
-  Future<void> init() async {
+  static Future<UserCubit> create(KeyValueStorage storage) async {
+    final cubit = UserCubit._(storage);
+    await cubit._init();
+    return cubit;
+  }
+
+  Future<void> _init() async {
     final (userName, rowNumberString, isAdmin) = await (
       _storage.get(StoredValues.userName),
       _storage.get(StoredValues.userRowNumber),

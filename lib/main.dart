@@ -11,6 +11,7 @@ import 'package:queue/data/database/sources/local_database/local_database.dart';
 import 'package:queue/data/database/sources/online_database/online_database.dart';
 import 'package:queue/domain/group_metainfo/group_metainfo.dart';
 import 'package:queue/domain/theme/theme_cubit.dart';
+import 'package:queue/domain/theme/theme_state.dart';
 import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/firebase_options.dart';
 import 'package:queue/navigation.dart';
@@ -27,9 +28,12 @@ void main() async {
   final onlineDatabase = OnlineDataBase();
   final keyValueStorage = KeyValueStorage(localDatabase);
   final databaseService = DatabaseService(localDatabase: localDatabase, onlineDataBase: onlineDatabase);
-  final userCubit = UserCubit(keyValueStorage);
-  final themeCubit = ThemeCubit(keyValueStorage);
-  final _ = await (themeCubit.init(), userCubit.init()).wait;
+  final (themeCubit, userCubit, groupMetaInfoCubit) = await (
+    ThemeCubit.create(keyValueStorage),
+    UserCubit.create(keyValueStorage),
+    GroupMetaInfoCubit.create(keyValueStorage),
+  ).wait;
+
   final appRouter = AppRouter(userCubit: userCubit).config();
   runApp(
     MultiBlocProvider(
@@ -38,7 +42,7 @@ void main() async {
         Provider.value(value: keyValueStorage),
         BlocProvider.value(value: userCubit),
         BlocProvider.value(value: themeCubit),
-        BlocProvider(create: (_) => GroupMetaInfoCubit(keyValueStorage)),
+        BlocProvider.value(value: groupMetaInfoCubit),
       ],
       child: MyApp(router: appRouter),
     ),
