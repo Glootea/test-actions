@@ -19,6 +19,7 @@ mixin _$User {
   String get name => throw _privateConstructorUsedError;
   int get id => throw _privateConstructorUsedError;
   bool get isAdmin => throw _privateConstructorUsedError;
+  List<OnlineAccount> get onlineAccounts => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $UserCopyWith<User> get copyWith => throw _privateConstructorUsedError;
@@ -29,7 +30,8 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call({String name, int id, bool isAdmin});
+  $Res call(
+      {String name, int id, bool isAdmin, List<OnlineAccount> onlineAccounts});
 }
 
 /// @nodoc
@@ -48,6 +50,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? name = null,
     Object? id = null,
     Object? isAdmin = null,
+    Object? onlineAccounts = null,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -62,6 +65,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.isAdmin
           : isAdmin // ignore: cast_nullable_to_non_nullable
               as bool,
+      onlineAccounts: null == onlineAccounts
+          ? _value.onlineAccounts
+          : onlineAccounts // ignore: cast_nullable_to_non_nullable
+              as List<OnlineAccount>,
     ) as $Val);
   }
 }
@@ -73,7 +80,8 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, int id, bool isAdmin});
+  $Res call(
+      {String name, int id, bool isAdmin, List<OnlineAccount> onlineAccounts});
 }
 
 /// @nodoc
@@ -89,6 +97,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? name = null,
     Object? id = null,
     Object? isAdmin = null,
+    Object? onlineAccounts = null,
   }) {
     return _then(_$UserImpl(
       name: null == name
@@ -103,15 +112,24 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.isAdmin
           : isAdmin // ignore: cast_nullable_to_non_nullable
               as bool,
+      onlineAccounts: null == onlineAccounts
+          ? _value._onlineAccounts
+          : onlineAccounts // ignore: cast_nullable_to_non_nullable
+              as List<OnlineAccount>,
     ));
   }
 }
 
 /// @nodoc
 
-class _$UserImpl implements _User {
+class _$UserImpl extends _User with DiagnosticableTreeMixin {
   const _$UserImpl(
-      {required this.name, required this.id, required this.isAdmin});
+      {required this.name,
+      required this.id,
+      required this.isAdmin,
+      final List<OnlineAccount> onlineAccounts = const []})
+      : _onlineAccounts = onlineAccounts,
+        super._();
 
   @override
   final String name;
@@ -119,10 +137,29 @@ class _$UserImpl implements _User {
   final int id;
   @override
   final bool isAdmin;
+  final List<OnlineAccount> _onlineAccounts;
+  @override
+  @JsonKey()
+  List<OnlineAccount> get onlineAccounts {
+    if (_onlineAccounts is EqualUnmodifiableListView) return _onlineAccounts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_onlineAccounts);
+  }
 
   @override
-  String toString() {
-    return 'User(name: $name, id: $id, isAdmin: $isAdmin)';
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'User._private(name: $name, id: $id, isAdmin: $isAdmin, onlineAccounts: $onlineAccounts)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'User._private'))
+      ..add(DiagnosticsProperty('name', name))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('isAdmin', isAdmin))
+      ..add(DiagnosticsProperty('onlineAccounts', onlineAccounts));
   }
 
   @override
@@ -132,11 +169,14 @@ class _$UserImpl implements _User {
             other is _$UserImpl &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
+            (identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin) &&
+            const DeepCollectionEquality()
+                .equals(other._onlineAccounts, _onlineAccounts));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, name, id, isAdmin);
+  int get hashCode => Object.hash(runtimeType, name, id, isAdmin,
+      const DeepCollectionEquality().hash(_onlineAccounts));
 
   @JsonKey(ignore: true)
   @override
@@ -145,11 +185,13 @@ class _$UserImpl implements _User {
       __$$UserImplCopyWithImpl<_$UserImpl>(this, _$identity);
 }
 
-abstract class _User implements User {
+abstract class _User extends User {
   const factory _User(
       {required final String name,
       required final int id,
-      required final bool isAdmin}) = _$UserImpl;
+      required final bool isAdmin,
+      final List<OnlineAccount> onlineAccounts}) = _$UserImpl;
+  const _User._() : super._();
 
   @override
   String get name;
@@ -157,6 +199,8 @@ abstract class _User implements User {
   int get id;
   @override
   bool get isAdmin;
+  @override
+  List<OnlineAccount> get onlineAccounts;
   @override
   @JsonKey(ignore: true)
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>

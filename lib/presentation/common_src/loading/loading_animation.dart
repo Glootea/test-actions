@@ -2,7 +2,7 @@ part of 'queue_loading_container.dart';
 
 class LoadingAnimation extends StatefulWidget {
   const LoadingAnimation({required this.state, required this.afterAnimationEnd, super.key});
-  final LoadingState state;
+  final LoadingStateEnum state;
   final VoidCallback afterAnimationEnd;
 
   @override
@@ -12,7 +12,7 @@ class LoadingAnimation extends StatefulWidget {
 class _LoadingAnimationState extends State<LoadingAnimation> {
   /// Timer and _states for checking if loaded state has already been reached, even before initialization
   late final Timer _timer;
-  final List<LoadingState> _states = [];
+  final List<LoadingStateEnum> _states = [];
 
   SMIBool? endTrigger;
 
@@ -37,9 +37,9 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
     }
   }
 
-  void handleLoadingState(LoadingState state) {
+  void handleLoadingState(LoadingStateEnum state) {
     _states.add(state);
-    if (_states.contains(LoadingState.loaded)) {
+    if (_states.contains(LoadingStateEnum.loaded)) {
       endTrigger?.value = true;
     }
   }
@@ -47,7 +47,7 @@ class _LoadingAnimationState extends State<LoadingAnimation> {
   @override
   void initState() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_states.contains(LoadingState.loaded)) {
+      if (_states.contains(LoadingStateEnum.loaded)) {
         endTrigger?.value = true;
       }
     });

@@ -14,12 +14,12 @@ class UserCubit extends Cubit<User?> {
     final (userName, rowNumberString, isAdmin) = await (
       _storage.get(StoredValues.userName),
       _storage.get(StoredValues.userRowNumber),
-      _storage.get(StoredValues.userIsAdmin)
+      _storage.get(StoredValues.userIsAdmin),
     ).wait;
     _inited = true;
     if (rowNumberString == null || userName == null) return;
     final rowNumber = int.parse(rowNumberString);
-    emit(User(name: userName, id: rowNumber, isAdmin: isAdmin == 'true'));
+    emit(User.fetchOnlineAccount(name: userName, id: rowNumber, isAdmin: isAdmin == 'true'));
     if (kDebugMode) {
       print('User cubit initialized: $state');
     }
@@ -31,7 +31,7 @@ class UserCubit extends Cubit<User?> {
     required bool isAdmin,
   }) async {
     assert(_inited == true, "User cubit hasn't been initialized for login");
-    emit(User(name: name, id: rowNumber, isAdmin: isAdmin));
+    emit(User.fetchOnlineAccount(name: name, id: rowNumber, isAdmin: isAdmin));
     await (
       _storage.set(StoredValues.userName, name),
       _storage.set(StoredValues.userRowNumber, rowNumber.toString()),
@@ -42,8 +42,10 @@ class UserCubit extends Cubit<User?> {
 
   Future<void> logout() async {
     assert(_inited == true, "User cubit hasn't been initialized for logout");
+    final tempUser = state;
     emit(null);
     await (
+      tempUser?.logoutAllOnlineAccounts().then((_) {}) ?? Future.value(),
       _storage.clean(StoredValues.userName),
       _storage.clean(StoredValues.userRowNumber),
       _storage.clean(StoredValues.userIsAdmin),
@@ -54,4 +56,21 @@ class UserCubit extends Cubit<User?> {
   String get name => state?.name ?? '';
   bool get isAdmin => state?.isAdmin ?? false;
   int get rowNumber => state?.id ?? 0;
+
+  ///Possible sign in options: [GoogleOnlineAccount]
+  Future<void> signInSingle<T extends OnlineAccount>() async {
+    assert(_inited == true, "User cubit hasn't been initialized for sign in");
+    assert(T == GoogleOnlineAccount, 'Unsupported sign in type: $T');
+    final user = state;
+    if (user == null) return;
+    emit(await user.signInSingle<T>());
+  }
+
+  ///Possible log out options: [GoogleOnlineAccount]
+  Future<void> logoutSingle<T extends OnlineAccount>() async {
+    assert(_inited == true, "User cubit hasn't been initialized for logout");
+    final user = state;
+    if (user == null) return;
+    emit(await user.logoutSingle<T>());
+  }
 }

@@ -51,25 +51,12 @@ class AppRouter extends _$AppRouter implements AutoRouteGuard {
 
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) {
-    if (userCubit.state != null || resolver.route.name == WelcomeRoute.name) {
+    if (userCubit.state != null ||
+        resolver.route.name == WelcomeRoute.name ||
+        resolver.route.name == InitLoadingRoute.name) {
       resolver.next();
     } else {
       resolver.redirect(const WelcomeRoute());
     }
-  }
-}
-
-@RoutePage()
-class AuthorizedRoutes extends StatelessWidget implements AutoRouteWrapper {
-  const AuthorizedRoutes({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Authorized Routes')));
-  }
-
-  @override
-  Widget wrappedRoute(BuildContext context) {
-    return this;
   }
 }

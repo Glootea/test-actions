@@ -7,7 +7,7 @@ abstract class LoadableCubit<T extends LoadableState> extends Cubit<T> {
   void onEndLoading();
 }
 
-enum LoadingState {
+enum LoadingStateEnum {
   /// Used to display loading phase of loading animation
   started,
 
@@ -22,7 +22,20 @@ enum LoadingState {
   noLoading
 }
 
-abstract interface class LoadableState {
-  const LoadableState(this.isStateLoading);
-  final LoadingState isStateLoading;
+class LoadableState {
+  const LoadableState(this.isStateLoading, {this.loadingStateText});
+  final LoadingStateEnum isStateLoading;
+  final String? loadingStateText;
+}
+
+class DefaultLoadingState extends LoadableState {
+  const DefaultLoadingState({super.loadingStateText}) : super(LoadingStateEnum.started);
+}
+
+class DefaultLoadedState extends LoadableState {
+  const DefaultLoadedState({super.loadingStateText}) : super(LoadingStateEnum.loaded);
+}
+
+class DefaultEndedState extends LoadableState {
+  const DefaultEndedState({super.loadingStateText}) : super(LoadingStateEnum.ended);
 }

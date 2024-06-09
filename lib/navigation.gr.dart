@@ -54,9 +54,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     InitLoadingRoute.name: (routeData) {
+      final args = routeData.argsAs<InitLoadingRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const InitLoadingScreen(),
+        child: InitLoadingScreen(
+          userCubit: args.userCubit,
+          key: args.key,
+        ),
       );
     },
     MainRoute.name: (routeData) {
@@ -238,16 +242,40 @@ class DetailedQueueRouteArgs {
 
 /// generated route for
 /// [InitLoadingScreen]
-class InitLoadingRoute extends PageRouteInfo<void> {
-  const InitLoadingRoute({List<PageRouteInfo>? children})
-      : super(
+class InitLoadingRoute extends PageRouteInfo<InitLoadingRouteArgs> {
+  InitLoadingRoute({
+    required UserCubit userCubit,
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
           InitLoadingRoute.name,
+          args: InitLoadingRouteArgs(
+            userCubit: userCubit,
+            key: key,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'InitLoadingRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<InitLoadingRouteArgs> page =
+      PageInfo<InitLoadingRouteArgs>(name);
+}
+
+class InitLoadingRouteArgs {
+  const InitLoadingRouteArgs({
+    required this.userCubit,
+    this.key,
+  });
+
+  final UserCubit userCubit;
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'InitLoadingRouteArgs{userCubit: $userCubit, key: $key}';
+  }
 }
 
 /// generated route for

@@ -18,7 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$TodayScreenState {
 // required List<Lesson> lessonList,
   SeparatedLessons get separatedLessons => throw _privateConstructorUsedError;
-  LoadingState get isLoading => throw _privateConstructorUsedError;
+  LoadingStateEnum get isLoading => throw _privateConstructorUsedError;
+  String? get loadingStateText => throw _privateConstructorUsedError;
   DialogData? get dialogData => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -34,7 +35,8 @@ abstract class $TodayScreenStateCopyWith<$Res> {
   @useResult
   $Res call(
       {SeparatedLessons separatedLessons,
-      LoadingState isLoading,
+      LoadingStateEnum isLoading,
+      String? loadingStateText,
       DialogData? dialogData});
 }
 
@@ -53,6 +55,7 @@ class _$TodayScreenStateCopyWithImpl<$Res, $Val extends TodayScreenState>
   $Res call({
     Object? separatedLessons = null,
     Object? isLoading = null,
+    Object? loadingStateText = freezed,
     Object? dialogData = freezed,
   }) {
     return _then(_value.copyWith(
@@ -63,7 +66,11 @@ class _$TodayScreenStateCopyWithImpl<$Res, $Val extends TodayScreenState>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
-              as LoadingState,
+              as LoadingStateEnum,
+      loadingStateText: freezed == loadingStateText
+          ? _value.loadingStateText
+          : loadingStateText // ignore: cast_nullable_to_non_nullable
+              as String?,
       dialogData: freezed == dialogData
           ? _value.dialogData
           : dialogData // ignore: cast_nullable_to_non_nullable
@@ -82,7 +89,8 @@ abstract class _$$MainScreenStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {SeparatedLessons separatedLessons,
-      LoadingState isLoading,
+      LoadingStateEnum isLoading,
+      String? loadingStateText,
       DialogData? dialogData});
 }
 
@@ -99,6 +107,7 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
   $Res call({
     Object? separatedLessons = null,
     Object? isLoading = null,
+    Object? loadingStateText = freezed,
     Object? dialogData = freezed,
   }) {
     return _then(_$MainScreenStateImpl(
@@ -109,7 +118,11 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
-              as LoadingState,
+              as LoadingStateEnum,
+      loadingStateText: freezed == loadingStateText
+          ? _value.loadingStateText
+          : loadingStateText // ignore: cast_nullable_to_non_nullable
+              as String?,
       dialogData: freezed == dialogData
           ? _value.dialogData
           : dialogData // ignore: cast_nullable_to_non_nullable
@@ -123,7 +136,8 @@ class __$$MainScreenStateImplCopyWithImpl<$Res>
 class _$MainScreenStateImpl extends _MainScreenState {
   const _$MainScreenStateImpl(
       {required this.separatedLessons,
-      this.isLoading = LoadingState.loaded,
+      this.isLoading = LoadingStateEnum.loaded,
+      this.loadingStateText = null,
       this.dialogData})
       : super._();
 
@@ -132,13 +146,16 @@ class _$MainScreenStateImpl extends _MainScreenState {
   final SeparatedLessons separatedLessons;
   @override
   @JsonKey()
-  final LoadingState isLoading;
+  final LoadingStateEnum isLoading;
+  @override
+  @JsonKey()
+  final String? loadingStateText;
   @override
   final DialogData? dialogData;
 
   @override
   String toString() {
-    return 'TodayScreenState(separatedLessons: $separatedLessons, isLoading: $isLoading, dialogData: $dialogData)';
+    return 'TodayScreenState(separatedLessons: $separatedLessons, isLoading: $isLoading, loadingStateText: $loadingStateText, dialogData: $dialogData)';
   }
 
   @override
@@ -150,13 +167,15 @@ class _$MainScreenStateImpl extends _MainScreenState {
                 other.separatedLessons == separatedLessons) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.loadingStateText, loadingStateText) ||
+                other.loadingStateText == loadingStateText) &&
             (identical(other.dialogData, dialogData) ||
                 other.dialogData == dialogData));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, separatedLessons, isLoading, dialogData);
+  int get hashCode => Object.hash(
+      runtimeType, separatedLessons, isLoading, loadingStateText, dialogData);
 
   @JsonKey(ignore: true)
   @override
@@ -169,14 +188,17 @@ class _$MainScreenStateImpl extends _MainScreenState {
 abstract class _MainScreenState extends TodayScreenState {
   const factory _MainScreenState(
       {required final SeparatedLessons separatedLessons,
-      final LoadingState isLoading,
+      final LoadingStateEnum isLoading,
+      final String? loadingStateText,
       final DialogData? dialogData}) = _$MainScreenStateImpl;
   const _MainScreenState._() : super._();
 
   @override // required List<Lesson> lessonList,
   SeparatedLessons get separatedLessons;
   @override
-  LoadingState get isLoading;
+  LoadingStateEnum get isLoading;
+  @override
+  String? get loadingStateText;
   @override
   DialogData? get dialogData;
   @override

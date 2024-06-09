@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/navigation.dart';
 import 'package:queue/presentation/common_src/expandable_block.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
@@ -23,13 +25,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     final loadingAnimation = ConstrainedBox(
       constraints: BoxConstraints.tight(Size(size / 2, size / 2)),
-      child: LoadingAnimation(state: LoadingState.started, afterAnimationEnd: () {}),
+      child: LoadingAnimation(state: LoadingStateEnum.started, afterAnimationEnd: () {}),
     );
     final createGroupButton = Padding(
       padding: const EdgeInsets.only(top: 32),
       child: Align(
         child: OutlinedButton(
-          onPressed: () async => AutoRouter.of(context).popAndPush(const InitLoadingRoute()),
+          onPressed: () async => AutoRouter.of(context).popAndPush(
+            InitLoadingRoute(
+              userCubit: context.read<UserCubit>(),
+            ),
+          ),
           child: const Text('Войти'),
         ),
       ),
@@ -107,7 +113,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             loadingAnimation,
             ...titleAndButtons,
             descriptionBlock,
-            createGroupButton,
+            if (selected == 1) createGroupButton,
             const Gap(16),
           ];
 

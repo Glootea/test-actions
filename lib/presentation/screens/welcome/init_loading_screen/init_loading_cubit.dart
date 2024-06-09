@@ -1,29 +1,37 @@
+import 'package:queue/domain/user/user.dart';
+import 'package:queue/domain/user/user_cubit.dart';
 import 'package:queue/presentation/common_src/loading/queue_loading_container.dart';
 
 class InitLoadingCubit extends LoadableCubit {
-  InitLoadingCubit() : super(NotLoadedState());
-
+  InitLoadingCubit(this._userCubit) : super(const InputDataState());
+  final UserCubit _userCubit;
   @override
   void onEndLoading() {
-    emit(EndedState());
+    emit(const DefaultEndedState());
   }
 
-  Future<void> startLoading() async {
-    return Future.delayed(const Duration(seconds: 3), () => emit(LoadedState()));
+  Future<void> login(GroupCreationData data) async {
+    print('Login flow started');
+    await _userCubit.login(name: data.headMasterName, rowNumber: 2, isAdmin: true);
+    await _userCubit.signInSingle<GoogleOnlineAccount>();
+
+    emit(const DefaultLoadingState(loadingStateText: 'Поиск данных на диске'));
+    await Future.delayed(const Duration(seconds: 3), () => emit(const DefaultLoadedState()));
   }
 }
 
-class NotLoadedState implements LoadableState {
-  @override
-  LoadingState get isStateLoading => LoadingState.started;
+class NoUserState extends LoadableState {
+  const NoUserState({this.errorMessage}) : super(LoadingStateEnum.noLoading);
+  final String? errorMessage;
 }
 
-class LoadedState implements LoadableState {
-  @override
-  LoadingState get isStateLoading => LoadingState.loaded;
+class InputDataState extends LoadableState {
+  const InputDataState() : super(LoadingStateEnum.noLoading);
 }
 
-class EndedState implements LoadableState {
-  @override
-  LoadingState get isStateLoading => LoadingState.ended;
+class GroupCreationData {
+  const GroupCreationData({required this.groupName, required this.headMasterName});
+
+  final String groupName;
+  final String headMasterName;
 }

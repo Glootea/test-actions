@@ -26,7 +26,7 @@ class TodayScreenCubit extends LoadableCubit<TodayScreenState> {
   }
 
   @override
-  void onEndLoading() => emit(state.copyWith(isLoading: LoadingState.ended));
+  void onEndLoading() => emit(state.copyWith(isLoading: LoadingStateEnum.ended));
 }
 
 class SeparatedLessons {
@@ -61,17 +61,18 @@ class TodayScreenState with _$TodayScreenState implements LoadableState {
   const factory TodayScreenState({
     // required List<Lesson> lessonList,
     required SeparatedLessons separatedLessons,
-    @Default(LoadingState.loaded) LoadingState isLoading,
+    @Default(LoadingStateEnum.loaded) LoadingStateEnum isLoading,
+    @Default(null) String? loadingStateText,
     DialogData? dialogData,
   }) = _MainScreenState;
   const TodayScreenState._();
   factory TodayScreenState.loading() => const TodayScreenState(
         separatedLessons: SeparatedLessons.empty(),
-        isLoading: LoadingState.started,
+        isLoading: LoadingStateEnum.started,
       );
 
   @override
-  LoadingState get isStateLoading => isLoading;
+  LoadingStateEnum get isStateLoading => isLoading;
 }
 
 abstract class DialogData {

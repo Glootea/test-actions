@@ -22,7 +22,7 @@ class SubjectAdminScreen extends StatelessWidget {
     return BlocProvider.value(
       value: cubit,
       child: AdminSettingsScreenTemplate(
-        onSubmit: () async {},
+        onSubmit: (context) async {},
         title: 'Изменение занятия',
         headlineHeroTag: 'SubjectPage$subjectID',
         children: [

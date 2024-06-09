@@ -9,7 +9,7 @@ class StudentAdminPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AdminSettingsScreenTemplate(
-      onSubmit: () async {},
+      onSubmit: (context) async {},
       title: 'Студенты',
       headlineHeroTag: 'Студенты',
       children: [Container()],
