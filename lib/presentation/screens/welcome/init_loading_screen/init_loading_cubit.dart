@@ -1,3 +1,4 @@
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:queue/data/google_drive_provider/google_drive_provider.dart';
 import 'package:queue/data/google_drive_provider/online_file_skeleton_filler.dart';
 import 'package:queue/data/online_database_strings.dart';
@@ -20,11 +21,8 @@ class InitLoadingCubit extends LoadableCubit {
   Future<void> headManCreateGroup(GroupCreationData data) async {
     print('Login flow started');
     await _userCubit.login(name: data.headMasterName, rowNumber: 2, isAdmin: true);
-    final googleSignIn = _userCubit.state!.getOnlineAccount<GoogleOnlineAccount>()!.googleSignIn;
-    if (googleSignIn.currentUser == null) {
-      await _userCubit.signInSingle<GoogleOnlineAccount>();
-    }
-
+    final googleSignIn = await _doubleLoginOrExit();
+    if (googleSignIn == null) return;
     emit(const DefaultLoadingState(loadingStateText: 'Поиск данных на диске'));
 
     final googleDriveProvider = await GoogleDriveProvider.create(googleSignIn);
@@ -49,9 +47,10 @@ class InitLoadingCubit extends LoadableCubit {
   Future<void> headMasterLogin() async {
     await _userCubit.loginTemp();
     await _userCubit.signInSingle<GoogleOnlineAccount>();
+    final googleSignIn = await _doubleLoginOrExit();
+    if (googleSignIn == null) return;
     emit(const DefaultLoadingState(loadingStateText: 'Поиск данных на диске'));
-    final googleSignIn =
-        _userCubit.state!.getOnlineAccount<GoogleOnlineAccount>()!.googleSignIn; //TODO: fix throw on cancel login
+
     final googleDriveProvider = await GoogleDriveProvider.create(googleSignIn);
     final foundInfoFile = await googleDriveProvider.fileExistsInAppFolder(OnlineDatabaseStrings.infoFileName);
     if (foundInfoFile) {
@@ -62,6 +61,18 @@ class InitLoadingCubit extends LoadableCubit {
       emit(const DefaultLoadingState(loadingStateText: 'Необходимая информация на вашем Google Drive не найдена.'));
       await Future.delayed(const Duration(seconds: 3), headManGroupCreationIntent);
     }
+  }
+
+  Future<GoogleSignIn?> _doubleLoginOrExit() async {
+    var googleSignIn = _userCubit.state!.getOnlineAccount<GoogleOnlineAccount>()?.googleSignIn;
+    if (googleSignIn?.currentUser == null) {
+      await _userCubit.signInSingle<GoogleOnlineAccount>();
+      googleSignIn ??= _userCubit.state!.getOnlineAccount<GoogleOnlineAccount>()?.googleSignIn;
+      if (googleSignIn?.currentUser == null) {
+        emit(const NoUserState(errorMessage: 'Failed to sign in'));
+      }
+    }
+    return googleSignIn;
   }
 }
 

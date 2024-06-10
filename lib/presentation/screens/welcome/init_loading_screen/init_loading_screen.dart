@@ -59,7 +59,7 @@ class InitLoadingScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            DefaultNoLoadingState() => const SizedBox(),
+            DefaultNoLoadingState() || NoUserState() => const SizedBox(),
             _ => throw UnimplementedError('Unexpected state: ${cubit.state}'),
           },
         ),
