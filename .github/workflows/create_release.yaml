@@ -1,7 +1,6 @@
 name: Create Release
 on:
   workflow_dispatch:
-   
   push:
     branches:
       - main
@@ -17,24 +16,20 @@ jobs:
           channel: stable
           flutter-version-file: pubspec.yaml
       - run: flutter --version
-  build-android:
-    runs-on: macos-latest
-    needs: get-flutter
-    steps:
-    - run: flutter build apk
-  build-ios:
-    runs-on: macos-latest
-    needs: get-flutter
-    steps:
+      - run: flutter build apk --target-platform=android-arm64
       - run: flutter build ios --release --no-codesign
-  build-web:
-    runs-on: macos-latest
-    needs: get-flutter
-    steps:
-    - run: flutter build web --wasm
-  build-macos:
-    runs-on: macos-latest
-    needs: get-flutter
-    steps:
       - run: flutter build macos
+      - run: flutter build web --wasm
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
+          allowUpdates: true
+          # bodyFile: "releaseNotes.md"
+      # - uses: FirebaseExtended/action-hosting-deploy@v0
+      #   with:
+      #     firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+      #     projectId: your-Firebase-project-ID
+      #     channelId: live
+
+      
   
