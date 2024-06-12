@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:googleapis/sheets/v4.dart';
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:queue/data/google_sheets_api_wrapper/google_sheets_api_wrapper.dart';
 import 'package:queue/data/online_database_strings.dart';
 
 class OnlineFileSkeletonFiller {
@@ -68,22 +70,9 @@ class OnlineFileSkeletonFiller {
         ),
         Request(deleteSheet: DeleteSheetRequest(sheetId: spreadsheet.sheets?.first.properties?.sheetId)),
       ];
-    await api.spreadsheets.batchUpdate(createSheetsRequest, fileID, $fields: '*').then(print);
-    final insertRequest = BatchUpdateSpreadsheetRequest()
-      ..requests = [
-        _requestToUpdateField(1, 0, 0, OnlineDatabaseStrings.keys),
-        _requestToUpdateField(1, 0, 1, OnlineDatabaseStrings.values),
-      ];
-    await api.spreadsheets.batchUpdate(insertRequest, fileID).then(print);
-  }
+    await api.spreadsheets.batchUpdate(createSheetsRequest, fileID, $fields: '*');
 
-  static Request _requestToUpdateField(int sheetId, int row, int column, String value) => Request(
-        updateCells: UpdateCellsRequest(
-          fields: '*',
-          range: GridRange(startRowIndex: row, startColumnIndex: column, sheetId: sheetId),
-          rows: [
-            RowData(values: [CellData(userEnteredValue: ExtendedValue(stringValue: value))]),
-          ],
-        ),
-      );
+    final sheet = GoogleSheetsApiWrapper(client).sheet(fileID, SheetsList.info);
+    await sheet.writeColumn([OnlineDatabaseStrings.keys, OnlineDatabaseStrings.values], column: 0);
+  }
 }

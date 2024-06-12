@@ -87,22 +87,22 @@ class DatabaseService {
 
   Future<bool> addNewQueueRecord(QueueRecord queueRecord) // TODO: implement
   async {
-    final uploaded = await _onlineDataBase.addNewQueueRecord(queueRecord);
-    if (uploaded) {
-      final updatedQueueRecord = queueRecord.copyWith(status: UploadStatus.uploaded);
-      await _localDatabase.addQueueRecord(updatedQueueRecord);
-      return true;
-    }
+    // final uploaded = await _onlineDataBase.addNewQueueRecord(queueRecord);
+    // if (uploaded) {
+    //   final updatedQueueRecord = queueRecord.copyWith(status: UploadStatus.uploaded);
+    //   await _localDatabase.addQueueRecord(updatedQueueRecord);
+    //   return true;
+    // }
     return false;
   }
 
   Future<void> deleteQueueRecord(QueueRecord queueRecord) async {
-    final deleted = await _onlineDataBase.deleteQueueRecord(queueRecord);
-    if (deleted) {
-      await _localDatabase.deleteQueueRecord(queueRecord);
-    } else {
-      await _localDatabase.updateQueueRecordUploadStatus(queueRecord, UploadStatus.shouldBeDeleted);
-    }
+    // final deleted = await _onlineDataBase.deleteQueueRecord(queueRecord);
+    // if (deleted) {
+    //   await _localDatabase.deleteQueueRecord(queueRecord);
+    // } else {
+    //   await _localDatabase.updateQueueRecordUploadStatus(queueRecord, UploadStatus.shouldBeDeleted);
+    // }
   }
 
   Lesson getLesson(int subjectLocalID) {

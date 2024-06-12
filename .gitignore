@@ -50,6 +50,7 @@ app.*.map.json
 firebase.json
 .firebase
 .vscode
+/test/temp_test.dart
 
 #Large windows build files
 /windows/out/
