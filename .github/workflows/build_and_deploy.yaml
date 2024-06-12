@@ -1,0 +1,61 @@
+name: Create Release
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: macos-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Install yq 
+        run: brew install yq jq
+            
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+          architecture: arm64
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.14.0
+
+      - name: Install firebase
+        run: |
+            npm install -g firebase-tools
+            dart pub global activate flutterfire_cli
+            flutterfire configure --token ${{ secrets.FIREBASE_TOKEN }} --platforms="android,ios,macos,web,windows" \
+            -a  "com.glootea.queueminder" \
+            -i  "com.glootea.queueminder" \
+            -m  "com.glootea.queueminder" \
+            -w  "${{ secrets.WEB_APP_ID }}" \
+            -x  "${{ secrets.WINDOWS_APP_ID }}" 
+
+      - name: Build 
+        run: |
+          flutter build apk --target-platform=android-arm64
+#         flutter build ios --release --no-codesign
+#         flutter build macos
+#         flutter build web --wasm
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+     
+          # bodyFile: "releaseNotes.md"
+      # - uses: FirebaseExtended/action-hosting-deploy@v0
+      #   with:
+      #     firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+      #     projectId: your-Firebase-project-ID
+      #     channelId: live
