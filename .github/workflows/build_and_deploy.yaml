@@ -4,12 +4,30 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: macos-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
+
+      - name: Check changelog
+        uses: tarides/changelog-check-action@v2
+        with:
+          changelog: CHANGELOG.md
+
+      - name: Get next version
+        uses: reecetech/version-increment@2024.4.3
+        id: version
+        with:
+          scheme: calver
+          release_branch: main
+
+      - name: Set version
+        run: | 
+          echo "VERSION = v${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}-pre" >> $GITHUB_ENV
+          echo "Version is $VERSION"
 
       - name: Install yq 
         run: brew install yq jq
@@ -44,18 +62,22 @@ jobs:
 #         flutter build ios --release --no-codesign
 #         flutter build macos
 #         flutter build web --wasm
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - uses: CupOfTea696/gh-action-auto-release@v1.0.0
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
-          files: |
-            build/app/outputs/flutter-apk/app-release.apk
-     
-          # bodyFile: "releaseNotes.md"
-      # - uses: FirebaseExtended/action-hosting-deploy@v0
+          title: "Release: ${{ env.VERSION }}"
+          tag: "v$semver"
+          draft: false
+          regex: "/^Release: #{semver}$/i"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+      # - uses: "marvinpinto/action-automatic-releases@latest"
       #   with:
-      #     firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-      #     projectId: your-Firebase-project-ID
-      #     channelId: live
+      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
+      #     automatic_release_tag: "latest"
+      #     prerelease: true
+      #     title: ${{ env.VERSION }}
+      #     files: |
+      #       build/app/outputs/flutter-apk/app-release.apk
+     
