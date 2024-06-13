@@ -62,7 +62,7 @@ jobs:
             -x  "${{ secrets.WINDOWS_APP_ID }}" 
 
       - name: Accept licenses
-        run: flutter doctor --android-licenses
+        run: yes | flutter doctor --android-licenses
 
 
       - name: Setup and cache android      
