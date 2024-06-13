@@ -26,8 +26,10 @@ jobs:
 
       - name: Set version
         run: | 
-          echo "VERSION = v${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}-pre" >> $GITHUB_ENV
-          echo "Version is $VERSION"
+          echo "VERSION=v${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}-pre" >> $GITHUB_ENV
+      
+      - name: Get version
+        run:  echo Version is $VERSION
 
       - name: Install yq 
         run: |
