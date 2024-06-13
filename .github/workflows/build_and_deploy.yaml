@@ -27,7 +27,7 @@ jobs:
       - name: Set version
         run: | 
           echo "VERSION = v${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}-pre" >> $GITHUB_ENV
-          echo "Version is $VERSION"
+          echo "Version is ${{ env.VERSION }}"
 
       - name: Install yq 
         run: brew install yq jq
@@ -56,6 +56,14 @@ jobs:
             -w  "${{ secrets.WEB_APP_ID }}" \
             -x  "${{ secrets.WINDOWS_APP_ID }}" 
 
+      - name: Setup and cache android      
+        uses: maxim-lobanov/setup-android-tools@v1
+        with:
+          packages: |
+            ndk;25.1.8937393
+            platforms;android-31
+            platforms;android-32
+          cache: true
       - name: Build 
         run: |
           flutter build apk --target-platform=android-arm64
