@@ -30,7 +30,9 @@ jobs:
           echo "Version is ${{ env.VERSION }}"
 
       - name: Install yq 
-        run: brew install yq jq
+        run: |
+          brew install yq jq
+          touch subdir/package-lock.json
             
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
