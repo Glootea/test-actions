@@ -27,7 +27,7 @@ jobs:
       - name: Set version
         run: | 
           echo "VERSION = v${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}-pre" >> $GITHUB_ENV
-          echo "Version is ${{ env.VERSION }}"
+          echo "Version is $VERSION"
 
       - name: Install yq 
         run: |
@@ -82,7 +82,9 @@ jobs:
           sdk-version: |
             31
             32
+            34
           ndk-version: 25.1.8937393
+          cmake-version: 3.22.1
 
       - name: Build 
         run: |
@@ -92,10 +94,11 @@ jobs:
 #         flutter build web --wasm
       - uses: CupOfTea696/gh-action-auto-release@v1.0.0
         with:
-          title: "Release: ${{ env.VERSION }}"
-          tag: "v$semver"
+          title: "Release: $VERSION"
+          tag: "$VERSION"
           draft: false
-          regex: "/^Release: #{semver}$/i"
+          regex:  v(\d+\.)?(\d+\.)?(\*|\d+)
+          prerelease-regex: v(\d+\.)?(\d+\.)?(\*|\d+)\b-pre\b
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
