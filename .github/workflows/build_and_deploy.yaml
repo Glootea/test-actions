@@ -43,6 +43,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
+          cache: true
           node-version: 20.14.0
 
       - name: Install firebase
@@ -55,6 +56,10 @@ jobs:
             -m  "com.glootea.queueminder" \
             -w  "${{ secrets.WEB_APP_ID }}" \
             -x  "${{ secrets.WINDOWS_APP_ID }}" 
+            
+      - name: Accept licenses
+        run: flutter doctor --android-licenses
+
 
       - name: Setup and cache android      
         uses: maxim-lobanov/setup-android-tools@v1
@@ -64,6 +69,7 @@ jobs:
             platforms;android-31
             platforms;android-32
           cache: true
+
       - name: Build 
         run: |
           flutter build apk --target-platform=android-arm64
