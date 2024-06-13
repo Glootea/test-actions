@@ -32,6 +32,7 @@ jobs:
       - name: Install yq 
         run: |
           brew install yq jq
+          mkdir subdir
           touch subdir/package-lock.json
             
       - name: Set up Flutter
