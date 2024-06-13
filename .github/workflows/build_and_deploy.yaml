@@ -15,7 +15,7 @@ jobs:
       - name: Check changelog
         uses: tarides/changelog-check-action@v2
         with:
-          changelog: CHANGELOG.md
+          changelog: ReleaseNote.md
 
       - name: Get next version
         uses: reecetech/version-increment@2024.4.3
@@ -95,15 +95,25 @@ jobs:
 #         flutter build ios --release --no-codesign
 #         flutter build macos
 #         flutter build web --wasm
-      - uses: CupOfTea696/gh-action-auto-release@v1.0.0
+
+      - uses: ncipollo/release-action@v1
         with:
-          title: "Release: $VERSION"
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
+          bodyFile: "ReleaseNote.md"
           tag: "$VERSION"
-          draft: false
-          regex:  "v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)"
-          prerelease-regex: "v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)\b-pre\b"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          commit: main
+          prerelease: true
+          allowUpdates: true
+
+      # - uses: CupOfTea696/gh-action-auto-release@v1.0.0
+      #   with:
+      #     title: "Release: $VERSION"
+      #     tag: "$VERSION"
+      #     draft: false
+      #     regex:  "v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)"
+      #     prerelease-regex: "v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)\b-pre\b"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       # - uses: "marvinpinto/action-automatic-releases@latest"
