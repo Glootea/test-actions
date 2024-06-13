@@ -43,7 +43,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          cache: true
+          cache: npm
           node-version: 20.14.0
 
       - name: Install firebase
@@ -56,7 +56,7 @@ jobs:
             -m  "com.glootea.queueminder" \
             -w  "${{ secrets.WEB_APP_ID }}" \
             -x  "${{ secrets.WINDOWS_APP_ID }}" 
-            
+
       - name: Accept licenses
         run: flutter doctor --android-licenses
 
