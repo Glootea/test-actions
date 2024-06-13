@@ -1,15 +1,20 @@
+import 'dart:developer';
+
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:queue/data/database/local_database.dart';
-import 'package:queue/data/user_database.dart';
-import 'package:queue/logic/bloc.dart';
-import 'package:queue/logic/events.dart';
-import 'package:queue/logic/states.dart';
-import 'package:queue/navigation.dart';
-// ignore: depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:provider/provider.dart';
+import 'package:queue/data/database/database_service.dart';
+import 'package:queue/data/database/sources/local_database/local_database.dart';
+import 'package:queue/data/database/sources/online_database/online_database.dart';
+import 'package:queue/domain/group_metainfo/group_metainfo.dart';
+import 'package:queue/domain/theme/theme_cubit.dart';
+import 'package:queue/domain/theme/theme_state.dart';
+import 'package:queue/domain/user/user_cubit.dart';
+import 'package:queue/firebase_options.dart';
+import 'package:queue/navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,67 +22,63 @@ void main() async {
   try {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   } catch (e) {
-    print(e.toString());
+    log(e.toString());
   }
-  LocalDatabase lessonDatabase = LocalDatabase();
-  final userDataBase = await UserDataBase.getConfiguredUserDataBase(lessonDatabase);
+  final localDatabase = LocalDatabase();
+  final onlineDatabase = OnlineDataBase();
+  final keyValueStorage = KeyValueStorage(localDatabase);
+  final databaseService = DatabaseService(localDatabase: localDatabase, onlineDataBase: onlineDatabase);
+  final (themeCubit, userCubit, groupMetaInfoCubit) = await (
+    ThemeCubit.create(keyValueStorage),
+    UserCubit.create(keyValueStorage),
+    GroupMetaInfoCubit.create(keyValueStorage),
+  ).wait;
 
-  runApp(BlocProvider(
-      create: (context) => QueueBloc(userDataBase, lessonDatabase, LoadingState())..add(FindUserEvent()),
-      // ..add(UserAuthenticateEvent("Рыбкин Александр Владимирович")),
-      // child: Consumer<QueueBloc>(
-      //   child: MyApp(),
-      //   builder: (_, value, __) {
-      //     // return MyApp();
-      //   },
-      // )));
-      child: const MyApp()));
+  final appRouter = AppRouter(userCubit: userCubit).config();
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        Provider.value(value: databaseService),
+        Provider.value(value: keyValueStorage),
+        BlocProvider.value(value: userCubit),
+        BlocProvider.value(value: themeCubit),
+        BlocProvider.value(value: groupMetaInfoCubit),
+      ],
+      child: MyApp(router: appRouter),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({required this.router, super.key});
+  final RouterConfig<Object>? router;
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final QueueBloc bloc = context.read<QueueBloc>();
-    final router = getRouter(bloc);
-    return MaterialApp.router(
-        builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child ?? Container()),
-        routerConfig: router,
-        theme: ThemeData(
-          colorScheme: const ColorScheme(
-              brightness: Brightness.dark,
-              primary: Colors.white,
-              onPrimary: Colors.black,
-              secondary: Colors.grey,
-              onSecondary: Colors.black,
-              error: Colors.red,
-              onError: Colors.redAccent,
-              background: Colors.black,
-              onBackground: Colors.white,
-              surface: Colors.black38,
-              onSurface: Colors.white),
-          textTheme: Typography.dense2021.copyWith(
-              // bodySmall: Theme.of(context).textTheme.body,
-              headlineLarge: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
-              displayLarge: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
-              displaySmall: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white),
-              titleMedium: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
-              bodyMedium: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
-              bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
-              headlineMedium: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
-              headlineSmall: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
-
-          // outlinedButtonTheme: OutlinedButtonThemeData(
-          //   style: OutlinedButton.styleFrom(
-          //     textStyle: const TextStyle(color: Colors.black),
-          //     backgroundColor: Colors.white.withOpacity(0.8),
-          //     side: const BorderSide(color: Colors.black, width: 1.5),
-          //   ),
-          // ),
-          useMaterial3: true,
-        ));
-    // home: const LoginScreen(),
+    return BlocBuilder<ThemeCubit, ThemeState>(
+      builder: (context, state) {
+        return DynamicColorBuilder(
+          builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+            final colorScheme = state.getScheme ??
+                (((state.brightness) == Brightness.dark) ? darkDynamic : lightDynamic) ??
+                const ColorScheme.dark();
+            return MaterialApp.router(
+              title: 'QueueMinder',
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                child: child ?? Container(),
+              ),
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                fontFamily: 'Roboto',
+                colorScheme: colorScheme,
+                timePickerTheme: TimePickerThemeData(dayPeriodColor: Theme.of(context).colorScheme.primaryContainer),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

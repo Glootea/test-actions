@@ -1,0 +1,67 @@
+html {
+    height: 100%;
+    overflow: hidden
+}
+
+body {
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+}
+
+#loading {
+    align-items: center;
+    display: flex;
+    height: 10%;
+    justify-content: center;
+    width: 10%;
+}
+
+#loading dotlottie-player {
+    animation: 1s ease-in-out 0s infinite alternate breathe;
+    opacity: .8;
+    transition: opacity .4s;
+}
+
+#loading.main_done dotlottie-player {
+    opacity: .8;
+}
+
+#loading.init_done {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 350ms, opacity 350ms ease-in-out;
+}
+
+@keyframes breathe {
+    from {
+        transform: scale(1)
+    }
+
+    to {
+        transform: scale(0.95)
+    }
+}
+
+@keyframes zooooom {
+    from {
+        transform: scale(1)
+    }
+
+    to {
+        transform: scale(10)
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
