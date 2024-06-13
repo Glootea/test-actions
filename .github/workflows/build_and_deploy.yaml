@@ -87,6 +87,7 @@ jobs:
             34
           ndk-version: 25.1.8937393
           cmake-version: 3.22.1
+          build-tools-version: 34.0.0
 
       - name: Build 
         run: |
@@ -99,8 +100,8 @@ jobs:
           title: "Release: $VERSION"
           tag: "$VERSION"
           draft: false
-          regex:  v(\d+\.)?(\d+\.)?(\*|\d+)
-          prerelease-regex: v(\d+\.)?(\d+\.)?(\*|\d+)\b-pre\b
+          regex:  "v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)"
+          prerelease-regex: "v(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)\b-pre\b"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
