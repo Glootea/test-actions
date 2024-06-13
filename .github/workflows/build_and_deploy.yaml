@@ -25,13 +25,6 @@ jobs:
           scheme: calver
           release_branch: main
 
-      - name: Set version
-        run: | 
-          echo "VERSION=v${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}-pre" >> $GITHUB_ENV
-      
-      - name: Get version
-        run:  echo Version is $VERSION
-
       - name: Install yq 
         run: |
           brew install yq jq
@@ -101,7 +94,7 @@ jobs:
         with:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk"
           bodyFile: "ReleaseNote.md"
-          tag: "$VERSION"
+          tag: v${{ steps.version.outputs.major-version }}.${{ steps.version.outputs.minor-version }}.${{ steps.version.outputs.patch-version }}-pre
           commit: main
           prerelease: true
           allowUpdates: true
